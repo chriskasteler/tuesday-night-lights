@@ -1,0 +1,36 @@
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor/IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (if using any build tools later)
+node_modules/
+npm-debug.log*
+
+# Environment variables (if any sensitive data)
+.env
+.env.local
+.env.production
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Firebase cache (if using Firebase CLI)
+.firebase/
+.firebaserc
+
+# Logs
+*.log 

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braemar Highland League</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>Braemar Highland League</h1>
+            <p style="font-size: 2rem; font-weight: 600; margin: 0 0 10px 0;">2025</p>
+            <p class="subtitle"><em>"Tuesday Night Lights"</em></p>
+            <p style="font-size: 1.1rem; opacity: 0.8;">7 Weeks of Competition • 9-Hole Matches • Different Format Each Week</p>
+            <p style="font-size: 1.1rem; opacity: 0.8;">August 5 - September 16, 2025 • 5:30pm Shotgun Start</p>
+        </div>
+
+        <nav class="nav-menu">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a class="nav-link active" onclick="showSection('info')">League Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('participants')">Participants</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('teams')">Teams</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('schedule')">Schedule</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('standings')">Standings</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="countdown-container">
+            <h2 style="text-align: center; margin-bottom: 15px; color: #333; font-size: 2rem; font-weight: 700;">
+                COUNTDOWN TO DRAFT DAY
+            </h2>
+            <div class="countdown-display" id="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="days">00</span>
+                    <span class="countdown-label">DAYS</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="hours">00</span>
+                    <span class="countdown-label">HOURS</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="minutes">00</span>
+                    <span class="countdown-label">MINUTES</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="seconds">00</span>
+                    <span class="countdown-label">SECONDS</span>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 15px; color: #333; font-size: 1.2rem; font-weight: 600;">
+                Tuesday, July 29th at 6:00 PM • Braemar Country Club
+            </p>
+        </div>
+
+        <div class="main-content">
+            <!-- League Info Section (Default) -->
+            <div id="info-section" class="content-section active">
+                <div class="info-section">
+                    <h2>League Information</h2>
+                    
+                    <div class="highlight">
+                        <h3 style="margin-bottom: 10px;">Season Overview</h3>
+                        <p><strong>5-Week Regular Season</strong> + <strong>2-Week Playoffs</strong></p>
+                        <p>6 Teams • 6 Players per Team • 2 Two-Man Teams Play Each Week</p>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>Schedule</h3>
+                            <p><strong>Every Tuesday</strong></p>
+                            <p>5:30pm Shotgun Start</p>
+                            <p>9-Hole Matches</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Scoring</h3>
+                            <p><strong>Match Play Format</strong></p>
+                            <p>Win = 2 points</p>
+                            <p>Split = 1 point</p>
+                            <p>Loss = 0 points</p>
+                            <p>Modified net scoring TBD</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Team Structure</h3>
+                            <p><strong>6 players per team</strong></p>
+                            <p>Each team will field 2 two-man teams each week. Two players will sit.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Playoffs</h3>
+                            <p><strong>Top 4 teams advance</strong></p>
+                            <p>Semifinals & Finals</p>
+                            <p>Plus 3rd place match</p>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #1a4e3b; margin: 30px 0 15px 0;">Weekly Formats</h3>
+                    <ul class="format-list">
+                        <li>
+                            <span><span class="week-number">Week 1</span> Aug 5 - Four-Ball (Best Ball)</span>
+                        </li>
+                        <li>
+                            <span><span class="week-number">Week 2</span> Aug 12 - Alternate Shot</span>
+                        </li>
+                        <li>
+                            <span><span class="week-number">Week 3</span> Aug 19 - Scramble</span>
+                        </li>
+                        <li>
+                            <span><span class="week-number">Week 4</span> Aug 26 - High-Low Match</span>
+                        </li>
+                        <li>
+                            <span><span class="week-number">Week 5</span> Sep 2 - Combined Score</span>
+                        </li>
+                        <li>
+                            <span><span class="week-number">Playoffs</span> Sep 9 - Semifinals (Vote on Format)</span>
+                        </li>
+                        <li>
+                            <span><span class="week-number">Playoffs</span> Sep 16 - Finals & 3rd Place (Vote on Format)</span>
+                        </li>
+                    </ul>
+
+                    <div class="highlight">
+                        <h3 style="margin-bottom: 10px;">What Makes This League Special</h3>
+                        <p>• Different format each week keeps everyone engaged<br>
+                        • High-Low and Combined Score formats ensure both players contribute<br>
+                        • Round-robin regular season - everyone plays everyone<br>
+                        • Players vote on playoff formats<br>
+                        • Payouts for 1st, 2nd, and 3rd place</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Participants Section -->
+            <div id="participants-section" class="content-section">
+                <div class="info-section">
+                    <h2>Registered Participants</h2>
+                    <div id="participants-list">
+                        <p style="text-align: center; color: #666; margin: 40px 0;">
+                            Participant list will be displayed here once registration begins.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teams Section -->
+            <div id="teams-section" class="content-section">
+                <div class="info-section">
+                    <h2>Team Rosters</h2>
+                    <p style="text-align: center; color: #666; margin-bottom: 30px; font-style: italic;">
+                        Teams will be formed on Draft Day (July 29th). Player names below are placeholders.
+                    </p>
+                    
+                    <div class="teams-grid">
+                        <div class="team-card">
+                            <h3 class="team-name">Team 1</h3>
+                            <div class="team-players">
+                                <div class="player-slot captain-slot">Captain</div>
+                                <div class="player-slot">Player 2</div>
+                                <div class="player-slot">Player 3</div>
+                                <div class="player-slot">Player 4</div>
+                                <div class="player-slot">Player 5</div>
+                                <div class="player-slot">Player 6</div>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <h3 class="team-name">Team 2</h3>
+                            <div class="team-players">
+                                <div class="player-slot captain-slot">Captain</div>
+                                <div class="player-slot">Player 2</div>
+                                <div class="player-slot">Player 3</div>
+                                <div class="player-slot">Player 4</div>
+                                <div class="player-slot">Player 5</div>
+                                <div class="player-slot">Player 6</div>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <h3 class="team-name">Team 3</h3>
+                            <div class="team-players">
+                                <div class="player-slot captain-slot">Captain</div>
+                                <div class="player-slot">Player 2</div>
+                                <div class="player-slot">Player 3</div>
+                                <div class="player-slot">Player 4</div>
+                                <div class="player-slot">Player 5</div>
+                                <div class="player-slot">Player 6</div>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <h3 class="team-name">Team 4</h3>
+                            <div class="team-players">
+                                <div class="player-slot captain-slot">Captain</div>
+                                <div class="player-slot">Player 2</div>
+                                <div class="player-slot">Player 3</div>
+                                <div class="player-slot">Player 4</div>
+                                <div class="player-slot">Player 5</div>
+                                <div class="player-slot">Player 6</div>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <h3 class="team-name">Team 5</h3>
+                            <div class="team-players">
+                                <div class="player-slot captain-slot">Captain</div>
+                                <div class="player-slot">Player 2</div>
+                                <div class="player-slot">Player 3</div>
+                                <div class="player-slot">Player 4</div>
+                                <div class="player-slot">Player 5</div>
+                                <div class="player-slot">Player 6</div>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <h3 class="team-name">Team 6</h3>
+                            <div class="team-players">
+                                <div class="player-slot captain-slot">Captain</div>
+                                <div class="player-slot">Player 2</div>
+                                <div class="player-slot">Player 3</div>
+                                <div class="player-slot">Player 4</div>
+                                <div class="player-slot">Player 5</div>
+                                <div class="player-slot">Player 6</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Section -->
+            <div id="schedule-section" class="content-section">
+                <div class="info-section">
+                    <h2>Match Schedule</h2>
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Date</th>
+                                <th>Format</th>
+                                <th>Matchups</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Aug 5</td>
+                                <td>Four-Ball (Best Ball)</td>
+                                <td>TBD after team formation</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Aug 12</td>
+                                <td>Alternate Shot</td>
+                                <td>TBD after team formation</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Aug 19</td>
+                                <td>Scramble</td>
+                                <td>TBD after team formation</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Aug 26</td>
+                                <td>High-Low Match</td>
+                                <td>TBD after team formation</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Sep 2</td>
+                                <td>Combined Score</td>
+                                <td>TBD after team formation</td>
+                            </tr>
+                            <tr style="background: #f0f8f5;">
+                                <td>6</td>
+                                <td>Sep 9</td>
+                                <td>Semifinals (Vote on Format)</td>
+                                <td>1st vs 4th, 2nd vs 3rd</td>
+                            </tr>
+                            <tr style="background: #f0f8f5;">
+                                <td>7</td>
+                                <td>Sep 16</td>
+                                <td>Finals (Vote on Format)</td>
+                                <td>Championship & 3rd Place</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Standings Section -->
+            <div id="standings-section" class="content-section">
+                <div class="info-section">
+                    <h2>League Standings</h2>
+                    <div id="standings-table">
+                        <p style="text-align: center; color: #666; margin: 40px 0;">
+                            Standings will be updated here as matches are completed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Sign Up Section (Always Visible) -->
+            <div class="signup-section">
+                <h2>Sign Up Now!</h2>
+                
+                <div class="highlight" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">Entry Fee & Prize Pool</h3>
+                    <p style="font-size: 1.3rem; margin-bottom: 10px;"><strong>$300 per player</strong></p>
+                    <p style="margin-bottom: 15px;">Total Prize Pool: <strong>$9,400</strong></p>
+                    <div style="font-size: 0.95rem; line-height: 1.8;">
+                        <strong>Payouts:</strong><br>
+                        1st Place: $4,800 ($800 per player)<br>
+                        2nd Place: $3,200 ($533 per player)<br>
+                        3rd Place: $1,800 ($300 per player)<br>
+                        <br>
+                        <strong>Weekly Prizes:</strong><br>
+                        TBD
+                    </div>
+                </div>
+
+                <div class="spots-remaining">
+                    <span class="spots-number" id="spotsRemaining">36</span>
+                    <span>Spots Remaining</span>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #1a4e3b;">
+                        <strong>First 36 players are in!</strong><br>
+                        Teams will be formed after registration closes.
+                    </p>
+                </div>
+
+                <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; margin-bottom: 25px; color: #856404;">
+                    <h3 style="margin: 0 0 10px 0; color: #856404; font-size: 1.2rem;">⚠️ Please Consider Your Schedule</h3>
+                    <p style="margin: 0; line-height: 1.5; font-weight: 500;">
+                        This league runs for <strong>7 consecutive Tuesday evenings</strong> from August 5 - September 16, 2025. 
+                        Please review the schedule and only sign up if you can commit to most weeks. 
+                        <strong>Teams depend on consistent participation!</strong>
+                    </p>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    ✅ Thanks for signing up! We'll be in touch about team assignments.
+                </div>
+
+                <form class="signup-form" id="signupForm">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" maxlength="14" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: flex-start; cursor: pointer; font-weight: 400; line-height: 1.4;">
+                            <input type="checkbox" id="teamCaptain" name="teamCaptain" style="margin-right: 12px; margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0;">
+                            <span>I would like to be a team captain</span>
+                        </label>
+                        <small style="color: #666; font-size: 0.9rem; margin-top: 8px; display: block; margin-left: 30px; line-height: 1.3;">
+                            Team captains help organize their team and coordinate with other captains
+                        </small>
+                    </div>
+
+                    <button type="submit" class="signup-btn">
+                        Sign Me Up!
+                    </button>
+                </form>
+
+                <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #666;">
+                    Questions? Contact the league organizer<br>
+                    <strong>More details coming soon!</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
