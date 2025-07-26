@@ -33,6 +33,19 @@
                 <li class="nav-item">
                     <a class="nav-link" onclick="showSection('standings')">Standings</a>
                 </li>
+                
+                <!-- Admin Only Navigation Items -->
+                <li class="nav-item admin-only" style="display: none;">
+                    <a class="nav-link" onclick="showSection('enter-scores')">Enter Scores</a>
+                </li>
+                <li class="nav-item admin-only" style="display: none;">
+                    <a class="nav-link" onclick="showSection('manage-teams')">Manage Teams</a>
+                </li>
+                
+                <!-- Admin Login/Logout Button -->
+                <li class="nav-item admin-login-item">
+                    <a class="nav-link admin-login-btn" onclick="showAdminLogin()" id="admin-login-btn">Admin Login</a>
+                </li>
             </ul>
         </nav>
 
@@ -252,36 +265,36 @@
                             <h3>Week 1 - August 19 • 5:30pm • Four-Ball (Best Ball)</h3>
                         </div>
                         <div class="matches-grid">
-                            <div class="match-card">
-                                <div class="match-teams">
-                                    <span class="team-name">Team 1</span>
-                                    <span class="vs">vs</span>
-                                    <span class="team-name">Team 2</span>
-                                </div>
-                                <div class="match-result">
-                                    <span class="result-placeholder">Result TBD</span>
-                                </div>
-                            </div>
-                            <div class="match-card">
-                                <div class="match-teams">
-                                    <span class="team-name">Team 3</span>
-                                    <span class="vs">vs</span>
-                                    <span class="team-name">Team 4</span>
-                                </div>
-                                <div class="match-result">
-                                    <span class="result-placeholder">Result TBD</span>
-                                </div>
-                            </div>
-                            <div class="match-card">
-                                <div class="match-teams">
-                                    <span class="team-name">Team 5</span>
-                                    <span class="vs">vs</span>
-                                    <span class="team-name">Team 6</span>
-                                </div>
-                                <div class="match-result">
-                                    <span class="result-placeholder">Result TBD</span>
-                                </div>
-                            </div>
+                                                         <div class="match-card" onclick="openScorecard('week1-match1', 'Team 1', 'Team 2', 'Four-Ball (Best Ball)')">
+                                 <div class="match-teams">
+                                     <span class="team-name">Team 1</span>
+                                     <span class="vs">vs</span>
+                                     <span class="team-name">Team 2</span>
+                                 </div>
+                                 <div class="match-result">
+                                     <span class="result-placeholder">Click to View Scorecard</span>
+                                 </div>
+                             </div>
+                                                         <div class="match-card" onclick="openScorecard('week1-match2', 'Team 3', 'Team 4', 'Four-Ball (Best Ball)')">
+                                 <div class="match-teams">
+                                     <span class="team-name">Team 3</span>
+                                     <span class="vs">vs</span>
+                                     <span class="team-name">Team 4</span>
+                                 </div>
+                                 <div class="match-result">
+                                     <span class="result-placeholder">Click to View Scorecard</span>
+                                 </div>
+                             </div>
+                             <div class="match-card" onclick="openScorecard('week1-match3', 'Team 5', 'Team 6', 'Four-Ball (Best Ball)')">
+                                 <div class="match-teams">
+                                     <span class="team-name">Team 5</span>
+                                     <span class="vs">vs</span>
+                                     <span class="team-name">Team 6</span>
+                                 </div>
+                                 <div class="match-result">
+                                     <span class="result-placeholder">Click to View Scorecard</span>
+                                 </div>
+                             </div>
                         </div>
                     </div>
 
@@ -666,9 +679,339 @@
         </div>
     </div>
 
+    <!-- Scorecard Modal -->
+    <div id="scorecard-modal" class="scorecard-modal">
+        <div class="scorecard-content">
+            <div class="scorecard-header">
+                <h2 id="scorecard-title">Match Scorecard</h2>
+                <button class="close-btn" onclick="closeScorecard()">&times;</button>
+            </div>
+            
+            <div class="scorecard-info">
+                <div class="match-info">
+                    <span id="scorecard-teams">Match 1: Team 1 vs Team 2</span>
+                    <span id="scorecard-format">Four-Ball (Best Ball)</span>
+                </div>
+            </div>
+
+            <div class="scorecard-notice">
+                <p style="text-align: center; color: #666; font-style: italic; margin: 0;">
+                    Scorecards are view-only. Contact the league organizer to report scores.
+                </p>
+            </div>
+
+            <div class="scorecards-container">
+                <!-- Single Match Scorecard -->
+                <div class="golf-scorecard">
+                    <div class="scorecard-match-header">
+                        <h3 id="match-title">Match 1</h3>
+                    </div>
+                    <table class="golf-scorecard-table">
+                        <thead>
+                            <tr class="holes-row">
+                                <th class="player-col">Player</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                <th>5</th>
+                                <th>6</th>
+                                <th>7</th>
+                                <th>8</th>
+                                <th>9</th>
+                                <th class="total-col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="player-row team1-player">
+                                <td class="player-name">Team 1 Player 1</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="player-row team1-player">
+                                <td class="player-name">Team 1 Player 2</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="team-score-row team1-score">
+                                <td class="team-score-label" id="team1-format-label">Team 1 Best Ball</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-total-cell">0</td>
+                            </tr>
+                            <tr class="match-status-row team1-status">
+                                <td class="match-status-label">Team 1 Status</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-result-cell">AS</td>
+                            </tr>
+                            <tr class="spacer-row">
+                                <td colspan="11" style="height: 15px; background: #f0f8f0; border: none;"></td>
+                            </tr>
+                            <tr class="player-row team2-player">
+                                <td class="player-name">Team 2 Player 1</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="player-row team2-player">
+                                <td class="player-name">Team 2 Player 2</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="team-score-row team2-score">
+                                <td class="team-score-label" id="team2-format-label">Team 2 Best Ball</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-total-cell">0</td>
+                            </tr>
+                            <tr class="match-status-row team2-status">
+                                <td class="match-status-label">Team 2 Status</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-result-cell">AS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Second Match Scorecard -->
+                <div class="golf-scorecard">
+                    <div class="scorecard-match-header">
+                        <h3 id="match2-title">Match 2</h3>
+                    </div>
+                    <table class="golf-scorecard-table">
+                        <thead>
+                            <tr class="holes-row">
+                                <th class="player-col">Player</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                <th>5</th>
+                                <th>6</th>
+                                <th>7</th>
+                                <th>8</th>
+                                <th>9</th>
+                                <th class="total-col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="player-row team1-player">
+                                <td class="player-name">Team 1 Player 3</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="player-row team1-player">
+                                <td class="player-name">Team 1 Player 4</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="team-score-row team1-score">
+                                <td class="team-score-label" id="team1-format-label2">Team 1 Best Ball</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-total-cell">0</td>
+                            </tr>
+                            <tr class="match-status-row team1-status">
+                                <td class="match-status-label">Team 1 Status</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-result-cell">AS</td>
+                            </tr>
+                            <tr class="spacer-row">
+                                <td colspan="11" style="height: 15px; background: #f0f8f0; border: none;"></td>
+                            </tr>
+                            <tr class="player-row team2-player">
+                                <td class="player-name">Team 2 Player 3</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="player-row team2-player">
+                                <td class="player-name">Team 2 Player 4</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">0</td>
+                            </tr>
+                            <tr class="team-score-row team2-score">
+                                <td class="team-score-label" id="team2-format-label2">Team 2 Best Ball</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-score-cell">-</td>
+                                <td class="team-total-cell">0</td>
+                            </tr>
+                            <tr class="match-status-row team2-status">
+                                <td class="match-status-label">Team 2 Status</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-status-cell">AS</td>
+                                <td class="match-result-cell">AS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="match-result-summary">
+                <div class="result-box">
+                    <h4>Match Result</h4>
+                    <p id="match-winner">Scores not yet entered</p>
+                </div>
+            </div>
+
+            <div class="scorecard-actions">
+                <button class="close-btn-bottom" onclick="closeScorecard()">Close Scorecard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="admin-modal" style="display: none;">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h2>Admin Login</h2>
+                <button class="close-btn" onclick="closeAdminLogin()">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <form id="admin-login-form">
+                    <div class="form-group">
+                        <label for="admin-email">Email:</label>
+                        <input type="email" id="admin-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Password:</label>
+                        <input type="password" id="admin-password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="login-btn">Login</button>
+                        <button type="button" class="cancel-btn" onclick="closeAdminLogin()">Cancel</button>
+                    </div>
+                </form>
+                <div id="login-error" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
     <!-- EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>

@@ -654,3 +654,496 @@ body {
         margin: 0;
     }
 }
+
+.match-card {
+    cursor: pointer;
+}
+
+.match-card:hover .result-placeholder {
+    color: #2d4a2d;
+    font-weight: 500;
+}
+
+.scorecard-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.scorecard-content {
+    background: white;
+    margin: 20px auto;
+    padding: 0;
+    max-width: 1000px;
+    width: 95%;
+    max-height: 95vh;
+    overflow-y: auto;
+}
+
+.scorecard-header {
+    background: #2d4a2d;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scorecard-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.scorecard-info {
+    padding: 20px;
+    background: #f8f9f8;
+    border-bottom: 2px solid #e8f0e8;
+}
+
+.match-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.match-info span {
+    font-weight: 600;
+    color: #1e3a1e;
+}
+
+.scorecard-notice {
+    padding: 15px 20px;
+    background: #fff3cd;
+    border-bottom: 2px solid #ffc107;
+}
+
+.scorecards-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.golf-scorecard {
+    background: white;
+    border: 2px solid #4a5d4a;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.scorecard-match-header {
+    background: #2d4a2d;
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+}
+
+.scorecard-match-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.golf-scorecard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.golf-scorecard-table th {
+    background: #4a5d4a;
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 500;
+    border: 1px solid #2d4a2d;
+}
+
+.golf-scorecard-table .player-col {
+    background: #6a7d6a;
+    text-align: left;
+    padding-left: 15px;
+    min-width: 120px;
+}
+
+.golf-scorecard-table .total-col {
+    background: #6a7d6a;
+    font-weight: 600;
+}
+
+.golf-scorecard-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid #e8f0e8;
+}
+
+.player-name {
+    text-align: left !important;
+    padding-left: 15px !important;
+    font-weight: 600;
+    color: #1e3a1e;
+    background: #f8f9f8;
+}
+
+.team1-player .player-name {
+    background: #e8f0e8;
+    border-left: 4px solid #4a5d4a;
+}
+
+.team2-player .player-name {
+    background: #f0f8f0;
+    border-left: 4px solid #6a7d6a;
+}
+
+.team1-score .team-score-label {
+    background: #4a5d4a !important;
+}
+
+.team2-score .team-score-label {
+    background: #6a7d6a !important;
+}
+
+.spacer-row td {
+    padding: 0 !important;
+}
+
+.score-cell {
+    background: white;
+    font-weight: 500;
+    color: #333;
+    min-width: 35px;
+}
+
+.total-cell {
+    background: #e8f0e8;
+    font-weight: 600;
+    color: #2d4a2d;
+}
+
+.team-score-row {
+    border-top: 2px solid #4a5d4a;
+}
+
+.team-score-label {
+    background: #2d4a2d !important;
+    color: white !important;
+    font-weight: 600;
+    text-align: left !important;
+    padding-left: 15px !important;
+}
+
+.team-score-cell {
+    background: #e8f0e8;
+    font-weight: 600;
+    color: #2d4a2d;
+    border-top: 2px solid #4a5d4a;
+}
+
+.team-total-cell {
+    background: #2d4a2d;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-top: 2px solid #4a5d4a;
+}
+
+.match-status-row {
+    border-top: 2px solid #4a5d4a;
+}
+
+.match-status-label {
+    background: #1e3a1e !important;
+    color: white !important;
+    font-weight: 600;
+    text-align: left !important;
+    padding-left: 15px !important;
+}
+
+.team1-status .match-status-label {
+    background: #4a5d4a !important;
+}
+
+.team2-status .match-status-label {
+    background: #6a7d6a !important;
+}
+
+.match-status-cell {
+    background: #f0f8f0;
+    font-weight: 600;
+    color: #2d4a2d;
+    border-top: 2px solid #4a5d4a;
+    font-size: 0.9rem;
+}
+
+.match-result-cell {
+    background: #1e3a1e;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    border-top: 2px solid #4a5d4a;
+}
+
+.match-result-summary {
+    padding: 20px;
+    background: #f8f9f8;
+    border-top: 2px solid #e8f0e8;
+}
+
+.result-box {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border: 2px solid #4a5d4a;
+}
+
+.result-box h4 {
+    margin: 0 0 10px 0;
+    color: #2d4a2d;
+    font-size: 1.2rem;
+}
+
+.result-box p {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e3a1e;
+}
+
+.scorecard-actions {
+    padding: 20px;
+    background: #f8f9f8;
+    display: flex;
+    justify-content: center;
+    border-top: 2px solid #e8f0e8;
+}
+
+.close-btn-bottom {
+    padding: 12px 30px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #2d4a2d;
+    color: white;
+}
+
+    .close-btn-bottom:hover {
+        background: #1e3a1e;
+    }
+
+/* Admin Styles */
+.admin-only {
+    display: none !important;
+}
+
+body.admin-logged-in .admin-only {
+    display: block !important;
+}
+
+.admin-login-btn {
+    background: #1e3a1e !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    font-weight: 600 !important;
+}
+
+.admin-login-btn:hover {
+    background: #2d4a2d !important;
+}
+
+.admin-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-modal-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.admin-modal-header {
+    background: #2d4a2d;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.admin-modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.admin-modal-body {
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d4a2d;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e8f0e8;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4a5d4a;
+    background: #f8f9f8;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.login-btn {
+    background: #2d4a2d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.login-btn:hover {
+    background: #1e3a1e;
+}
+
+.cancel-btn {
+    background: #ddd;
+    color: #333;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.cancel-btn:hover {
+    background: #ccc;
+}
+
+.error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 4px;
+    border-left: 4px solid #c62828;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .scorecard-content {
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+    
+    .scorecards-container {
+        padding: 15px;
+        gap: 25px;
+    }
+    
+    .golf-scorecard-table {
+        font-size: 0.8rem;
+    }
+    
+    .golf-scorecard-table th,
+    .golf-scorecard-table td {
+        padding: 6px 4px;
+    }
+    
+    .golf-scorecard-table .player-col {
+        min-width: 80px;
+        padding-left: 8px;
+    }
+    
+    .player-name {
+        padding-left: 8px !important;
+        font-size: 0.85rem;
+    }
+    
+    .score-cell {
+        min-width: 25px;
+    }
+    
+    .scorecard-match-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .match-status-label {
+        padding-left: 8px !important;
+        font-size: 0.8rem;
+    }
+    
+    .match-status-cell,
+    .match-result-cell {
+        font-size: 0.8rem;
+    }
+    
+    .team1-player .player-name,
+    .team2-player .player-name {
+        border-left-width: 2px;
+    }
+}

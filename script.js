@@ -11,6 +11,10 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
+
+// Admin email - change this to your email
+const ADMIN_EMAIL = 'chris.kasteler@me.com';
 
 // Initialize EmailJS
 emailjs.init('vLntllpJOaRGyqN-E');
@@ -283,5 +287,189 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
             }
         });
+    }
+});
+
+// Scorecard functionality
+let currentMatch = null;
+
+function openScorecard(matchId, team1, team2, format) {
+    currentMatch = {
+        id: matchId,
+        team1: team1,
+        team2: team2,
+        format: format
+    };
+    
+    // Update modal content
+    document.getElementById('scorecard-teams').textContent = `${team1} vs ${team2}`;
+    document.getElementById('scorecard-format').textContent = format;
+    document.getElementById('match-title').textContent = 'Match 1';
+    document.getElementById('match2-title').textContent = 'Match 2';
+    
+    // Update format labels based on the game type
+    let formatLabel = 'Team Score';
+    if (format.includes('Four-Ball') || format.includes('Best Ball')) {
+        formatLabel = 'Best Ball';
+    } else if (format.includes('Alternate Shot')) {
+        formatLabel = 'Alternate Shot';
+    } else if (format.includes('Scramble')) {
+        formatLabel = 'Scramble';
+    } else if (format.includes('High-Low')) {
+        formatLabel = 'High-Low';
+    } else if (format.includes('Combined')) {
+        formatLabel = 'Combined Score';
+    }
+    
+    // Update format labels for both matches
+    document.getElementById('team1-format-label').textContent = `${team1} ${formatLabel}`;
+    document.getElementById('team2-format-label').textContent = `${team2} ${formatLabel}`;
+    document.getElementById('team1-format-label2').textContent = `${team1} ${formatLabel}`;
+    document.getElementById('team2-format-label2').textContent = `${team2} ${formatLabel}`;
+    
+    // Update player names dynamically based on teams
+    try {
+        // Get all player name elements
+        const playerNames = document.querySelectorAll('.player-name');
+        const statusLabels = document.querySelectorAll('.match-status-label');
+        
+        // Update player names - assuming order: Team1P1, Team1P2, Team2P1, Team2P2, Team1P3, Team1P4, Team2P3, Team2P4
+        if (playerNames.length >= 8) {
+            playerNames[0].textContent = `${team1} Player 1`;
+            playerNames[1].textContent = `${team1} Player 2`;
+            playerNames[2].textContent = `${team2} Player 1`;
+            playerNames[3].textContent = `${team2} Player 2`;
+            playerNames[4].textContent = `${team1} Player 3`;
+            playerNames[5].textContent = `${team1} Player 4`;
+            playerNames[6].textContent = `${team2} Player 3`;
+            playerNames[7].textContent = `${team2} Player 4`;
+        }
+        
+        // Update status labels
+        if (statusLabels.length >= 4) {
+            statusLabels[0].textContent = `${team1} Status`;
+            statusLabels[1].textContent = `${team2} Status`;
+            statusLabels[2].textContent = `${team1} Status`;
+            statusLabels[3].textContent = `${team2} Status`;
+        }
+    } catch (error) {
+        console.log('Error updating player names:', error);
+        // Modal will still open even if player name updates fail
+    }
+    
+    // Show placeholder scores (read-only)
+    document.getElementById('match-winner').textContent = 'Scores not yet entered';
+    
+    // Show modal
+    document.getElementById('scorecard-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeScorecard() {
+    document.getElementById('scorecard-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    currentMatch = null;
+}
+
+// Note: Scorecard is now read-only for regular users
+// Score entry will be handled through admin interface
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('scorecard-modal');
+    if (event.target === modal) {
+        closeScorecard();
+    }
+});
+
+// ===== ADMIN AUTHENTICATION =====
+
+// Firebase Auth state listener
+auth.onAuthStateChanged(user => {
+    if (user && user.email === ADMIN_EMAIL) {
+        // User is admin - show admin features
+        document.body.classList.add('admin-logged-in');
+        document.getElementById('admin-login-btn').textContent = 'Admin Logout';
+        document.getElementById('admin-login-btn').onclick = adminLogout;
+        console.log('Admin logged in:', user.email);
+    } else {
+        // User is not admin or not logged in - hide admin features
+        document.body.classList.remove('admin-logged-in');
+        document.getElementById('admin-login-btn').textContent = 'Admin Login';
+        document.getElementById('admin-login-btn').onclick = showAdminLogin;
+        if (user) {
+            console.log('Non-admin user logged in:', user.email);
+        } else {
+            console.log('No user logged in');
+        }
+    }
+});
+
+// Show admin login modal
+function showAdminLogin() {
+    document.getElementById('admin-login-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Clear form
+    document.getElementById('admin-email').value = '';
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+}
+
+// Close admin login modal
+function closeAdminLogin() {
+    document.getElementById('admin-login-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Admin login form submission
+document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('admin-email').value;
+    const password = document.getElementById('admin-password').value;
+    const errorDiv = document.getElementById('login-error');
+    
+    try {
+        // Sign in with Firebase Auth
+        await auth.signInWithEmailAndPassword(email, password);
+        
+        // Close modal on successful login
+        closeAdminLogin();
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        
+        // Show error message
+        let errorMessage = 'Login failed. Please try again.';
+        if (error.code === 'auth/user-not-found') {
+            errorMessage = 'No account found with this email address.';
+        } else if (error.code === 'auth/wrong-password') {
+            errorMessage = 'Incorrect password.';
+        } else if (error.code === 'auth/invalid-email') {
+            errorMessage = 'Invalid email address.';
+        } else if (error.code === 'auth/too-many-requests') {
+            errorMessage = 'Too many failed attempts. Please try again later.';
+        }
+        
+        errorDiv.textContent = errorMessage;
+        errorDiv.style.display = 'block';
+    }
+});
+
+// Admin logout
+function adminLogout() {
+    auth.signOut().then(() => {
+        console.log('Admin logged out');
+    }).catch((error) => {
+        console.error('Logout error:', error);
+    });
+}
+
+// Close admin modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('admin-login-modal');
+    if (event.target === modal) {
+        closeAdminLogin();
     }
 });
