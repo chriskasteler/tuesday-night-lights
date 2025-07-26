@@ -678,8 +678,11 @@ async function approveRequest(requestId) {
             status: 'approved'
         });
         
-        // Send approval email notification
+        // Send approval email notification (EmailJS - will be replaced)
         await sendApprovalEmail(requestData);
+        
+        // Add "approved" tag to user in Mailchimp (triggers automation)
+        await addMailchimpTag(requestData.email, 'approved');
         
         // Refresh the requests list
         await loadPendingRequests();
@@ -717,8 +720,11 @@ async function markFeeReceived(requestId) {
         // Remove from requests collection
         await db.collection('requests').doc(requestId).delete();
         
-        // Send payment confirmation email
+        // Send payment confirmation email (placeholder)
         await sendPaymentConfirmationEmail(participantData);
+        
+        // Add "paid" tag to user in Mailchimp (triggers automation)
+        await addMailchimpTag(participantData.email, 'paid');
         
         // Refresh the requests list
         await loadPendingRequests();
@@ -813,6 +819,31 @@ async function sendPaymentConfirmationEmail(participantData) {
         console.log('Payment confirmation email prepared for:', templateParams);
     } catch (error) {
         console.error('Failed to send payment confirmation email:', error);
+    }
+}
+
+// Add tag to user in Mailchimp (triggers email automation)
+async function addMailchimpTag(email, tag) {
+    try {
+        const response = await fetch('/.netlify/functions/add-tag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                tag: tag
+            })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`Tag '${tag}' added to ${email}:`, result.message);
+        } else {
+            console.log(`Failed to add tag '${tag}' to ${email}`);
+        }
+    } catch (error) {
+        console.error('Error adding Mailchimp tag:', error);
     }
 }
 
