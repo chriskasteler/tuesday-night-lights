@@ -597,7 +597,46 @@
                 </div>
             </div>
 
-
+            <!-- Manage Teams Section (Admin Only) -->
+            <div id="manage-teams-section" class="content-section">
+                <div class="info-section">
+                    <h2>Manage Teams</h2>
+                    <p style="text-align: center; color: #666; margin-bottom: 30px; font-style: italic;">
+                        Edit team names, assign players, and set team captains
+                    </p>
+                    
+                    <div id="manage-status-message" class="status-message" style="display: none;"></div>
+                    
+                    <!-- Unassigned Players Section -->
+                    <div class="unassigned-players" style="background: white; border: 2px solid #ffc107; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                        <h3 style="color: #856404; margin-bottom: 15px;">Unassigned Players</h3>
+                        <div id="unassigned-players-list" class="unassigned-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Teams Management Grid -->
+                    <div class="teams-management-grid" id="teams-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-bottom: 30px;">
+                        <!-- Teams will be populated dynamically -->
+                    </div>
+                    
+                    <!-- Actions Section -->
+                    <div class="actions-section" style="text-align: center; padding: 20px; background: #f8f9f8; border-radius: 8px; margin-bottom: 20px;">
+                        <button class="action-btn" onclick="saveAllTeams()" style="background: #4a5d4a; color: white; border: none; padding: 12px 24px; margin: 0 10px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">Save All Changes</button>
+                        <button class="action-btn secondary" onclick="resetTeams()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; margin: 0 10px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">Reset to Default</button>
+                        <button class="action-btn secondary" onclick="autoAssignPlayers()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; margin: 0 10px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">Auto-Assign Remaining Players</button>
+                    </div>
+                    
+                    <!-- Signup Control Section -->
+                    <div class="signup-control-section" style="text-align: center; padding: 20px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #856404; margin-bottom: 15px;">Signup Section Control</h3>
+                        <p style="color: #856404; margin-bottom: 15px; font-size: 0.9rem;">Control whether the signup section is visible to visitors</p>
+                        <button id="toggle-signup-btn" class="action-btn" onclick="toggleSignupVisibility()" style="background: #856404; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                            Loading...
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Sign Up Section (Always Visible) -->
             <div class="signup-section">
@@ -1017,5 +1056,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <script src="script.js"></script>
+    <script src="manage-teams.js"></script>
 </body>
 </html>
