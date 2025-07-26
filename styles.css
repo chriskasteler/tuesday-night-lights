@@ -679,7 +679,7 @@ body {
 
 .match-card {
     background: white;
-    padding: 20px;
+    padding: 12px;
     border: 2px solid #e8f0e8;
     transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
@@ -693,7 +693,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
 }
 
 .team-name {
@@ -715,7 +715,7 @@ body {
 
 .match-result {
     text-align: center;
-    padding: 10px;
+    padding: 6px;
     background: #f8f9f8;
     border-top: 2px solid #e8f0e8;
 }
@@ -738,7 +738,7 @@ body {
     }
     
     .match-card {
-        padding: 15px;
+        padding: 8px;
     }
     
     .team-name {
@@ -747,7 +747,7 @@ body {
     
     .match-teams {
         flex-direction: column;
-        gap: 10px;
+        gap: 6px;
     }
     
     .vs {
