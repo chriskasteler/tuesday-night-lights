@@ -641,14 +641,21 @@ function renderPendingRequests() {
                     <p style="margin: 0; font-size: 0.8rem; color: #999;">Requested: ${new Date(request.timestamp).toLocaleDateString()}</p>
                 </div>
                 <div style="display: flex; gap: 8px; margin-left: 15px;">
-                    <button onclick="approveRequest('${request.id}')" 
-                            style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
-                        Approve
-                    </button>
-                    <button onclick="denyRequest('${request.id}', '${request.name.replace(/'/g, "\\'")}') " 
-                            style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
-                        Deny
-                    </button>
+                    ${request.status === 'approved' ? `
+                        <button onclick="markFeeReceived('${request.id}')" 
+                                style="background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                            Fee Received
+                        </button>
+                    ` : `
+                        <button onclick="approveRequest('${request.id}')" 
+                                style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                            Approve
+                        </button>
+                        <button onclick="denyRequest('${request.id}', '${request.name.replace(/'/g, "\\'")}') " 
+                                style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                            Deny
+                        </button>
+                    `}
                 </div>
             </div>
         </div>
@@ -657,6 +664,36 @@ function renderPendingRequests() {
 
 // Approve a membership request
 async function approveRequest(requestId) {
+    try {
+        // Get the request data
+        const requestDoc = await db.collection('requests').doc(requestId).get();
+        if (!requestDoc.exists) {
+            throw new Error('Request not found');
+        }
+        
+        const requestData = requestDoc.data();
+        
+        // Update status to approved (don't move to participants yet)
+        await db.collection('requests').doc(requestId).update({
+            status: 'approved'
+        });
+        
+        // Send approval email notification
+        await sendApprovalEmail(requestData);
+        
+        // Refresh the requests list
+        await loadPendingRequests();
+        
+        showStatusMessage(`${requestData.name} approved! Waiting for fee payment.`, 'success');
+        
+    } catch (error) {
+        console.error('Error approving request:', error);
+        showStatusMessage('Error approving request. Please try again.', 'error');
+    }
+}
+
+// Mark fee as received and move to participants
+async function markFeeReceived(requestId) {
     try {
         // Get the request data
         const requestDoc = await db.collection('requests').doc(requestId).get();
@@ -680,17 +717,17 @@ async function approveRequest(requestId) {
         // Remove from requests collection
         await db.collection('requests').doc(requestId).delete();
         
-        // Send approval email notification
-        await sendApprovalEmail(participantData);
+        // Send payment confirmation email
+        await sendPaymentConfirmationEmail(participantData);
         
         // Refresh the requests list
         await loadPendingRequests();
         
-        showStatusMessage(`${requestData.name} approved and added to the league!`, 'success');
+        showStatusMessage(`${requestData.name} fee received and added to participants!`, 'success');
         
     } catch (error) {
-        console.error('Error approving request:', error);
-        showStatusMessage('Error approving request. Please try again.', 'error');
+        console.error('Error marking fee received:', error);
+        showStatusMessage('Error processing fee payment. Please try again.', 'error');
     }
 }
 
@@ -755,6 +792,27 @@ async function sendDenialEmail(requestData) {
         console.log('Denial email sent successfully');
     } catch (error) {
         console.error('Failed to send denial email:', error);
+    }
+}
+
+// Send payment confirmation email (placeholder - will be replaced with Mailchimp)
+async function sendPaymentConfirmationEmail(participantData) {
+    try {
+        // TODO: Replace with Mailchimp template when integration is complete
+        console.log('Payment confirmation email would be sent to:', participantData.email);
+        
+        // Placeholder using existing EmailJS setup - will be replaced
+        const templateParams = {
+            user_name: participantData.name,
+            user_email: participantData.email,
+            message_type: 'Payment received - Welcome to the league!',
+            approval_status: 'payment_received'
+        };
+
+        // For now, just log - we'll implement this with Mailchimp
+        console.log('Payment confirmation email prepared for:', templateParams);
+    } catch (error) {
+        console.error('Failed to send payment confirmation email:', error);
     }
 }
 

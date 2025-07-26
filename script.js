@@ -16,8 +16,12 @@ const auth = firebase.auth();
 // Admin email - change this to your email
 const ADMIN_EMAIL = 'chris.kasteler@me.com';
 
-// Initialize EmailJS
-emailjs.init('vLntllpJOaRGyqN-E');
+// Mailchimp configuration
+const MAILCHIMP_CONFIG = {
+    apiKey: 'YOUR_MAILCHIMP_API_KEY', // Replace with your actual API key
+    audienceId: 'YOUR_AUDIENCE_ID',   // Replace with your actual audience ID
+    serverPrefix: 'us21'              // Replace with your server prefix (check your Mailchimp URL)
+};
 
 // Navigation functionality
 function showSection(sectionName) {
