@@ -964,6 +964,10 @@ body.admin-logged-in .admin-only {
     display: block !important;
 }
 
+body.admin-logged-in .remove-player-btn {
+    display: inline-block !important;
+}
+
 .admin-login-btn {
     background: #1e3a1e !important;
     color: white !important;

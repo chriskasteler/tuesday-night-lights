@@ -39,7 +39,6 @@ function showSection(sectionName) {
 }
 
 let signedUpPlayers = [];
-let spotsRemaining = 36;
 
 // Load participants from Firebase
 function loadParticipants() {
@@ -49,101 +48,121 @@ function loadParticipants() {
             signedUpPlayers.push({ id: doc.id, ...doc.data() });
         });
         
-        // Update spots remaining
-        spotsRemaining = 36 - signedUpPlayers.length;
-        document.getElementById('spotsRemaining').textContent = spotsRemaining;
-        
         // Update participants list
         updateParticipantsList();
-        
-        // Update signup section if full
-        if (spotsRemaining <= 0) {
-            document.querySelector('.spots-remaining').innerHTML = `
-                <span class="spots-number" style="color: #dc3545;">FULL</span>
-                <span>League is Full!</span>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #dc3545;">
-                    <strong>Contact organizer for waitlist</strong>
-                </p>
-            `;
-            document.getElementById('signupForm').innerHTML = `
-                <div style="text-align: center; padding: 20px; background: #f8d7da; color: #721c24;">
-                    <h3>Registration Closed</h3>
-                    <p>The league has reached capacity with 36 players.</p>
-                </div>
-            `;
-        }
     });
 }
 
 document.getElementById('signupForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
-    if (spotsRemaining <= 0) {
-        alert('Sorry, the league is full! Please contact the organizer to be added to the waitlist.');
-        return;
-    }
+
+    // Get the submit button and show loading state
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Submitting...';
+    submitButton.disabled = true;
 
     const formData = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
         teamCaptain: document.getElementById('teamCaptain').checked,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: 'pending'
     };
 
     try {
-    // Check if email already exists
-        const existingUser = await db.collection('participants').where('email', '==', formData.email).get();
-        if (!existingUser.empty) {
-        alert('This email address is already registered!');
-        return;
-    }
+        // Check if email already exists in participants or requests
+        const existingParticipant = await db.collection('participants').where('email', '==', formData.email).get();
+        const existingRequest = await db.collection('requests').where('email', '==', formData.email).get();
+        
+        if (!existingParticipant.empty) {
+            alert('This email address is already registered in the league!');
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+            return;
+        }
+        
+        if (!existingRequest.empty) {
+            alert('You already have a pending request. Please wait for approval.');
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+            return;
+        }
 
-        // Add player to Firestore
-        await db.collection('participants').add(formData);
+        // Add request to Firestore
+        await db.collection('requests').add(formData);
     
-        // Send email notification
-        await sendEmailNotification(formData);
+        // Send email notification to admin
+        await sendRequestNotification(formData);
     
-    // Show success message
-    document.getElementById('successMessage').style.display = 'block';
-    
-    // Reset form
-    document.getElementById('signupForm').reset();
-    
-    // Scroll to success message
-    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
-    
-    // Hide success message after 5 seconds
-    setTimeout(() => {
-        document.getElementById('successMessage').style.display = 'none';
-    }, 5000);
+        // Show popup alert
+        alert('Request Submitted\n\nSpace is extremely limited. You will receive an email if you have secured a spot in this year\'s league.');
+        
+        // Reset form
+        document.getElementById('signupForm').reset();
 
-        console.log('Player registered:', formData);
+        console.log('Request submitted:', formData);
         
     } catch (error) {
-        console.error('Error adding participant:', error);
-        alert('There was an error submitting your registration. Please try again.');
+        console.error('Error submitting request:', error);
+        alert('There was an error submitting your request. Please try again.');
+    } finally {
+        // Restore button state
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
     }
 });
 
-// Send email notification for new registration
-async function sendEmailNotification(playerData) {
+// Send email notification for new request
+async function sendRequestNotification(requestData) {
     try {
         const templateParams = {
-            user_name: playerData.name,
-            user_email: playerData.email,
-            user_phone: playerData.phone,
-            team_captain: playerData.teamCaptain ? 'Yes' : 'No',
-            registration_time: new Date(playerData.timestamp).toLocaleString(),
-            total_registrations: signedUpPlayers.length + 1
+            user_name: requestData.name,
+            user_email: requestData.email,
+            user_phone: requestData.phone,
+            team_captain: requestData.teamCaptain ? 'Yes' : 'No',
+            request_time: new Date(requestData.timestamp).toLocaleString(),
+            message_type: 'New membership request'
         };
 
         await emailjs.send('service_t1yivr7', 'template_f5aievt', templateParams);
-        console.log('Email notification sent successfully');
+        console.log('Request notification sent successfully');
     } catch (error) {
-        console.error('Failed to send email notification:', error);
-        // Don't show error to user - registration still succeeded
+        console.error('Failed to send request notification:', error);
+        // Don't show error to user - request still succeeded
+    }
+}
+
+// Remove participant (admin only)
+async function removeParticipant(participantId, participantName) {
+    if (!confirm(`Are you sure you want to remove ${participantName} from the league? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        // Delete from Firebase
+        await db.collection('participants').doc(participantId).delete();
+        
+        console.log(`Participant removed: ${participantName}`);
+        
+        // Show success message (reusing the signup success message area)
+        const successMessage = document.getElementById('successMessage');
+        if (successMessage) {
+            successMessage.textContent = `${participantName} has been removed from the league.`;
+            successMessage.style.display = 'block';
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        // The loadParticipants() listener will automatically update the display
+        
+    } catch (error) {
+        console.error('Error removing participant:', error);
+        alert('There was an error removing the participant. Please try again.');
     }
 }
 
@@ -168,9 +187,15 @@ function updateParticipantsList() {
                     <div style="background: #f8f9f8; padding: 15px; border-left: 4px solid #4a5d4a; transition: transform 0.2s ease;" 
                          onmouseover="this.style.transform='translateY(-2px)'" 
                          onmouseout="this.style.transform='translateY(0)'">
-                        <h4 style="margin: 0 0 5px 0; color: #1e3a1e; font-weight: 600; display: flex; align-items: center;">
-                            ${player.name}
-                            ${player.teamCaptain ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.75rem; font-weight: 500; margin-left: 10px;">CAPTAIN</span>' : ''}
+                        <h4 style="margin: 0 0 5px 0; color: #1e3a1e; font-weight: 600; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center;">
+                                ${player.name}
+                                ${player.teamCaptain ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.75rem; font-weight: 500; margin-left: 10px;">CAPTAIN</span>' : ''}
+                            </div>
+                            <button class="admin-only remove-player-btn" onclick="removeParticipant('${player.id}', '${player.name.replace(/'/g, "\\'")}') " 
+                                    style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
+                                Remove
+                            </button>
                         </h4>
                         <p style="margin: 0; font-size: 0.9rem; color: #666; line-height: 1.4;">
                             Registered: ${new Date(player.timestamp).toLocaleDateString()}
@@ -178,17 +203,7 @@ function updateParticipantsList() {
                     </div>
                 `).join('')}
             </div>
-            <div style="text-align: center; padding: 20px; background: #f8f9f8; border: 2px solid #4a5d4a;">
-                <span style="font-size: 1.5rem; font-weight: 700; color: #2d4a2d; display: block; margin-bottom: 5px;">
-                    ${signedUpPlayers.length}
-                </span>
-                <span style="color: #1e3a1e; font-weight: 500;">
-                    of 36 players registered
-                </span>
-                <span style="display: block; margin-top: 5px; color: #4a5d4a; font-size: 0.9rem;">
-                    ${36 - signedUpPlayers.length} spots remaining
-                </span>
-            </div>
+
         `;
     }
 }
@@ -210,7 +225,7 @@ function formatPhoneNumber(value) {
 
 // Countdown timer functionality
 function updateCountdown() {
-    // Set target date: Monday, August 12th, 2025 at 6:00 PM
+    // Set target date: Tuesday, August 12th, 2025 at 6:00 PM
     const targetDate = new Date('2025-08-12T18:00:00').getTime();
     const now = new Date().getTime();
     const timeLeft = targetDate - now;

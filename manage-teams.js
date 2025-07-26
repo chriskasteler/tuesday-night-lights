@@ -575,6 +575,189 @@ function updateSignupToggleButton() {
     }
 }
 
+// Manage membership requests
+let pendingRequests = [];
+
+// Load pending requests from Firebase
+async function loadPendingRequests() {
+    try {
+        // Try to get all requests and filter locally to avoid indexing issues
+        const requestsSnapshot = await db.collection('requests').orderBy('timestamp', 'asc').get();
+        pendingRequests = [];
+        requestsSnapshot.forEach((doc) => {
+            const data = doc.data();
+            // Only include pending requests (or requests without status field)
+            if (!data.status || data.status === 'pending') {
+                pendingRequests.push({ id: doc.id, ...data });
+            }
+        });
+        
+        console.log('Loaded pending requests:', pendingRequests.length);
+        renderPendingRequests();
+        
+    } catch (error) {
+        console.error('Error loading pending requests:', error);
+        
+        // Fallback: try without ordering if that fails too
+        try {
+            const fallbackSnapshot = await db.collection('requests').get();
+            pendingRequests = [];
+            fallbackSnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (!data.status || data.status === 'pending') {
+                    pendingRequests.push({ id: doc.id, ...data });
+                }
+            });
+            
+            console.log('Loaded pending requests (fallback):', pendingRequests.length);
+            renderPendingRequests();
+            
+        } catch (fallbackError) {
+            console.error('Fallback also failed:', fallbackError);
+        }
+    }
+}
+
+// Render pending requests in admin interface
+function renderPendingRequests() {
+    const requestsList = document.getElementById('pending-requests-list');
+    if (!requestsList) return;
+    
+    if (pendingRequests.length === 0) {
+        requestsList.innerHTML = '<p style="color: #666; font-style: italic; text-align: center;">No pending requests</p>';
+        return;
+    }
+    
+    requestsList.innerHTML = pendingRequests.map(request => `
+        <div style="background: white; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 5px 0; color: #333;">
+                        ${request.name}
+                        ${request.teamCaptain ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; margin-left: 8px;">WANTS CAPTAIN</span>' : ''}
+                    </h4>
+                    <p style="margin: 0 0 3px 0; font-size: 0.9rem; color: #666;">${request.email}</p>
+                    <p style="margin: 0 0 3px 0; font-size: 0.9rem; color: #666;">${request.phone}</p>
+                    <p style="margin: 0; font-size: 0.8rem; color: #999;">Requested: ${new Date(request.timestamp).toLocaleDateString()}</p>
+                </div>
+                <div style="display: flex; gap: 8px; margin-left: 15px;">
+                    <button onclick="approveRequest('${request.id}')" 
+                            style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                        Approve
+                    </button>
+                    <button onclick="denyRequest('${request.id}', '${request.name.replace(/'/g, "\\'")}') " 
+                            style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                        Deny
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Approve a membership request
+async function approveRequest(requestId) {
+    try {
+        // Get the request data
+        const requestDoc = await db.collection('requests').doc(requestId).get();
+        if (!requestDoc.exists) {
+            throw new Error('Request not found');
+        }
+        
+        const requestData = requestDoc.data();
+        
+        // Move to participants collection
+        const participantData = {
+            name: requestData.name,
+            email: requestData.email,
+            phone: requestData.phone,
+            teamCaptain: requestData.teamCaptain,
+            timestamp: requestData.timestamp
+        };
+        
+        await db.collection('participants').add(participantData);
+        
+        // Remove from requests collection
+        await db.collection('requests').doc(requestId).delete();
+        
+        // Send approval email notification
+        await sendApprovalEmail(participantData);
+        
+        // Refresh the requests list
+        await loadPendingRequests();
+        
+        showStatusMessage(`${requestData.name} approved and added to the league!`, 'success');
+        
+    } catch (error) {
+        console.error('Error approving request:', error);
+        showStatusMessage('Error approving request. Please try again.', 'error');
+    }
+}
+
+// Deny a membership request
+async function denyRequest(requestId, requestName) {
+    if (!confirm(`Are you sure you want to deny ${requestName}'s request to join the league?`)) {
+        return;
+    }
+    
+    try {
+        // Get the request data for email notification
+        const requestDoc = await db.collection('requests').doc(requestId).get();
+        if (requestDoc.exists) {
+            const requestData = requestDoc.data();
+            
+            // Send denial email notification
+            await sendDenialEmail(requestData);
+        }
+        
+        // Remove from requests collection
+        await db.collection('requests').doc(requestId).delete();
+        
+        // Refresh the requests list
+        await loadPendingRequests();
+        
+        showStatusMessage(`${requestName}'s request has been denied.`, 'success');
+        
+    } catch (error) {
+        console.error('Error denying request:', error);
+        showStatusMessage('Error denying request. Please try again.', 'error');
+    }
+}
+
+// Send approval email
+async function sendApprovalEmail(participantData) {
+    try {
+        const templateParams = {
+            user_name: participantData.name,
+            user_email: participantData.email,
+            message_type: 'Membership approved',
+            approval_status: 'approved'
+        };
+
+        await emailjs.send('service_t1yivr7', 'template_f5aievt', templateParams);
+        console.log('Approval email sent successfully');
+    } catch (error) {
+        console.error('Failed to send approval email:', error);
+    }
+}
+
+// Send denial email
+async function sendDenialEmail(requestData) {
+    try {
+        const templateParams = {
+            user_name: requestData.name,
+            user_email: requestData.email,
+            message_type: 'Membership request denied',
+            approval_status: 'denied'
+        };
+
+        await emailjs.send('service_t1yivr7', 'template_f5aievt', templateParams);
+        console.log('Denial email sent successfully');
+    } catch (error) {
+        console.error('Failed to send denial email:', error);
+    }
+}
+
 // Load teams data when page loads (for other sections that need team names)
 document.addEventListener('DOMContentLoaded', function() {
     // Load signup visibility setting on every page load
@@ -583,5 +766,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only initialize manage teams if we're on that section
     if (document.getElementById('teams-grid')) {
         initializeManageTeams();
+        loadPendingRequests(); // Also load pending requests
     }
 }); 
