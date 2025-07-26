@@ -159,69 +159,35 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     }
 });
 
-// Mailchimp configuration
-const MAILCHIMP_API_KEY = 'abaa168cf9fd046eee829fff558562aa-us20';
-const MAILCHIMP_AUDIENCE_ID = 'a9732d0dd1';
-
-// Send admin notification via Mailchimp
+// Send admin notification via Netlify Function
 async function sendRequestNotification(requestData) {
     try {
-        // Add/update admin with notification tag and request details
-        await addToMailchimp('chris.kasteler@gmail.com', 'Admin', ['admin-notification'], {
-            'RNAME': requestData.name,
-            'REMAIL': requestData.email,  
-            'RPHONE': requestData.phone,
-            'RCAPTAIN': requestData.teamCaptain ? 'Yes' : 'No',
-            'RTIME': new Date(requestData.timestamp).toLocaleString()
+        const response = await fetch('/.netlify/functions/send-admin-notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: requestData.name,
+                email: requestData.email,
+                phone: requestData.phone,
+                handicap: requestData.handicap,
+                teamCaptain: requestData.teamCaptain,
+                timestamp: requestData.timestamp
+            })
         });
-        
-        console.log('Request notification triggered successfully');
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Function error: ${error}`);
+        }
+
+        const result = await response.json();
+        console.log('Request notification triggered successfully:', result.message);
     } catch (error) {
         console.error('Failed to send request notification:', error);
         // Don't show error to user - request still succeeded
     }
-}
-
-// Add member to Mailchimp audience with tags
-async function addToMailchimp(email, name, tags = [], mergeFields = {}) {
-    const datacenter = MAILCHIMP_API_KEY.split('-')[1];
-    const emailHash = await sha256(email.toLowerCase());
-    
-    const memberData = {
-        email_address: email,
-        status: 'subscribed',
-        merge_fields: {
-            FNAME: name.split(' ')[0] || name,
-            LNAME: name.split(' ').slice(1).join(' ') || '',
-            ...mergeFields
-        },
-        tags: tags
-    };
-
-    const response = await fetch(`https://${datacenter}.api.mailchimp.com/3.0/lists/${MAILCHIMP_AUDIENCE_ID}/members/${emailHash}`, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Basic ${btoa('anystring:' + MAILCHIMP_API_KEY)}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(memberData)
-    });
-
-    if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`Mailchimp API error: ${error}`);
-    }
-
-    return await response.json();
-}
-
-// Simple SHA256 function for email hashing
-async function sha256(message) {
-    const msgBuffer = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
 }
 
 // Remove participant (admin only)
