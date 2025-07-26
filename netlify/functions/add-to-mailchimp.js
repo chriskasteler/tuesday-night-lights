@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
     // Extract datacenter from API key (us20, us21, etc.)
     const datacenter = MAILCHIMP_API_KEY.split('-')[1];
     
-    // Add the user who signed up to Mailchimp (this triggers admin notification)
+    // Add user to Mailchimp for future automations (approval, payment emails)
     await addOrUpdateMember(
       email, 
       name, 
@@ -53,7 +53,7 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({ 
         success: true, 
-        message: 'User added to Mailchimp successfully'
+        message: 'User added to Mailchimp for future automations'
       })
     };
 
@@ -66,7 +66,7 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Headers': 'Content-Type'
       },
       body: JSON.stringify({ 
-        error: 'Failed to send admin notification',
+        error: 'Failed to add user to Mailchimp',
         details: error.message 
       })
     };

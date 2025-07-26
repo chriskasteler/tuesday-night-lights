@@ -159,10 +159,24 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     }
 });
 
-// Add user to Mailchimp via Netlify Function (triggers admin notification automation)
+// Send admin notification via EmailJS + add user to Mailchimp for future automations
 async function sendRequestNotification(requestData) {
     try {
-        const response = await fetch('/.netlify/functions/send-admin-notification', {
+        // 1. Send EmailJS admin notification
+        const templateParams = {
+            user_name: requestData.name,
+            user_email: requestData.email,
+            user_phone: requestData.phone,
+            team_captain: requestData.teamCaptain ? 'Yes' : 'No',
+            request_time: new Date(requestData.timestamp).toLocaleString(),
+            message_type: 'New membership request'
+        };
+
+        await emailjs.send('service_t1yivr7', 'template_f5aievt', templateParams);
+        console.log('Admin notification sent via EmailJS');
+
+        // 2. Add user to Mailchimp for future automations
+        const response = await fetch('/.netlify/functions/add-to-mailchimp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -177,15 +191,15 @@ async function sendRequestNotification(requestData) {
             })
         });
 
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Function error: ${error}`);
+        if (response.ok) {
+            const result = await response.json();
+            console.log('User added to Mailchimp successfully:', result.message);
+        } else {
+            console.log('Mailchimp add failed, but EmailJS notification sent');
         }
 
-        const result = await response.json();
-        console.log('User added to Mailchimp successfully:', result.message);
     } catch (error) {
-        console.error('Failed to send request notification:', error);
+        console.error('Error in notification process:', error);
         // Don't show error to user - request still succeeded
     }
 }
