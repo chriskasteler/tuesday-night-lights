@@ -463,3 +463,194 @@ body {
         padding: 15px;
     }
 }
+
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: white;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.standings-table th {
+    background: #2d4a2d;
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+
+.standings-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e8f0e8;
+}
+
+.standings-table tr:nth-child(even) {
+    background: #f8f9f8;
+}
+
+.standings-table tr:hover {
+    background: #e8f0e8;
+}
+
+.standings-table .points {
+    font-weight: 600;
+    color: #2d4a2d;
+    text-align: center;
+}
+
+.standings-table th:nth-child(1),
+.standings-table td:nth-child(1) {
+    text-align: center;
+    font-weight: 600;
+}
+
+.standings-table th:nth-child(3),
+.standings-table td:nth-child(3) {
+    text-align: center;
+}
+
+.standings-table th:nth-child(4),
+.standings-table td:nth-child(4) {
+    text-align: center;
+}
+
+.standings-table th:nth-child(5),
+.standings-table td:nth-child(5) {
+    text-align: center;
+    font-family: monospace;
+}
+
+@media (max-width: 768px) {
+    .standings-table {
+        font-size: 0.9rem;
+    }
+    
+    .standings-table th,
+    .standings-table td {
+        padding: 10px 8px;
+    }
+}
+
+.week-section {
+    margin: 30px 0;
+    padding: 25px;
+    background: #f8f9f8;
+    border-left: 4px solid #4a5d4a;
+}
+
+.week-section.course-closed {
+    background: #ffcccc;
+    border-left: 4px solid #dc3545;
+}
+
+.week-section.playoffs {
+    background: #e8f0e8;
+    border-left: 4px solid #2d4a2d;
+}
+
+.week-header {
+    margin-bottom: 20px;
+}
+
+.week-header h3 {
+    color: #1e3a1e;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.course-closed .week-header h3 {
+    color: #dc3545;
+}
+
+.playoffs .week-header h3 {
+    color: #2d4a2d;
+}
+
+.matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.match-card {
+    background: white;
+    padding: 20px;
+    border: 2px solid #e8f0e8;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.match-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 93, 74, 0.15);
+}
+
+.match-teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.team-name {
+    font-weight: 600;
+    color: #1e3a1e;
+    font-size: 1.1rem;
+    flex: 1;
+    text-align: center;
+}
+
+.vs {
+    color: #666;
+    font-weight: 500;
+    margin: 0 15px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.match-result {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9f8;
+    border-top: 2px solid #e8f0e8;
+}
+
+.result-placeholder {
+    color: #666;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .week-section {
+        padding: 20px 15px;
+        margin: 20px 0;
+    }
+    
+    .matches-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .match-card {
+        padding: 15px;
+    }
+    
+    .team-name {
+        font-size: 1rem;
+    }
+    
+    .match-teams {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .vs {
+        margin: 0;
+    }
+}

@@ -88,32 +88,32 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     };
 
     try {
-        // Check if email already exists
+    // Check if email already exists
         const existingUser = await db.collection('participants').where('email', '==', formData.email).get();
         if (!existingUser.empty) {
-            alert('This email address is already registered!');
-            return;
-        }
+        alert('This email address is already registered!');
+        return;
+    }
 
         // Add player to Firestore
         await db.collection('participants').add(formData);
-        
+    
         // Send email notification
         await sendEmailNotification(formData);
-        
-        // Show success message
-        document.getElementById('successMessage').style.display = 'block';
-        
-        // Reset form
-        document.getElementById('signupForm').reset();
-        
-        // Scroll to success message
-        document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
-        
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-            document.getElementById('successMessage').style.display = 'none';
-        }, 5000);
+    
+    // Show success message
+    document.getElementById('successMessage').style.display = 'block';
+    
+    // Reset form
+    document.getElementById('signupForm').reset();
+    
+    // Scroll to success message
+    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+        document.getElementById('successMessage').style.display = 'none';
+    }, 5000);
 
         console.log('Player registered:', formData);
         
@@ -206,8 +206,8 @@ function formatPhoneNumber(value) {
 
 // Countdown timer functionality
 function updateCountdown() {
-    // Set target date: Tuesday, July 29th, 2025 at 6:00 PM
-    const targetDate = new Date('2025-07-29T18:00:00').getTime();
+    // Set target date: Monday, August 12th, 2025 at 6:00 PM
+    const targetDate = new Date('2025-08-12T18:00:00').getTime();
     const now = new Date().getTime();
     const timeLeft = targetDate - now;
 
