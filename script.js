@@ -58,7 +58,7 @@ function updateMobilePageTitle(sectionName) {
     
     const titles = {
         'info': 'League Info',
-        'participants': 'Participants', 
+        'participants': 'Players', 
         'teams': 'Teams',
         'schedule': 'Schedule',
         'standings': 'Standings',
@@ -245,7 +245,7 @@ function updateParticipantsList() {
     if (signedUpPlayers.length === 0) {
         participantsList.innerHTML = `
             <p style="text-align: center; color: #666; margin: 40px 0;">
-                No participants registered yet. Be the first to sign up!
+                No players registered yet. Be the first to sign up!
             </p>
         `;
     } else {
