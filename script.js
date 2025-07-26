@@ -159,7 +159,7 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     }
 });
 
-// Send admin notification via Netlify Function
+// Add user to Mailchimp via Netlify Function (triggers admin notification automation)
 async function sendRequestNotification(requestData) {
     try {
         const response = await fetch('/.netlify/functions/send-admin-notification', {
@@ -183,7 +183,7 @@ async function sendRequestNotification(requestData) {
         }
 
         const result = await response.json();
-        console.log('Request notification triggered successfully:', result.message);
+        console.log('User added to Mailchimp successfully:', result.message);
     } catch (error) {
         console.error('Failed to send request notification:', error);
         // Don't show error to user - request still succeeded

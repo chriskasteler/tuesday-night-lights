@@ -29,22 +29,19 @@ exports.handler = async (event, context) => {
     // Extract datacenter from API key (us20, us21, etc.)
     const datacenter = MAILCHIMP_API_KEY.split('-')[1];
     
-    // Add/update admin with request details as merge fields
+    // Add the user who signed up to Mailchimp (this triggers admin notification)
     await addOrUpdateMember(
-      ADMIN_EMAIL, 
-      'Admin', 
-      '', 
+      email, 
+      name, 
+      phone, 
       MAILCHIMP_API_KEY, 
       MAILCHIMP_AUDIENCE_ID, 
       datacenter, 
-      ['admin-notification'], 
+      [], // No tags initially - they're just a new signup
       {
-        'RNAME': name || '',
-        'REMAIL': email || '',
-        'RPHONE': phone || '',
-        'RHANDICAP': handicap || 'Not provided',
-        'RCAPTAIN': teamCaptain ? 'Yes' : 'No',
-        'RTIME': new Date(timestamp).toLocaleString() || new Date().toLocaleString()
+        'PHONE': phone || '',
+        'HANDICAP': handicap || 'Not provided',
+        'CAPTAIN': teamCaptain ? 'Yes' : 'No'
       }
     );
     
@@ -56,7 +53,7 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({ 
         success: true, 
-        message: 'Admin notification triggered successfully'
+        message: 'User added to Mailchimp successfully'
       })
     };
 
