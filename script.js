@@ -36,6 +36,47 @@ function showSection(sectionName) {
     
     // Add active class to clicked nav link
     event.target.classList.add('active');
+    
+    // Update mobile page title
+    updateMobilePageTitle(sectionName);
+    
+    // Close mobile menu if it's open
+    closeMobileMenu();
+}
+
+// Update mobile page title
+function updateMobilePageTitle(sectionName) {
+    const titleElement = document.getElementById('mobile-page-title');
+    if (!titleElement) return;
+    
+    const titles = {
+        'info': 'League Info',
+        'participants': 'Participants', 
+        'teams': 'Teams',
+        'schedule': 'Schedule',
+        'standings': 'Standings',
+        'enter-scores': 'Enter Scores',
+        'manage-teams': 'Manage Teams'
+    };
+    
+    titleElement.textContent = titles[sectionName] || 'League Info';
+}
+
+// Mobile menu functionality
+function toggleMobileMenu() {
+    const navList = document.getElementById('nav-list');
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    
+    navList.classList.toggle('mobile-open');
+    menuToggle.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    const navList = document.getElementById('nav-list');
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    
+    navList.classList.remove('mobile-open');
+    menuToggle.classList.remove('active');
 }
 
 let signedUpPlayers = [];

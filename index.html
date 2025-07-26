@@ -16,8 +16,20 @@
             <p style="font-size: 1.1rem; opacity: 0.8;">August 19 - October 7, 2025 • 5:30pm Start (5:00pm for Week 5 & Playoffs)</p>
         </div>
 
-        <nav class="nav-menu">
-            <ul class="nav-list">
+        <!-- Separate navigation bar -->
+        <div class="navigation-bar">
+            <!-- Mobile page title and hamburger -->
+            <div class="mobile-nav-header">
+                <div class="mobile-page-title" id="mobile-page-title">League Info</div>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+            
+            <nav class="nav-menu">
+                <ul class="nav-list" id="nav-list">
                 <li class="nav-item">
                     <a class="nav-link active" onclick="showSection('info')">League Info</a>
                 </li>
@@ -46,12 +58,13 @@
                 <li class="nav-item admin-login-item">
                     <a class="nav-link admin-login-btn" onclick="showAdminLogin()" id="admin-login-btn">Admin Login</a>
                 </li>
-            </ul>
-        </nav>
+                </ul>
+            </nav>
+        </div>
 
         <div class="countdown-container">
             <h2 style="text-align: center; margin-bottom: 15px; color: #333; font-size: 2rem; font-weight: 700;">
-                COUNTDOWN TO DRAFT DAY
+                COUNTDOWN TO DRAFT
             </h2>
             <div class="countdown-display" id="countdown">
                 <div class="countdown-item">
@@ -85,7 +98,7 @@
                     <div class="highlight">
                         <h3 style="margin-bottom: 10px;">Season Overview</h3>
                         <p><strong>5-Week Regular Season</strong> + <strong>2-Week Playoffs</strong></p>
-                        <p>6 Teams • 6 Players per Team • 2 Two-Man Teams Play Each Week</p>
+                        <p>6 Teams • 6 Players per Team • Each team fields 4 players per week</p>
                     </div>
 
                     <div class="info-grid">
