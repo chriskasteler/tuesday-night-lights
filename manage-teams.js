@@ -651,6 +651,10 @@ function renderPendingRequests() {
                                 style="background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
                             Fee Received
                         </button>
+                        <button onclick="removeApprovedRequest('${request.id}', '${request.name.replace(/'/g, "\\'")}') " 
+                                style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                            Remove
+                        </button>
                     ` : `
                         <button onclick="approveRequest('${request.id}')" 
                                 style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
@@ -766,6 +770,36 @@ async function denyRequest(requestId, requestName) {
     } catch (error) {
         console.error('Error denying request:', error);
         showStatusMessage('Error denying request. Please try again.', 'error');
+    }
+}
+
+// Remove an approved request (for users who back out after approval)
+async function removeApprovedRequest(requestId, requestName) {
+    if (!confirm(`Are you sure you want to remove ${requestName} from the approved list?\n\nThis should only be used if they decided not to continue or failed to pay their fee.`)) {
+        return;
+    }
+    
+    try {
+        // Get the request data for potential email notification
+        const requestDoc = await db.collection('requests').doc(requestId).get();
+        if (requestDoc.exists) {
+            const requestData = requestDoc.data();
+            
+            // Optionally add "removed" tag to user in Mailchimp (no automation set up yet)
+            // await addMailchimpTag(requestData.email, 'removed');
+        }
+        
+        // Remove from requests collection
+        await db.collection('requests').doc(requestId).delete();
+        
+        // Refresh the requests list
+        await loadPendingRequests();
+        
+        showStatusMessage(`${requestName} has been removed from the approved list.`, 'success');
+        
+    } catch (error) {
+        console.error('Error removing approved request:', error);
+        showStatusMessage('Error removing request. Please try again.', 'error');
     }
 }
 
