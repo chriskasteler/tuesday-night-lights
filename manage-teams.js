@@ -628,7 +628,12 @@ function renderPendingRequests() {
         return;
     }
     
-    requestsList.innerHTML = pendingRequests.map(request => `
+    // Sort requests alphabetically by name
+    const sortedRequests = [...pendingRequests].sort((a, b) => 
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+    );
+    
+    requestsList.innerHTML = sortedRequests.map(request => `
         <div style="background: white; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div style="flex: 1;">
