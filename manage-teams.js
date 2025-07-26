@@ -578,43 +578,49 @@ function updateSignupToggleButton() {
 // Manage membership requests
 let pendingRequests = [];
 
-// Load pending requests from Firebase
-async function loadPendingRequests() {
+// Load pending requests from Firebase with real-time updates
+function loadPendingRequests() {
     try {
-        // Try to get all requests and filter locally to avoid indexing issues
-        const requestsSnapshot = await db.collection('requests').orderBy('timestamp', 'asc').get();
-        pendingRequests = [];
-        requestsSnapshot.forEach((doc) => {
-            const data = doc.data();
-            // Include pending and approved requests (but not denied)
-            if (!data.status || data.status === 'pending' || data.status === 'approved') {
-                pendingRequests.push({ id: doc.id, ...data });
-            }
-        });
-        
-        console.log('Loaded pending requests:', pendingRequests.length);
-        renderPendingRequests();
-        
-    } catch (error) {
-        console.error('Error loading pending requests:', error);
-        
-        // Fallback: try without ordering if that fails too
-        try {
-            const fallbackSnapshot = await db.collection('requests').get();
+        // Use onSnapshot for real-time updates
+        db.collection('requests').orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
             pendingRequests = [];
-            fallbackSnapshot.forEach((doc) => {
+            snapshot.forEach((doc) => {
                 const data = doc.data();
+                // Include pending and approved requests (but not denied)
                 if (!data.status || data.status === 'pending' || data.status === 'approved') {
                     pendingRequests.push({ id: doc.id, ...data });
                 }
             });
             
-            console.log('Loaded pending requests (fallback):', pendingRequests.length);
+            console.log('Loaded pending requests (real-time):', pendingRequests.length);
             renderPendingRequests();
-            
-        } catch (fallbackError) {
-            console.error('Fallback also failed:', fallbackError);
-        }
+        });
+        
+    } catch (error) {
+        console.error('Error setting up real-time requests listener:', error);
+        
+        // Fallback to manual loading
+        loadPendingRequestsFallback();
+    }
+}
+
+// Fallback function for manual loading if real-time fails
+async function loadPendingRequestsFallback() {
+    try {
+        const requestsSnapshot = await db.collection('requests').orderBy('timestamp', 'asc').get();
+        pendingRequests = [];
+        requestsSnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (!data.status || data.status === 'pending' || data.status === 'approved') {
+                pendingRequests.push({ id: doc.id, ...data });
+            }
+        });
+        
+        console.log('Loaded pending requests (fallback):', pendingRequests.length);
+        renderPendingRequests();
+        
+    } catch (fallbackError) {
+        console.error('Fallback loading also failed:', fallbackError);
     }
 }
 
@@ -690,9 +696,7 @@ async function approveRequest(requestId) {
         // Add "approved" tag to user in Mailchimp (triggers approval email automation)
         await addMailchimpTag(requestData.email, 'approved');
         
-        // Refresh the requests list
-        await loadPendingRequests();
-        
+        // Real-time updates will automatically refresh the requests list
         showStatusMessage(`${requestData.name} approved! Waiting for fee payment.`, 'success');
         
     } catch (error) {
@@ -732,9 +736,7 @@ async function markFeeReceived(requestId) {
         // Add "paid" tag to user in Mailchimp (triggers automation)
         await addMailchimpTag(participantData.email, 'paid');
         
-        // Refresh the requests list
-        await loadPendingRequests();
-        
+        // Real-time updates will automatically refresh the requests list
         showStatusMessage(`${requestData.name} fee received and added to participants!`, 'success');
         
     } catch (error) {
@@ -762,9 +764,7 @@ async function denyRequest(requestId, requestName) {
         // Remove from requests collection
         await db.collection('requests').doc(requestId).delete();
         
-        // Refresh the requests list
-        await loadPendingRequests();
-        
+        // Real-time updates will automatically refresh the requests list
         showStatusMessage(`${requestName}'s request has been denied.`, 'success');
         
     } catch (error) {
@@ -792,9 +792,7 @@ async function removeApprovedRequest(requestId, requestName) {
         // Remove from requests collection
         await db.collection('requests').doc(requestId).delete();
         
-        // Refresh the requests list
-        await loadPendingRequests();
-        
+        // Real-time updates will automatically refresh the requests list
         showStatusMessage(`${requestName} has been removed from the approved list.`, 'success');
         
     } catch (error) {
