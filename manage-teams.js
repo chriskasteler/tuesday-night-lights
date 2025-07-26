@@ -678,10 +678,7 @@ async function approveRequest(requestId) {
             status: 'approved'
         });
         
-        // Send approval email notification (EmailJS - will be replaced)
-        await sendApprovalEmail(requestData);
-        
-        // Add "approved" tag to user in Mailchimp (triggers automation)
+        // Add "approved" tag to user in Mailchimp (triggers approval email automation)
         await addMailchimpTag(requestData.email, 'approved');
         
         // Refresh the requests list
@@ -749,8 +746,8 @@ async function denyRequest(requestId, requestName) {
         if (requestDoc.exists) {
             const requestData = requestDoc.data();
             
-            // Send denial email notification
-            await sendDenialEmail(requestData);
+            // Add "denied" tag to user in Mailchimp (triggers denial email automation)
+            await addMailchimpTag(requestData.email, 'denied');
         }
         
         // Remove from requests collection
@@ -767,39 +764,8 @@ async function denyRequest(requestId, requestName) {
     }
 }
 
-// Send approval email
-async function sendApprovalEmail(participantData) {
-    try {
-        const templateParams = {
-            user_name: participantData.name,
-            user_email: participantData.email,
-            message_type: 'Membership approved',
-            approval_status: 'approved'
-        };
-
-        await emailjs.send('service_t1yivr7', 'template_f5aievt', templateParams);
-        console.log('Approval email sent successfully');
-    } catch (error) {
-        console.error('Failed to send approval email:', error);
-    }
-}
-
-// Send denial email
-async function sendDenialEmail(requestData) {
-    try {
-        const templateParams = {
-            user_name: requestData.name,
-            user_email: requestData.email,
-            message_type: 'Membership request denied',
-            approval_status: 'denied'
-        };
-
-        await emailjs.send('service_t1yivr7', 'template_f5aievt', templateParams);
-        console.log('Denial email sent successfully');
-    } catch (error) {
-        console.error('Failed to send denial email:', error);
-    }
-}
+// Approval and denial emails are now handled by Mailchimp automations
+// triggered by tags added via addMailchimpTag() function
 
 // Send payment confirmation email (placeholder - will be replaced with Mailchimp)
 async function sendPaymentConfirmationEmail(participantData) {
