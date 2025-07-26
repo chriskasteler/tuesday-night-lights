@@ -586,8 +586,8 @@ async function loadPendingRequests() {
         pendingRequests = [];
         requestsSnapshot.forEach((doc) => {
             const data = doc.data();
-            // Only include pending requests (or requests without status field)
-            if (!data.status || data.status === 'pending') {
+            // Include pending and approved requests (but not denied)
+            if (!data.status || data.status === 'pending' || data.status === 'approved') {
                 pendingRequests.push({ id: doc.id, ...data });
             }
         });
@@ -604,7 +604,7 @@ async function loadPendingRequests() {
             pendingRequests = [];
             fallbackSnapshot.forEach((doc) => {
                 const data = doc.data();
-                if (!data.status || data.status === 'pending') {
+                if (!data.status || data.status === 'pending' || data.status === 'approved') {
                     pendingRequests.push({ id: doc.id, ...data });
                 }
             });
