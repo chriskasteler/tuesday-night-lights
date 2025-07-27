@@ -18,6 +18,9 @@ async function loadPlayersAndTeams() {
         participantsSnapshot.forEach((doc) => {
             allPlayers.push({ id: doc.id, ...doc.data() });
         });
+        
+        console.log('Loaded participants:', allPlayers.length);
+        console.log('Participant names:', allPlayers.map(p => p.name));
 
         // Load teams (or create default structure)
         const teamsSnapshot = await db.collection('teams').orderBy('teamId', 'asc').get();
