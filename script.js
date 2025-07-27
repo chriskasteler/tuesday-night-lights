@@ -101,6 +101,15 @@ function loadParticipants() {
     });
 }
 
+// Function to format names properly (Title Case)
+function formatName(name) {
+    return name.trim()
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
 document.getElementById('signupForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -111,7 +120,7 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     submitButton.disabled = true;
 
     const formData = {
-        name: document.getElementById('name').value,
+        name: formatName(document.getElementById('name').value),
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
         teamCaptain: document.getElementById('teamCaptain').checked,

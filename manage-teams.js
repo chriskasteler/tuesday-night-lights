@@ -3,6 +3,15 @@
 let allPlayers = [];
 let currentTeams = [];
 
+// Function to format names properly (Title Case)
+function formatName(name) {
+    return name.trim()
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
 // Initialize the manage teams functionality
 function initializeManageTeams() {
     console.log('Initializing manage teams...');
@@ -773,7 +782,7 @@ async function markFeeReceived(requestId) {
         
         // Move to participants collection
         const participantData = {
-            name: requestData.name,
+            name: formatName(requestData.name),
             email: requestData.email,
             phone: requestData.phone,
             teamCaptain: requestData.teamCaptain,
