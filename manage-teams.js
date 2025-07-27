@@ -18,9 +18,6 @@ async function loadPlayersAndTeams() {
         participantsSnapshot.forEach((doc) => {
             allPlayers.push({ id: doc.id, ...doc.data() });
         });
-        
-        console.log('Loaded participants:', allPlayers.length);
-        console.log('Participant names:', allPlayers.map(p => p.name));
 
         // Load teams (or create default structure)
         const teamsSnapshot = await db.collection('teams').orderBy('teamId', 'asc').get();
@@ -630,6 +627,27 @@ async function loadPendingRequestsFallback() {
     }
 }
 
+// Refresh participants data after fee received
+async function refreshParticipantsData() {
+    try {
+        // Reload participants from Firebase
+        const participantsSnapshot = await db.collection('participants').orderBy('name', 'asc').get();
+        allPlayers = [];
+        participantsSnapshot.forEach((doc) => {
+            allPlayers.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Update counters with fresh data
+        updateMembershipCounters();
+        
+        // Refresh the teams management display if needed
+        renderTeamsManagement();
+        
+    } catch (error) {
+        console.error('Error refreshing participants data:', error);
+    }
+}
+
 // Update membership counters
 function updateMembershipCounters() {
     // Calculate counts
@@ -772,6 +790,9 @@ async function markFeeReceived(requestId) {
         
         // Add "paid" tag to user in Mailchimp (triggers automation)
         await addMailchimpTag(participantData.email, 'paid');
+        
+        // Refresh participants data to update counters
+        await refreshParticipantsData();
         
         // Real-time updates will automatically refresh the requests list
         showStatusMessage(`${requestData.name} fee received and added to participants!`, 'success');
