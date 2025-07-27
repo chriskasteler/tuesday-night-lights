@@ -35,6 +35,9 @@ async function loadPlayersAndTeams() {
         // Render the teams management interface
         renderTeamsManagement();
         
+        // Update counters for players tab
+        updateMembershipCounters();
+        
     } catch (error) {
         console.error('Error loading players and teams:', error);
         showStatusMessage('Error loading data. Please refresh the page.', 'error');
@@ -624,10 +627,41 @@ async function loadPendingRequestsFallback() {
     }
 }
 
+// Update membership counters
+function updateMembershipCounters() {
+    // Calculate counts
+    const pendingCount = pendingRequests.filter(req => !req.status || req.status === 'pending').length;
+    const approvedCount = pendingRequests.filter(req => req.status === 'approved').length;
+    const paidCount = allPlayers.length;
+    const totalCount = approvedCount + paidCount;
+    
+    // Update membership counter in manage requests section
+    const membershipCounter = document.getElementById('membership-counter');
+    if (membershipCounter) {
+        membershipCounter.innerHTML = `
+            <strong>League Status:</strong> 
+            Pending: ${pendingCount} | 
+            Approved: ${approvedCount} | 
+            Paid: ${paidCount} | 
+            <strong>Total: ${totalCount}/36</strong>
+            ${totalCount >= 36 ? '<span style="color: #dc3545; font-weight: bold; margin-left: 10px;">⚠️ LEAGUE FULL</span>' : ''}
+        `;
+    }
+    
+    // Update registered players heading
+    const playersHeading = document.getElementById('registered-players-heading');
+    if (playersHeading) {
+        playersHeading.textContent = `Registered Players - ${paidCount}`;
+    }
+}
+
 // Render pending requests in admin interface
 function renderPendingRequests() {
     const requestsList = document.getElementById('pending-requests-list');
     if (!requestsList) return;
+    
+    // Update counters first
+    updateMembershipCounters();
     
     if (pendingRequests.length === 0) {
         requestsList.innerHTML = '<p style="color: #666; font-style: italic; text-align: center;">No pending requests</p>';
