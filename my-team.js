@@ -344,58 +344,73 @@ function loadWeekLineup() {
         return;
     }
     
-    // Full league schedule - all matches for all weeks
+    // Full league schedule - all matches for all weeks (each team plays 2 matches per week)
     const leagueSchedule = {
         '1': [
             { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format' },
-            { team1: 'Team 3', team2: 'Team 4', format: 'Best Ball Format' },
+            { team1: 'Team 1', team2: 'Team 3', format: 'Best Ball Format' },
+            { team1: 'Team 2', team2: 'Team 4', format: 'Best Ball Format' },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Best Ball Format' },
+            { team1: 'Team 4', team2: 'Team 6', format: 'Best Ball Format' },
             { team1: 'Team 5', team2: 'Team 6', format: 'Best Ball Format' }
         ],
         '2': [
-            { team1: 'Team 1', team2: 'Team 3', format: 'Alternate Shot Format' },
-            { team1: 'Team 2', team2: 'Team 5', format: 'Alternate Shot Format' },
-            { team1: 'Team 4', team2: 'Team 6', format: 'Alternate Shot Format' }
+            { team1: 'Team 1', team2: 'Team 4', format: 'Alternate Shot Format' },
+            { team1: 'Team 1', team2: 'Team 5', format: 'Alternate Shot Format' },
+            { team1: 'Team 2', team2: 'Team 3', format: 'Alternate Shot Format' },
+            { team1: 'Team 2', team2: 'Team 6', format: 'Alternate Shot Format' },
+            { team1: 'Team 3', team2: 'Team 4', format: 'Alternate Shot Format' },
+            { team1: 'Team 5', team2: 'Team 6', format: 'Alternate Shot Format' }
         ],
         '3': [
-            { team1: 'Team 1', team2: 'Team 4', format: 'Scramble Format' },
-            { team1: 'Team 2', team2: 'Team 6', format: 'Scramble Format' },
-            { team1: 'Team 3', team2: 'Team 5', format: 'Scramble Format' }
+            { team1: 'Team 1', team2: 'Team 6', format: 'Scramble Format' },
+            { team1: 'Team 2', team2: 'Team 5', format: 'Scramble Format' },
+            { team1: 'Team 3', team2: 'Team 6', format: 'Scramble Format' },
+            { team1: 'Team 4', team2: 'Team 5', format: 'Scramble Format' },
+            { team1: 'Team 3', team2: 'Team 4', format: 'Scramble Format' },
+            { team1: 'Team 1', team2: 'Team 2', format: 'Scramble Format' }
         ],
         '4': [
+            { team1: 'Team 2', team2: 'Team 4', format: 'High-Low Format' },
+            { team1: 'Team 3', team2: 'Team 6', format: 'High-Low Format' },
             { team1: 'Team 1', team2: 'Team 5', format: 'High-Low Format' },
-            { team1: 'Team 2', team2: 'Team 3', format: 'High-Low Format' },
-            { team1: 'Team 4', team2: 'Team 6', format: 'High-Low Format' }
+            { team1: 'Team 1', team2: 'Team 6', format: 'High-Low Format' },
+            { team1: 'Team 2', team2: 'Team 5', format: 'High-Low Format' },
+            { team1: 'Team 3', team2: 'Team 4', format: 'High-Low Format' }
         ],
         '5': [
-            { team1: 'Team 1', team2: 'Team 6', format: 'Modified Stableford Format' },
-            { team1: 'Team 2', team2: 'Team 4', format: 'Modified Stableford Format' },
-            { team1: 'Team 3', team2: 'Team 5', format: 'Modified Stableford Format' }
+            { team1: 'Team 1', team2: 'Team 3', format: 'Modified Stableford Format' },
+            { team1: 'Team 1', team2: 'Team 4', format: 'Modified Stableford Format' },
+            { team1: 'Team 2', team2: 'Team 6', format: 'Modified Stableford Format' },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Modified Stableford Format' },
+            { team1: 'Team 4', team2: 'Team 5', format: 'Modified Stableford Format' },
+            { team1: 'Team 2', team2: 'Team 3', format: 'Modified Stableford Format' }
         ]
     };
 
-    // Find this team's match for the selected week
+    // Find all matches where current team is playing this week
     const weekMatches = leagueSchedule[selectedWeek];
     if (!weekMatches) {
         console.log('No matches found for week', selectedWeek);
         return;
     }
 
-    // Find the match where current team is playing
-    let matchup = null;
+    // Find all matches where current team is playing
+    const teamMatches = [];
     for (const match of weekMatches) {
         if (match.team1 === currentTeamData.name || match.team2 === currentTeamData.name) {
-            matchup = match;
-            break;
+            teamMatches.push(match);
         }
     }
 
-    if (!matchup) {
-        console.log('No matchup found for', currentTeamData.name, 'in week', selectedWeek);
+    if (teamMatches.length === 0) {
+        console.log('No matchups found for', currentTeamData.name, 'in week', selectedWeek);
         return;
     }
     
-    container.innerHTML = `
-        <div class="captain-scorecard">
+    // Render all scorecards for this team's matches this week
+    container.innerHTML = teamMatches.map((matchup, index) => `
+        <div class="captain-scorecard" style="margin-bottom: 30px;">
             <div class="scorecard-header">
                 <div class="match-info">
                     <span class="match-title">${matchup.team1} vs ${matchup.team2} - ${matchup.format}</span>
@@ -503,7 +518,7 @@ function loadWeekLineup() {
                 </table>
             </div>
         </div>
-    `;
+    `).join('');
 }
 
 // Render lineup editor for specific week
