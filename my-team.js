@@ -201,13 +201,26 @@ function renderTeamRoster() {
     console.log('Rendering team roster. Current roster length:', currentTeamRoster.length);
     
     const teamName = currentTeamData.teamName || `Team ${currentTeamData.teamId}`;
-    const captain = currentTeamRoster.find(player => player.id === currentTeamData.captain);
-    const regularPlayers = currentTeamRoster.filter(player => player.id !== currentTeamData.captain);
+    
+    // Find captain - check both team captain field and current user (since they're viewing this page as captain)
+    const currentUserEmail = firebase.auth().currentUser?.email;
+    let captain = currentTeamRoster.find(player => player.id === currentTeamData.captain);
+    
+    // If no captain found by ID, check if current user is in roster (they must be the captain)
+    if (!captain && currentUserEmail) {
+        captain = currentTeamRoster.find(player => player.email === currentUserEmail);
+        console.log('Captain identified by current user email:', captain?.name);
+    }
+    
+    // Filter out the captain from regular players
+    const captainId = captain?.id;
+    const regularPlayers = currentTeamRoster.filter(player => player.id !== captainId);
     
     console.log('Team name:', teamName);
     console.log('Captain data:', captain);
-    console.log('Regular players:', regularPlayers);
-    console.log('Current team captain ID:', currentTeamData.captain);
+    console.log('Regular players count:', regularPlayers.length);
+    console.log('Current team captain ID from data:', currentTeamData.captain);
+    console.log('Actual captain found:', captain?.name);
     
     container.innerHTML = `
         <div class="team-header">
