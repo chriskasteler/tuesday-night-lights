@@ -344,16 +344,55 @@ function loadWeekLineup() {
         return;
     }
     
-    // Team matchups for each week  
-    const weekMatchups = {
-        '1': { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format' },
-        '2': { team1: 'Team 1', team2: 'Team 3', format: 'Alternate Shot Format' },
-        '3': { team1: 'Team 1', team2: 'Team 4', format: 'Scramble Format' },
-        '4': { team1: 'Team 1', team2: 'Team 5', format: 'High-Low Format' },
-        '5': { team1: 'Team 1', team2: 'Team 6', format: 'Modified Stableford Format' }
+    // Full league schedule - all matches for all weeks
+    const leagueSchedule = {
+        '1': [
+            { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format' },
+            { team1: 'Team 3', team2: 'Team 4', format: 'Best Ball Format' },
+            { team1: 'Team 5', team2: 'Team 6', format: 'Best Ball Format' }
+        ],
+        '2': [
+            { team1: 'Team 1', team2: 'Team 3', format: 'Alternate Shot Format' },
+            { team1: 'Team 2', team2: 'Team 5', format: 'Alternate Shot Format' },
+            { team1: 'Team 4', team2: 'Team 6', format: 'Alternate Shot Format' }
+        ],
+        '3': [
+            { team1: 'Team 1', team2: 'Team 4', format: 'Scramble Format' },
+            { team1: 'Team 2', team2: 'Team 6', format: 'Scramble Format' },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Scramble Format' }
+        ],
+        '4': [
+            { team1: 'Team 1', team2: 'Team 5', format: 'High-Low Format' },
+            { team1: 'Team 2', team2: 'Team 3', format: 'High-Low Format' },
+            { team1: 'Team 4', team2: 'Team 6', format: 'High-Low Format' }
+        ],
+        '5': [
+            { team1: 'Team 1', team2: 'Team 6', format: 'Modified Stableford Format' },
+            { team1: 'Team 2', team2: 'Team 4', format: 'Modified Stableford Format' },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Modified Stableford Format' }
+        ]
     };
-    
-    const matchup = weekMatchups[selectedWeek];
+
+    // Find this team's match for the selected week
+    const weekMatches = leagueSchedule[selectedWeek];
+    if (!weekMatches) {
+        console.log('No matches found for week', selectedWeek);
+        return;
+    }
+
+    // Find the match where current team is playing
+    let matchup = null;
+    for (const match of weekMatches) {
+        if (match.team1 === currentTeamData.name || match.team2 === currentTeamData.name) {
+            matchup = match;
+            break;
+        }
+    }
+
+    if (!matchup) {
+        console.log('No matchup found for', currentTeamData.name, 'in week', selectedWeek);
+        return;
+    }
     
     container.innerHTML = `
         <div class="captain-scorecard">
