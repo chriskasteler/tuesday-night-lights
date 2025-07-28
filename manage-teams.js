@@ -155,8 +155,128 @@ window.cleanupTeams = async function() {
         console.log('Duplicates removed. Reloading teams...');
         await loadPlayersAndTeams();
         console.log('Teams reloaded successfully');
+        // Re-render the interface
+        renderTeamsManagement();
+    } else {
+        console.log('No duplicates found, but reloading anyway...');
+        await loadPlayersAndTeams();
+        renderTeamsManagement();
     }
     return removed;
+};
+
+// Enhanced cleanup that also fixes the captain assignment issue
+window.fixTeamCaptainIssue = async function() {
+    console.log('Fixing team captain assignment issue...');
+    
+    try {
+        // Get current user
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.log('No user logged in');
+            return;
+        }
+        
+        // Get user data to find their team assignment
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+            console.log('User document not found');
+            return;
+        }
+        
+        const userData = userDoc.data();
+        const expectedTeamId = userData.teamId;
+        
+        console.log('User expected team:', expectedTeamId);
+        console.log('User email:', user.email);
+        
+        // Find all teams with this teamId
+        const teamsSnapshot = await db.collection('teams')
+            .where('teamId', '==', parseInt(expectedTeamId))
+            .get();
+        
+        console.log(`Found ${teamsSnapshot.size} teams with teamId ${expectedTeamId}`);
+        
+        if (teamsSnapshot.size > 1) {
+            // Multiple teams found - consolidate them
+            const teams = [];
+            teamsSnapshot.forEach(doc => {
+                teams.push({ id: doc.id, ...doc.data() });
+            });
+            
+            console.log('Teams found:', teams);
+            
+            // Find the participant record
+            const participantSnapshot = await db.collection('participants')
+                .where('email', '==', user.email)
+                .get();
+            
+            let participantId = null;
+            if (!participantSnapshot.empty) {
+                participantId = participantSnapshot.docs[0].id;
+                console.log('Found participant ID:', participantId);
+            }
+            
+            // Keep the team with the expected document ID or the one that has the user as captain
+            const expectedDocId = `team-${expectedTeamId}`;
+            let keepTeam = teams.find(t => t.id === expectedDocId);
+            
+            if (!keepTeam) {
+                // If no team with expected ID, find one with user as captain
+                keepTeam = teams.find(t => t.captain === participantId);
+            }
+            
+            if (!keepTeam) {
+                // Just keep the first one
+                keepTeam = teams[0];
+            }
+            
+            console.log('Keeping team:', keepTeam);
+            
+            // Update the kept team to ensure it has correct captain
+            if (participantId && keepTeam.captain !== participantId) {
+                const updateData = {
+                    ...keepTeam,
+                    captain: participantId,
+                    players: keepTeam.players || [],
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                // Add captain to players if not already there
+                if (!updateData.players.includes(participantId)) {
+                    updateData.players.unshift(participantId);
+                }
+                
+                await db.collection('teams').doc(keepTeam.id).set(updateData);
+                console.log('Updated kept team with correct captain');
+            }
+            
+            // Delete the other teams
+            const teamsToDelete = teams.filter(t => t.id !== keepTeam.id);
+            console.log('Deleting teams:', teamsToDelete.map(t => t.id));
+            
+            const batch = db.batch();
+            teamsToDelete.forEach(team => {
+                batch.delete(db.collection('teams').doc(team.id));
+            });
+            await batch.commit();
+            
+            console.log('Duplicate teams deleted and captain issue fixed');
+            
+            // Reload the page
+            await loadPlayersAndTeams();
+            renderTeamsManagement();
+            
+            return true;
+        } else {
+            console.log('No duplicate teams found');
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('Error fixing team captain issue:', error);
+        return false;
+    }
 };
 
 // Render the teams management interface
@@ -524,6 +644,23 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
                 currentTeams[teamIndex].captain = null;
             }
         }
+    }
+    
+    // Save the updated team to database
+    try {
+        const team = currentTeams[teamIndex];
+        await db.collection('teams').doc(team.id).set({
+            teamId: team.teamId,
+            teamName: team.teamName,
+            players: team.players,
+            captain: team.captain,
+            wins: team.wins || 0,
+            losses: team.losses || 0,
+            lastUpdated: new Date().toISOString()
+        });
+        console.log(`Updated team ${team.teamId} in database after player removal`);
+    } catch (error) {
+        console.error(`Error saving team ${teamId} after player removal:`, error);
     }
     
     // Re-render to update interface and show player as available again
