@@ -298,7 +298,7 @@ function showSection(sectionName) {
     // Add active class to clicked nav link
     event.target.classList.add('active');
     
-    // Show/hide hero section and countdown - only visible on League Info (home page)
+    // Show/hide hero section and countdown - only visible on Home page
     const heroSection = document.querySelector('.hero');
     const countdownSection = document.querySelector('.countdown-container');
     
@@ -384,7 +384,7 @@ function updateMobilePageTitle(sectionName) {
     if (!titleElement) return;
     
     const titles = {
-        'info': 'League Info',
+        'info': 'Home',
         'participants': 'Players', 
         'teams': 'Teams',
         'schedule': 'Schedule',
@@ -393,7 +393,7 @@ function updateMobilePageTitle(sectionName) {
         'manage-teams': 'Manage Teams'
     };
     
-    titleElement.textContent = titles[sectionName] || 'League Info';
+    titleElement.textContent = titles[sectionName] || 'Home';
 }
 
 // Mobile menu functionality
