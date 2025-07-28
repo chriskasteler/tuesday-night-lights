@@ -19,6 +19,48 @@ const ADMIN_EMAIL = 'chris.kasteler@me.com';
 // Initialize EmailJS
 emailjs.init('vLntllpJOaRGyqN-E');
 
+// ===== USER ROLES SYSTEM =====
+
+// Initialize user in users collection with role
+async function initializeUserRole(user) {
+    try {
+        const userRef = db.collection('users').doc(user.uid);
+        const userDoc = await userRef.get();
+        
+        if (!userDoc.exists) {
+            // Determine user role
+            let role = 'guest'; // default role
+            let teamId = null;
+            
+            if (user.email === ADMIN_EMAIL) {
+                role = 'admin';
+            }
+            // Future: Add captain email checks here
+            
+            // Create user document
+            await userRef.set({
+                email: user.email,
+                role: role,
+                teamId: teamId,
+                createdAt: new Date().toISOString(),
+                lastLogin: new Date().toISOString()
+            });
+            
+            console.log(`User role initialized: ${user.email} -> ${role}`);
+        } else {
+            // Update last login
+            await userRef.update({
+                lastLogin: new Date().toISOString()
+            });
+            
+            const userData = userDoc.data();
+            console.log(`User role detected: ${user.email} -> ${userData.role}`);
+        }
+    } catch (error) {
+        console.error('Error initializing user role:', error);
+    }
+}
+
 // Mailchimp configuration
 const MAILCHIMP_CONFIG = {
     apiKey: 'YOUR_MAILCHIMP_API_KEY', // Replace with your actual API key
@@ -494,23 +536,30 @@ document.addEventListener('click', function(event) {
 // ===== ADMIN AUTHENTICATION =====
 
 // Firebase Auth state listener
-auth.onAuthStateChanged(user => {
-    if (user && user.email === ADMIN_EMAIL) {
-        // User is admin - show admin features
-        document.body.classList.add('admin-logged-in');
-        document.getElementById('admin-login-btn').textContent = 'Admin Logout';
-        document.getElementById('admin-login-btn').onclick = adminLogout;
-        console.log('Admin logged in:', user.email);
+auth.onAuthStateChanged(async user => {
+    if (user) {
+        // Initialize user role in Firestore
+        await initializeUserRole(user);
+        
+        if (user.email === ADMIN_EMAIL) {
+            // User is admin - show admin features
+            document.body.classList.add('admin-logged-in');
+            document.getElementById('admin-login-btn').textContent = 'Admin Logout';
+            document.getElementById('admin-login-btn').onclick = adminLogout;
+            console.log('Admin logged in:', user.email);
+        } else {
+            // User is not admin - basic user features
+            document.body.classList.remove('admin-logged-in');
+            document.getElementById('admin-login-btn').textContent = 'Logout';
+            document.getElementById('admin-login-btn').onclick = adminLogout;
+            console.log('User logged in:', user.email);
+        }
     } else {
-        // User is not admin or not logged in - hide admin features
+        // No user logged in - show login option
         document.body.classList.remove('admin-logged-in');
         document.getElementById('admin-login-btn').textContent = 'Admin Login';
         document.getElementById('admin-login-btn').onclick = showAdminLogin;
-        if (user) {
-            console.log('Non-admin user logged in:', user.email);
-        } else {
-            console.log('No user logged in');
-        }
+        console.log('No user logged in');
     }
 });
 
