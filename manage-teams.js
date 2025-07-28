@@ -196,6 +196,36 @@ window.saveAllTeamsManually = async function() {
     return true;
 };
 
+// Debug function to fix participant teamIds based on current team assignments
+window.fixParticipantTeamIds = async function() {
+    console.log('🔧 Fixing participant teamIds based on current team assignments...');
+    
+    let fixedCount = 0;
+    let errorCount = 0;
+    
+    for (const team of currentTeams) {
+        if (team.players && team.players.length > 0) {
+            console.log(`Processing Team ${team.teamId} with ${team.players.length} players`);
+            
+            for (const playerId of team.players) {
+                try {
+                    await db.collection('participants').doc(playerId).update({
+                        teamId: String(team.teamId)
+                    });
+                    console.log(`✅ Fixed participant ${playerId} -> Team ${team.teamId}`);
+                    fixedCount++;
+                } catch (error) {
+                    console.error(`❌ Error fixing participant ${playerId}:`, error);
+                    errorCount++;
+                }
+            }
+        }
+    }
+    
+    console.log(`🎯 Fix complete: ${fixedCount} fixed, ${errorCount} errors`);
+    return { fixed: fixedCount, errors: errorCount };
+};
+
 // Enhanced cleanup that also fixes the captain assignment issue
 window.fixTeamCaptainIssue = async function() {
     console.log('Fixing team captain assignment issue...');
@@ -532,6 +562,25 @@ async function updateTeamRoster(selectElement) {
             
             console.log(`✅ Successfully saved team ${teamId} data to Firestore (doc: ${docId})`);
             
+            // Update each participant's teamId
+            console.log(`📝 Updating participant records with teamId...`);
+            const participantUpdates = [];
+            
+            for (const playerId of players) {
+                try {
+                    await db.collection('participants').doc(playerId).update({
+                        teamId: String(teamId)
+                    });
+                    console.log(`✅ Updated participant ${playerId} with teamId: ${teamId}`);
+                    participantUpdates.push(`✅ ${playerId}`);
+                } catch (error) {
+                    console.error(`❌ Error updating participant ${playerId}:`, error);
+                    participantUpdates.push(`❌ ${playerId}: ${error.message}`);
+                }
+            }
+            
+            console.log(`📝 Participant updates complete:`, participantUpdates);
+            
             // Verify the save by reading it back
             const savedDoc = await db.collection('teams').doc(docId).get();
             if (savedDoc.exists) {
@@ -659,12 +708,17 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
     const teamIndex = currentTeams.findIndex(t => t.teamId === teamId);
     if (teamIndex === -1) return;
     
+    // Track which player IDs are being removed so we can clear their teamId
+    const removedPlayerIds = [];
+    
     if (slotIdentifier === 'captain') {
         // Remove captain
         const captainId = currentTeams[teamIndex].captain;
         
-        // Remove captain role from user
         if (captainId) {
+            removedPlayerIds.push(captainId);
+            
+            // Remove captain role from user
             const captainPlayer = allPlayers.find(p => p.id === captainId);
             if (captainPlayer) {
                 await removeCaptainRole(captainPlayer.email);
@@ -681,6 +735,8 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
         // Remove regular player (slotIdentifier is the array index)
         const playerId = currentTeams[teamIndex].players[slotIdentifier];
         if (playerId) {
+            removedPlayerIds.push(playerId);
+            
             // Remove from players array
             currentTeams[teamIndex].players.splice(slotIdentifier, 1);
             
@@ -708,6 +764,19 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
             lastUpdated: new Date().toISOString()
         });
         console.log(`Updated team ${team.teamId} in database after player removal`);
+        
+        // Clear teamId from removed players
+        for (const playerId of removedPlayerIds) {
+            try {
+                await db.collection('participants').doc(playerId).update({
+                    teamId: null
+                });
+                console.log(`✅ Cleared teamId for removed participant: ${playerId}`);
+            } catch (error) {
+                console.error(`❌ Error clearing teamId for participant ${playerId}:`, error);
+            }
+        }
+        
     } catch (error) {
         console.error(`Error saving team ${teamId} after player removal:`, error);
     }
