@@ -633,6 +633,203 @@ window.forceRenderRoster = function() {
     console.log('Roster table rendered with placeholders for styling purposes');
 };
 
+// Debug function to force render the lineup section for styling purposes
+window.forceRenderLineup = function() {
+    console.log('Force rendering lineup section for styling...');
+    
+    // Set up minimal team data if none exists
+    if (!currentTeamData) {
+        currentTeamData = {
+            id: 'test-team',
+            teamId: 1,
+            teamName: 'Test Team',
+            captain: null,
+            players: []
+        };
+    }
+    
+    // Set up some fake roster data for the scorecard
+    currentTeamRoster = [
+        { id: 'player1', name: 'John Smith' },
+        { id: 'player2', name: 'Mike Johnson' },
+        { id: 'player3', name: 'David Wilson' },
+        { id: 'player4', name: 'Chris Brown' },
+        { id: 'player5', name: 'Tom Davis' },
+        { id: 'player6', name: 'Steve Miller' }
+    ];
+    
+    // Force render lineup section
+    renderLineupManagement();
+    
+    console.log('Lineup section rendered with dropdown and scorecard preview');
+};
+
+// Simple function to show lineup dropdown and scorecard anywhere on the page
+window.showLineupDemo = function() {
+    console.log('Creating lineup demo...');
+    
+    // Create container if it doesn't exist
+    let container = document.getElementById('demo-lineup-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'demo-lineup-container';
+        container.style.cssText = 'margin: 20px; padding: 20px; background: #f8f9f8; border-radius: 8px; border: 1px solid #ddd;';
+        document.body.appendChild(container);
+    }
+    
+    // Simple dropdown and scorecard demo
+    container.innerHTML = `
+        <h3>Lineup Demo</h3>
+        <div class="lineup-controls">
+            <div class="week-selector">
+                <label for="demo-week-select">Select Week:</label>
+                <select id="demo-week-select" onchange="updateDemoScorecard()">
+                    <option value="">Choose a week...</option>
+                    <option value="1">Week 1 - Aug 19</option>
+                    <option value="2">Week 2 - Aug 26</option>
+                    <option value="3">Week 3 - Sep 2</option>
+                    <option value="4">Week 4 - Sep 9</option>
+                    <option value="5">Week 5 - Sep 23</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="demo-scorecard-container" style="margin-top: 20px;">
+            <p style="color: #666; text-align: center; padding: 20px;">Select a week to see the scorecard</p>
+        </div>
+    `;
+    
+    console.log('Lineup demo created! Select a week from the dropdown.');
+};
+
+// Update demo scorecard when week is selected
+window.updateDemoScorecard = function() {
+    const select = document.getElementById('demo-week-select');
+    const container = document.getElementById('demo-scorecard-container');
+    
+    if (!select || !container) return;
+    
+    const weekNumber = select.value;
+    if (!weekNumber) {
+        container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Select a week to see the scorecard</p>';
+        return;
+    }
+    
+    const weekData = [
+        { number: 1, date: 'Aug 19' },
+        { number: 2, date: 'Aug 26' },
+        { number: 3, date: 'Sep 2' },
+        { number: 4, date: 'Sep 9' },
+        { number: 5, date: 'Sep 23' }
+    ].find(w => w.number == weekNumber);
+    
+    container.innerHTML = `
+        <div class="captain-scorecard">
+            <div class="scorecard-header">
+                <div class="match-info">
+                    <span class="match-teams">Test Team vs TBD</span>
+                    <span class="match-format">Format TBD</span>
+                </div>
+            </div>
+            
+            <div class="scorecard-notice">
+                <p style="text-align: center; color: #666; font-style: italic; margin: 10px 0;">
+                    Week ${weekNumber} - ${weekData ? weekData.date : 'TBD'} | Scorecard will be populated after match completion
+                </p>
+            </div>
+            
+            <div class="golf-scorecard-mini">
+                <table class="scorecard-table">
+                    <thead>
+                        <tr class="holes-row">
+                            <th class="player-col">Player</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>8</th>
+                            <th>9</th>
+                            <th class="total-col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="player-row lineup-player">
+                            <td class="player-name">John Smith</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="player-row lineup-player">
+                            <td class="player-name">Mike Johnson</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="player-row lineup-player">
+                            <td class="player-name">David Wilson</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="player-row lineup-player">
+                            <td class="player-name">Chris Brown</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="team-score-row">
+                            <td class="team-score-label">Test Team Score</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-total-cell">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    console.log(`Scorecard updated for Week ${weekNumber}`);
+};
+
 // ===== UTILITY FUNCTIONS =====
 
 // Show success message
