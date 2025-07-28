@@ -319,23 +319,33 @@ async function handleCaptainRoleAssignment(newCaptainId, teamId, previousCaptain
 // Remove captain role from a user
 async function removeCaptainRole(userEmail) {
     try {
-        // Find user by email
-        const usersSnapshot = await db.collection('users').where('email', '==', userEmail).get();
+        console.log(`Removing captain role from: "${userEmail}"`);
         
-        if (usersSnapshot.empty) {
+        // Find user by email (case-insensitive search)
+        const usersSnapshot = await db.collection('users').get();
+        let foundUser = null;
+        
+        usersSnapshot.forEach(doc => {
+            const userData = doc.data();
+            if (userData.email && userData.email.toLowerCase() === userEmail.toLowerCase()) {
+                foundUser = { id: doc.id, ...userData };
+                console.log('Found user for role removal:', foundUser);
+            }
+        });
+        
+        if (!foundUser) {
             console.log(`User with email ${userEmail} not found for role removal`);
             return false;
         }
         
-        const userDoc = usersSnapshot.docs[0];
-        const userData = userDoc.data();
-        const currentRoles = userData.roles || [userData.role || 'guest'];
+        const currentRoles = foundUser.roles || [foundUser.role || 'guest'];
         
         // Remove captain role if present
         const updatedRoles = currentRoles.filter(role => role !== 'captain');
         
         // Update user document
-        await userDoc.ref.update({
+        const userRef = db.collection('users').doc(foundUser.id);
+        await userRef.update({
             roles: updatedRoles,
             teamId: null, // Remove team assignment
             lastUpdated: new Date().toISOString()
@@ -345,7 +355,7 @@ async function removeCaptainRole(userEmail) {
         
         // If this is the current user, refresh their roles immediately
         const currentUser = firebase.auth().currentUser;
-        if (currentUser && currentUser.email === userEmail) {
+        if (currentUser && currentUser.email.toLowerCase() === userEmail.toLowerCase()) {
             await refreshCurrentUserRoles();
         }
         

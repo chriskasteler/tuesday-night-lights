@@ -72,20 +72,78 @@ async function initializeUserRole(user) {
     }
 }
 
+// Debug function to check current user info
+async function debugCurrentUser() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('No user logged in');
+        return;
+    }
+    
+    console.log('=== USER DEBUG INFO ===');
+    console.log('Auth email:', user.email);
+    console.log('Auth UID:', user.uid);
+    
+    try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+            console.log('Firestore user data:', userDoc.data());
+        } else {
+            console.log('No Firestore user document found');
+        }
+        
+        // Also search by email to see if there are duplicates
+        const emailSearch = await db.collection('users').where('email', '==', user.email).get();
+        console.log('Users found by email search:', emailSearch.size);
+        emailSearch.forEach(doc => {
+            console.log('Email search result:', doc.id, doc.data());
+        });
+        
+    } catch (error) {
+        console.error('Error getting user data:', error);
+    }
+}
+
 // Assign captain role to a user
 async function assignCaptainRole(userEmail, teamId) {
     try {
-        // Find user by email
-        const usersSnapshot = await db.collection('users').where('email', '==', userEmail).get();
+        console.log(`Looking for user with email: "${userEmail}"`);
         
-        if (usersSnapshot.empty) {
+        // Find user by email (case-insensitive search)
+        const usersSnapshot = await db.collection('users').get();
+        let foundUser = null;
+        
+        usersSnapshot.forEach(doc => {
+            const userData = doc.data();
+            if (userData.email && userData.email.toLowerCase() === userEmail.toLowerCase()) {
+                foundUser = { id: doc.id, ...userData };
+                console.log('Found matching user:', foundUser);
+            }
+        });
+        
+        if (!foundUser) {
+            // Try exact match as fallback
+            const exactMatch = await db.collection('users').where('email', '==', userEmail).get();
+            if (!exactMatch.empty) {
+                const doc = exactMatch.docs[0];
+                foundUser = { id: doc.id, ...doc.data() };
+                console.log('Found user with exact match:', foundUser);
+            }
+        }
+        
+        if (!foundUser) {
             console.error('User not found:', userEmail);
+            // List all users for debugging
+            const allUsersSnapshot = await db.collection('users').get();
+            console.log('All users in database:');
+            allUsersSnapshot.forEach(doc => {
+                const data = doc.data();
+                console.log(`- Email: "${data.email}", UID: ${doc.id}`);
+            });
             return false;
         }
         
-        const userDoc = usersSnapshot.docs[0];
-        const userData = userDoc.data();
-        const currentRoles = userData.roles || [userData.role || 'guest'];
+        const currentRoles = foundUser.roles || [foundUser.role || 'guest'];
         
         // Add captain role if not already present
         if (!currentRoles.includes('captain')) {
@@ -93,7 +151,8 @@ async function assignCaptainRole(userEmail, teamId) {
         }
         
         // Update user with captain role and team assignment
-        await userDoc.ref.update({
+        const userRef = db.collection('users').doc(foundUser.id);
+        await userRef.update({
             roles: currentRoles,
             teamId: teamId,
             lastUpdated: new Date().toISOString()
@@ -103,7 +162,7 @@ async function assignCaptainRole(userEmail, teamId) {
         
         // If this is the current user, refresh their roles immediately
         const currentUser = firebase.auth().currentUser;
-        if (currentUser && currentUser.email === userEmail) {
+        if (currentUser && currentUser.email.toLowerCase() === userEmail.toLowerCase()) {
             await refreshCurrentUserRoles();
         }
         
@@ -151,6 +210,8 @@ async function refreshCurrentUserRoles() {
         document.getElementById('admin-login-btn').textContent = buttonText;
         
         console.log('User roles refreshed successfully');
+        console.log('Current user email in auth:', user.email);
+        console.log('User data from Firestore:', userData);
         
     } catch (error) {
         console.error('Error refreshing user roles:', error);
