@@ -28,25 +28,32 @@ async function initializeUserRole(user) {
         const userDoc = await userRef.get();
         
         if (!userDoc.exists) {
-            // Determine user role
-            let role = 'guest'; // default role
+            // Determine user roles (can have multiple)
+            let roles = ['guest']; // default role array
             let teamId = null;
             
             if (user.email === ADMIN_EMAIL) {
-                role = 'admin';
+                roles = ['admin']; // Admin gets admin role
+                // Future: Admin can also be captain of a specific team
+                // roles.push('captain');
+                // teamId = 'team1'; // Admin's team
             }
             // Future: Add captain email checks here
+            // if (captainEmails.includes(user.email)) {
+            //     roles.push('captain');
+            //     teamId = getCaptainTeamId(user.email);
+            // }
             
             // Create user document
             await userRef.set({
                 email: user.email,
-                role: role,
+                roles: roles, // Array of roles instead of single role
                 teamId: teamId,
                 createdAt: new Date().toISOString(),
                 lastLogin: new Date().toISOString()
             });
             
-            console.log(`User role initialized: ${user.email} -> ${role}`);
+            console.log(`User roles initialized: ${user.email} -> ${roles.join(', ')}`);
         } else {
             // Update last login
             await userRef.update({
@@ -54,10 +61,48 @@ async function initializeUserRole(user) {
             });
             
             const userData = userDoc.data();
-            console.log(`User role detected: ${user.email} -> ${userData.role}`);
+            const userRoles = userData.roles || [userData.role || 'guest']; // Handle both old and new format
+            console.log(`User roles detected: ${user.email} -> ${userRoles.join(', ')}`);
         }
+        
+        return userDoc.exists ? userDoc.data() : null;
     } catch (error) {
         console.error('Error initializing user role:', error);
+        return null;
+    }
+}
+
+// Helper function to add captain role to a user (for future use)
+async function assignCaptainRole(userEmail, teamId) {
+    try {
+        // Find user by email
+        const usersSnapshot = await db.collection('users').where('email', '==', userEmail).get();
+        
+        if (usersSnapshot.empty) {
+            console.error('User not found:', userEmail);
+            return false;
+        }
+        
+        const userDoc = usersSnapshot.docs[0];
+        const userData = userDoc.data();
+        const currentRoles = userData.roles || [userData.role || 'guest'];
+        
+        // Add captain role if not already present
+        if (!currentRoles.includes('captain')) {
+            currentRoles.push('captain');
+        }
+        
+        // Update user with captain role and team assignment
+        await userDoc.ref.update({
+            roles: currentRoles,
+            teamId: teamId
+        });
+        
+        console.log(`Assigned captain role: ${userEmail} -> Team ${teamId}`);
+        return true;
+    } catch (error) {
+        console.error('Error assigning captain role:', error);
+        return false;
     }
 }
 
@@ -538,25 +583,51 @@ document.addEventListener('click', function(event) {
 // Firebase Auth state listener
 auth.onAuthStateChanged(async user => {
     if (user) {
-        // Initialize user role in Firestore
-        await initializeUserRole(user);
+        // Initialize user role in Firestore and get user data
+        const userData = await initializeUserRole(user);
         
-        if (user.email === ADMIN_EMAIL) {
-            // User is admin - show admin features
+        // Clear all role classes first
+        document.body.classList.remove('admin-logged-in', 'captain-logged-in');
+        
+        // Get user roles (handle both new array format and old single role format)
+        const userRoles = userData?.roles || [userData?.role || 'guest'];
+        
+        // Apply CSS classes based on roles
+        let buttonText = 'Logout';
+        let isAdmin = false;
+        let isCaptain = false;
+        
+        if (userRoles.includes('admin')) {
             document.body.classList.add('admin-logged-in');
-            document.getElementById('admin-login-btn').textContent = 'Admin Logout';
-            document.getElementById('admin-login-btn').onclick = adminLogout;
+            isAdmin = true;
             console.log('Admin logged in:', user.email);
+        }
+        
+        if (userRoles.includes('captain')) {
+            document.body.classList.add('captain-logged-in');
+            isCaptain = true;
+            console.log('Captain logged in:', user.email, userData?.teamId ? `(Team: ${userData.teamId})` : '');
+        }
+        
+        // Set button text based on roles
+        if (isAdmin && isCaptain) {
+            buttonText = 'Logout'; // Both admin and captain
+        } else if (isAdmin) {
+            buttonText = 'Admin Logout'; // Admin only
+        } else if (isCaptain) {
+            buttonText = 'Captain Logout'; // Captain only  
         } else {
-            // User is not admin - basic user features
-            document.body.classList.remove('admin-logged-in');
-            document.getElementById('admin-login-btn').textContent = 'Logout';
-            document.getElementById('admin-login-btn').onclick = adminLogout;
+            buttonText = 'Logout'; // Regular user
             console.log('User logged in:', user.email);
         }
+        
+        // Update button
+        document.getElementById('admin-login-btn').textContent = buttonText;
+        document.getElementById('admin-login-btn').onclick = adminLogout;
+        
     } else {
         // No user logged in - show login option
-        document.body.classList.remove('admin-logged-in');
+        document.body.classList.remove('admin-logged-in', 'captain-logged-in');
         document.getElementById('admin-login-btn').textContent = 'Admin Login';
         document.getElementById('admin-login-btn').onclick = showAdminLogin;
         console.log('No user logged in');
