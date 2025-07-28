@@ -344,47 +344,47 @@ function loadWeekLineup() {
         return;
     }
     
-    // Full league schedule - all matches for all weeks (each team plays 2 matches per week)
+    // Full league schedule - each team plays the SAME opponent TWICE per week
     const leagueSchedule = {
         '1': [
-            { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format' },
-            { team1: 'Team 1', team2: 'Team 3', format: 'Best Ball Format' },
-            { team1: 'Team 2', team2: 'Team 4', format: 'Best Ball Format' },
-            { team1: 'Team 3', team2: 'Team 5', format: 'Best Ball Format' },
-            { team1: 'Team 4', team2: 'Team 6', format: 'Best Ball Format' },
-            { team1: 'Team 5', team2: 'Team 6', format: 'Best Ball Format' }
+            { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format', match: 1 },
+            { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format', match: 2 },
+            { team1: 'Team 3', team2: 'Team 4', format: 'Best Ball Format', match: 1 },
+            { team1: 'Team 3', team2: 'Team 4', format: 'Best Ball Format', match: 2 },
+            { team1: 'Team 5', team2: 'Team 6', format: 'Best Ball Format', match: 1 },
+            { team1: 'Team 5', team2: 'Team 6', format: 'Best Ball Format', match: 2 }
         ],
         '2': [
-            { team1: 'Team 1', team2: 'Team 4', format: 'Alternate Shot Format' },
-            { team1: 'Team 1', team2: 'Team 5', format: 'Alternate Shot Format' },
-            { team1: 'Team 2', team2: 'Team 3', format: 'Alternate Shot Format' },
-            { team1: 'Team 2', team2: 'Team 6', format: 'Alternate Shot Format' },
-            { team1: 'Team 3', team2: 'Team 4', format: 'Alternate Shot Format' },
-            { team1: 'Team 5', team2: 'Team 6', format: 'Alternate Shot Format' }
+            { team1: 'Team 1', team2: 'Team 3', format: 'Alternate Shot Format', match: 1 },
+            { team1: 'Team 1', team2: 'Team 3', format: 'Alternate Shot Format', match: 2 },
+            { team1: 'Team 2', team2: 'Team 5', format: 'Alternate Shot Format', match: 1 },
+            { team1: 'Team 2', team2: 'Team 5', format: 'Alternate Shot Format', match: 2 },
+            { team1: 'Team 4', team2: 'Team 6', format: 'Alternate Shot Format', match: 1 },
+            { team1: 'Team 4', team2: 'Team 6', format: 'Alternate Shot Format', match: 2 }
         ],
         '3': [
-            { team1: 'Team 1', team2: 'Team 6', format: 'Scramble Format' },
-            { team1: 'Team 2', team2: 'Team 5', format: 'Scramble Format' },
-            { team1: 'Team 3', team2: 'Team 6', format: 'Scramble Format' },
-            { team1: 'Team 4', team2: 'Team 5', format: 'Scramble Format' },
-            { team1: 'Team 3', team2: 'Team 4', format: 'Scramble Format' },
-            { team1: 'Team 1', team2: 'Team 2', format: 'Scramble Format' }
+            { team1: 'Team 1', team2: 'Team 4', format: 'Scramble Format', match: 1 },
+            { team1: 'Team 1', team2: 'Team 4', format: 'Scramble Format', match: 2 },
+            { team1: 'Team 2', team2: 'Team 6', format: 'Scramble Format', match: 1 },
+            { team1: 'Team 2', team2: 'Team 6', format: 'Scramble Format', match: 2 },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Scramble Format', match: 1 },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Scramble Format', match: 2 }
         ],
         '4': [
-            { team1: 'Team 2', team2: 'Team 4', format: 'High-Low Format' },
-            { team1: 'Team 3', team2: 'Team 6', format: 'High-Low Format' },
-            { team1: 'Team 1', team2: 'Team 5', format: 'High-Low Format' },
-            { team1: 'Team 1', team2: 'Team 6', format: 'High-Low Format' },
-            { team1: 'Team 2', team2: 'Team 5', format: 'High-Low Format' },
-            { team1: 'Team 3', team2: 'Team 4', format: 'High-Low Format' }
+            { team1: 'Team 1', team2: 'Team 5', format: 'High-Low Format', match: 1 },
+            { team1: 'Team 1', team2: 'Team 5', format: 'High-Low Format', match: 2 },
+            { team1: 'Team 2', team2: 'Team 3', format: 'High-Low Format', match: 1 },
+            { team1: 'Team 2', team2: 'Team 3', format: 'High-Low Format', match: 2 },
+            { team1: 'Team 4', team2: 'Team 6', format: 'High-Low Format', match: 1 },
+            { team1: 'Team 4', team2: 'Team 6', format: 'High-Low Format', match: 2 }
         ],
         '5': [
-            { team1: 'Team 1', team2: 'Team 3', format: 'Modified Stableford Format' },
-            { team1: 'Team 1', team2: 'Team 4', format: 'Modified Stableford Format' },
-            { team1: 'Team 2', team2: 'Team 6', format: 'Modified Stableford Format' },
-            { team1: 'Team 3', team2: 'Team 5', format: 'Modified Stableford Format' },
-            { team1: 'Team 4', team2: 'Team 5', format: 'Modified Stableford Format' },
-            { team1: 'Team 2', team2: 'Team 3', format: 'Modified Stableford Format' }
+            { team1: 'Team 1', team2: 'Team 6', format: 'Modified Stableford Format', match: 1 },
+            { team1: 'Team 1', team2: 'Team 6', format: 'Modified Stableford Format', match: 2 },
+            { team1: 'Team 2', team2: 'Team 4', format: 'Modified Stableford Format', match: 1 },
+            { team1: 'Team 2', team2: 'Team 4', format: 'Modified Stableford Format', match: 2 },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Modified Stableford Format', match: 1 },
+            { team1: 'Team 3', team2: 'Team 5', format: 'Modified Stableford Format', match: 2 }
         ]
     };
 
@@ -441,7 +441,7 @@ function loadWeekLineup() {
         <div class="captain-scorecard" style="margin-bottom: 30px;">
             <div class="scorecard-header">
                 <div class="match-info">
-                    <span class="match-title">${matchup.team1} vs ${matchup.team2} - ${matchup.format}</span>
+                    <span class="match-title">${matchup.team1} vs ${matchup.team2} - ${matchup.format} (Match ${matchup.match})</span>
                 </div>
             </div>
             
