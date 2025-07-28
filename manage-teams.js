@@ -28,8 +28,13 @@ async function loadPlayersAndTeams() {
             allPlayers.push({ id: doc.id, ...doc.data() });
         });
 
+        // Clean up any duplicate teams first
+        const duplicatesRemoved = await cleanupDuplicateTeams();
+        
         // Load teams (or create default structure)
         const teamsSnapshot = await db.collection('teams').orderBy('teamId', 'asc').get();
+        
+        console.log('Teams found in database:', teamsSnapshot.size);
         
         if (teamsSnapshot.empty) {
             // Create default teams structure
@@ -40,6 +45,8 @@ async function loadPlayersAndTeams() {
                 currentTeams.push({ id: doc.id, ...doc.data() });
             });
         }
+        
+        console.log('Loaded teams:', currentTeams.map(t => `${t.teamName} (ID: ${t.id}, teamId: ${t.teamId})`));
 
         // Render the teams management interface
         renderTeamsManagement();
@@ -63,17 +70,94 @@ async function createDefaultTeams() {
             teamId: i,
             teamName: `Team ${i}`,
             players: [],
-            captain: null
+            captain: null,
+            wins: 0,
+            losses: 0,
+            lastUpdated: new Date().toISOString()
         };
         
         try {
-            const docRef = await db.collection('teams').add(teamData);
-            currentTeams.push({ id: docRef.id, ...teamData });
+            // Use set() with specific document ID to prevent duplicates
+            const docId = `team-${i}`;
+            await db.collection('teams').doc(docId).set(teamData);
+            currentTeams.push({ id: docId, ...teamData });
+            console.log(`Created/Updated Team ${i} with ID: ${docId}`);
         } catch (error) {
             console.error(`Error creating Team ${i}:`, error);
         }
     }
 }
+
+// Clean up duplicate teams in the database
+async function cleanupDuplicateTeams() {
+    try {
+        console.log('Checking for duplicate teams...');
+        const teamsSnapshot = await db.collection('teams').get();
+        const teamsByTeamId = {};
+        const duplicates = [];
+        
+        // Group teams by teamId
+        teamsSnapshot.forEach(doc => {
+            const data = doc.data();
+            const teamId = data.teamId;
+            
+            if (!teamsByTeamId[teamId]) {
+                teamsByTeamId[teamId] = [];
+            }
+            teamsByTeamId[teamId].push({ docId: doc.id, data: data });
+        });
+        
+        // Find duplicates and mark for deletion
+        Object.keys(teamsByTeamId).forEach(teamId => {
+            const teams = teamsByTeamId[teamId];
+            if (teams.length > 1) {
+                console.log(`Found ${teams.length} teams with teamId ${teamId}`);
+                
+                // Keep the one with the expected document ID format, or the first one
+                const expectedDocId = `team-${teamId}`;
+                const keepTeam = teams.find(t => t.docId === expectedDocId) || teams[0];
+                
+                // Mark others for deletion
+                teams.forEach(team => {
+                    if (team.docId !== keepTeam.docId) {
+                        duplicates.push(team.docId);
+                    }
+                });
+            }
+        });
+        
+        // Delete duplicates
+        if (duplicates.length > 0) {
+            console.log(`Deleting ${duplicates.length} duplicate teams:`, duplicates);
+            const batch = db.batch();
+            duplicates.forEach(docId => {
+                batch.delete(db.collection('teams').doc(docId));
+            });
+            await batch.commit();
+            console.log('Duplicate teams deleted successfully');
+            return true;
+        } else {
+            console.log('No duplicate teams found');
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('Error cleaning up duplicate teams:', error);
+        return false;
+    }
+}
+
+// Debug function - can be called from console to manually clean up duplicates
+window.cleanupTeams = async function() {
+    console.log('Manual team cleanup initiated...');
+    const removed = await cleanupDuplicateTeams();
+    if (removed) {
+        console.log('Duplicates removed. Reloading teams...');
+        await loadPlayersAndTeams();
+        console.log('Teams reloaded successfully');
+    }
+    return removed;
+};
 
 // Render the teams management interface
 function renderTeamsManagement() {
