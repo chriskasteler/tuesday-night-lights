@@ -219,9 +219,9 @@ function renderTeamRoster() {
                         <th>Position</th>
                         <th>Player Name</th>
                         <th>Status</th>
-                        <th>Games Played</th>
-                        <th>Average</th>
-                        <th>Total Points</th>
+                        <th>Matches Played</th>
+                        <th>Record</th>
+                        <th>Points</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -235,9 +235,9 @@ function renderTeamRoster() {
                             <td class="status-cell">
                                 <span class="status-active">Active</span>
                             </td>
-                            <td class="stats-cell">${captain.gamesPlayed || 0}</td>
-                            <td class="stats-cell">${captain.average || 'N/A'}</td>
-                            <td class="stats-cell">${captain.totalPoints || 0}</td>
+                            <td class="stats-cell">${captain.matchesPlayed || captain.gamesPlayed || 0}</td>
+                            <td class="stats-cell">${captain.record || captain.average || 'N/A'}</td>
+                            <td class="stats-cell">${captain.points || captain.totalPoints || 0}</td>
                         </tr>
                     ` : `
                         <tr class="captain-row">
@@ -277,9 +277,9 @@ function renderTeamRoster() {
                                         <span class="status-open">Open</span>
                                     `}
                                 </td>
-                                <td class="stats-cell">${player ? (player.gamesPlayed || 0) : '-'}</td>
-                                <td class="stats-cell">${player ? (player.average || 'N/A') : '-'}</td>
-                                <td class="stats-cell">${player ? (player.totalPoints || 0) : '-'}</td>
+                                <td class="stats-cell">${player ? (player.matchesPlayed || player.gamesPlayed || 0) : '-'}</td>
+                                <td class="stats-cell">${player ? (player.record || player.average || 'N/A') : '-'}</td>
+                                <td class="stats-cell">${player ? (player.points || player.totalPoints || 0) : '-'}</td>
                             </tr>
                         `;
                     }).join('')}
