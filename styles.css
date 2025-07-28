@@ -116,6 +116,31 @@ body {
     display: none;
 }
 
+/* Admin Button Section */
+.admin-button-section {
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 20px;
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.admin-btn {
+    background: #2d4a2d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.admin-btn:hover {
+    background: #1e3a1e;
+}
+
 .content-section.active {
     display: block;
 }
@@ -377,6 +402,15 @@ body {
     .hero .logo {
         max-width: 200px;
         padding: 15px;
+    }
+    
+    .admin-button-section {
+        padding: 10px 15px;
+    }
+    
+    .admin-btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
     }
     
     .info-grid {
@@ -1082,17 +1116,7 @@ body.admin-logged-in .remove-player-btn {
     display: inline-block !important;
 }
 
-.admin-login-btn {
-    background: #1e3a1e !important;
-    color: white !important;
-    padding: 8px 16px !important;
-    border-radius: 4px !important;
-    font-weight: 600 !important;
-}
 
-.admin-login-btn:hover {
-    background: #2d4a2d !important;
-}
 
 .admin-modal {
     position: fixed;
