@@ -359,8 +359,7 @@ function loadWeekLineup() {
         <div class="captain-scorecard">
             <div class="scorecard-header">
                 <div class="match-info">
-                    <span class="match-teams">${matchup.team1} vs ${matchup.team2}</span>
-                    <span class="match-format">Best Ball Format</span>
+                    <span class="match-title">${matchup.team1} vs ${matchup.team2} - Best Ball Format</span>
                 </div>
             </div>
             
