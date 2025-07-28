@@ -20,56 +20,56 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Standalone navigation bar -->
+    <div class="navigation-bar">
+        <!-- Mobile page title and hamburger -->
+        <div class="mobile-nav-header">
+            <div class="mobile-page-title" id="mobile-page-title">League Info</div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+        
+        <nav class="nav-menu">
+            <ul class="nav-list" id="nav-list">
+            <li class="nav-item">
+                <a class="nav-link active" onclick="showSection('info')">League Info</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showSection('participants')">Players</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showSection('teams')">Teams</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showSection('schedule')">Schedule</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showSection('standings')">Standings</a>
+            </li>
+            
+            <!-- Admin Only Navigation Items -->
+            <li class="nav-item admin-only" style="display: none;">
+                <a class="nav-link" onclick="showSection('enter-scores')">Enter Scores</a>
+            </li>
+            <li class="nav-item admin-only" style="display: none;">
+                <a class="nav-link" onclick="showSection('manage-teams')">Manage Teams</a>
+            </li>
+            
+            <!-- Admin Login/Logout Button -->
+            <li class="nav-item admin-login-item">
+                <a class="nav-link admin-login-btn" onclick="showAdminLogin()" id="admin-login-btn">Admin Login</a>
+            </li>
+            </ul>
+        </nav>
+    </div>
+
     <div class="container">
         <div class="hero">
             <img src="logo.png" alt="Braemar Highland League" class="logo">
             <p class="subtitle"><em>"Tuesday Night Lights"</em></p>
-        </div>
-
-        <!-- Separate navigation bar -->
-        <div class="navigation-bar">
-            <!-- Mobile page title and hamburger -->
-            <div class="mobile-nav-header">
-                <div class="mobile-page-title" id="mobile-page-title">League Info</div>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
-            </div>
-            
-            <nav class="nav-menu">
-                <ul class="nav-list" id="nav-list">
-                <li class="nav-item">
-                    <a class="nav-link active" onclick="showSection('info')">League Info</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="showSection('participants')">Players</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="showSection('teams')">Teams</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="showSection('schedule')">Schedule</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="showSection('standings')">Standings</a>
-                </li>
-                
-                <!-- Admin Only Navigation Items -->
-                <li class="nav-item admin-only" style="display: none;">
-                    <a class="nav-link" onclick="showSection('enter-scores')">Enter Scores</a>
-                </li>
-                <li class="nav-item admin-only" style="display: none;">
-                    <a class="nav-link" onclick="showSection('manage-teams')">Manage Teams</a>
-                </li>
-                
-                <!-- Admin Login/Logout Button -->
-                <li class="nav-item admin-login-item">
-                    <a class="nav-link admin-login-btn" onclick="showAdminLogin()" id="admin-login-btn">Admin Login</a>
-                </li>
-                </ul>
-            </nav>
         </div>
 
         <div class="countdown-container">
