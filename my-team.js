@@ -942,6 +942,8 @@ function populatePlayerDropdowns(weekNumber) {
     
     dropdowns.forEach(dropdown => {
         const currentValue = dropdown.value;
+        const container = dropdown.parentElement;
+        const removeBtn = container.querySelector('.remove-player-btn');
         
         // Clear existing options except the default
         dropdown.innerHTML = '<option value="">Select Player</option>';
@@ -964,6 +966,15 @@ function populatePlayerDropdowns(weekNumber) {
                 }
             }
         });
+        
+        // Show/hide remove button based on whether a player is selected
+        if (removeBtn) {
+            if (currentValue && currentValue !== '') {
+                removeBtn.style.display = 'inline-block';
+            } else {
+                removeBtn.style.display = 'none';
+            }
+        }
     });
 }
 
@@ -971,23 +982,33 @@ function populatePlayerDropdowns(weekNumber) {
 function handlePlayerSelection(selectElement, weekNumber, match, position) {
     const playerId = `${match}-${position}`;
     const selectedPlayer = selectElement.value;
+    const container = selectElement.parentElement;
+    const removeBtn = container.querySelector('.remove-player-btn');
     
     if (selectedPlayer) {
         // Add to weekly lineup
         weeklyLineups[weekNumber].players[playerId] = selectedPlayer;
         
         // Show remove button
-        const container = selectElement.parentElement;
-        const removeBtn = container.querySelector('.remove-player-btn');
         if (removeBtn) {
             removeBtn.style.display = 'inline-block';
         }
         
-        // Update all dropdowns to remove this player from others
-        populatePlayerDropdowns(weekNumber);
-        
         console.log(`Selected ${selectedPlayer} for Week ${weekNumber}, Match ${match}, Position ${position}`);
+    } else {
+        // No player selected - remove from lineup and hide remove button
+        delete weeklyLineups[weekNumber].players[playerId];
+        
+        // Hide remove button
+        if (removeBtn) {
+            removeBtn.style.display = 'none';
+        }
+        
+        console.log(`Cleared selection for Week ${weekNumber}, Match ${match}, Position ${position}`);
     }
+    
+    // Update all dropdowns to remove this player from others
+    populatePlayerDropdowns(weekNumber);
     
     // Check if all 4 positions are filled
     updateSubmitButtonState(weekNumber);
