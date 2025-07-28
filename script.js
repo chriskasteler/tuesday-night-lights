@@ -197,6 +197,24 @@ async function assignCaptainRole(userEmail, teamId) {
         
         console.log(`Assigned captain role: ${userEmail} -> Team ${teamId}`);
         
+        // ALSO update the participant record to include teamId
+        console.log(`Looking for participant record with email: ${userEmail}`);
+        const participantsSnapshot = await db.collection('participants')
+            .where('email', '==', userEmail)
+            .get();
+        
+        if (!participantsSnapshot.empty) {
+            // Update participant record with teamId
+            const participantDoc = participantsSnapshot.docs[0];
+            await participantDoc.ref.update({
+                teamId: teamId,
+                lastUpdated: new Date().toISOString()
+            });
+            console.log(`Updated participant record: ${userEmail} -> Team ${teamId}`);
+        } else {
+            console.log(`No participant record found for ${userEmail} - they may not be in participants collection yet`);
+        }
+        
         // If this is the current user, refresh their roles immediately
         const currentUser = firebase.auth().currentUser;
         if (currentUser && currentUser.email.toLowerCase() === userEmail.toLowerCase()) {

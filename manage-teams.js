@@ -353,6 +353,24 @@ async function removeCaptainRole(userEmail) {
         
         console.log(`Captain role removed from ${userEmail}`);
         
+        // ALSO remove teamId from participant record
+        console.log(`Looking for participant record to remove teamId: ${userEmail}`);
+        const participantsSnapshot = await db.collection('participants')
+            .where('email', '==', userEmail)
+            .get();
+        
+        if (!participantsSnapshot.empty) {
+            // Remove teamId from participant record
+            const participantDoc = participantsSnapshot.docs[0];
+            await participantDoc.ref.update({
+                teamId: firebase.firestore.FieldValue.delete(),
+                lastUpdated: new Date().toISOString()
+            });
+            console.log(`Removed teamId from participant record: ${userEmail}`);
+        } else {
+            console.log(`No participant record found for ${userEmail}`);
+        }
+        
         // If this is the current user, refresh their roles immediately
         const currentUser = firebase.auth().currentUser;
         if (currentUser && currentUser.email.toLowerCase() === userEmail.toLowerCase()) {

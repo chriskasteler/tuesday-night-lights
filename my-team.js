@@ -109,12 +109,8 @@ async function loadTeamRoster(teamId) {
         }
         
         participantsSnapshot.forEach((doc) => {
-            const playerData = { id: doc.id, ...doc.data() };
-            console.log('Found participant for team:', playerData.name, playerData.email);
-            currentTeamRoster.push(playerData);
+            currentTeamRoster.push({ id: doc.id, ...doc.data() });
         });
-        
-        console.log(`Found ${currentTeamRoster.length} participants with teamId ${teamIdStr}`);
         
         // Method 2: If no participants found with teamId, get players from team.players array
         if (currentTeamRoster.length === 0 && currentTeamData?.players) {
@@ -140,55 +136,7 @@ async function loadTeamRoster(teamId) {
             }
         }
         
-        // Debug: Check if current user is in the roster
-        const currentUserEmail = firebase.auth().currentUser?.email;
-        console.log('Current user email:', currentUserEmail);
         console.log('Team roster loaded:', currentTeamRoster);
-        console.log('Roster names:', currentTeamRoster.map(p => `${p.name} (${p.email})`));
-        
-        const userInRoster = currentTeamRoster.find(p => p.email === currentUserEmail);
-        if (userInRoster) {
-            console.log('✓ Current user found in roster:', userInRoster.name);
-        } else {
-            console.log('❌ Current user NOT found in roster!');
-            console.log('Checking if user exists in participants collection...');
-            
-            // Check if user exists but with wrong/missing teamId
-            const userSnapshot = await db.collection('participants')
-                .where('email', '==', currentUserEmail)
-                .get();
-            
-            if (!userSnapshot.empty) {
-                userSnapshot.forEach(doc => {
-                    const userData = doc.data();
-                    console.log('Found user participant record:', userData);
-                    console.log('User teamId:', userData.teamId, 'Expected teamId:', teamIdStr);
-                    
-                    // Add user to roster if they're missing
-                    const userDataWithTeam = { id: doc.id, ...userData, teamId: teamIdStr };
-                    currentTeamRoster.push(userDataWithTeam);
-                    console.log('Added current user to roster:', userData.name);
-                });
-            } else {
-                console.log('User not found in participants collection at all!');
-                console.log('Creating temporary roster entry for current user...');
-                
-                // Add current user as a temporary entry
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    currentTeamRoster.push({
-                        id: 'temp-current-user',
-                        name: user.displayName || user.email.split('@')[0],
-                        email: user.email,
-                        teamId: teamIdStr,
-                        status: 'active'
-                    });
-                    console.log('Added temporary user entry');
-                }
-            }
-        }
-        
-        console.log('Final roster after user check:', currentTeamRoster.map(p => p.name));
         console.log('Roster loading complete. Will render table with placeholders if empty.');
         
     } catch (error) {
@@ -971,11 +919,6 @@ function initializePlayerDropdowns(weekNumber) {
 
 // Populate dropdowns with available players
 function populatePlayerDropdowns(weekNumber) {
-    console.log('=== DROPDOWN DEBUG ===');
-    console.log('Current team roster:', currentTeamRoster);
-    console.log('Team roster length:', currentTeamRoster?.length);
-    console.log('Current team data:', currentTeamData);
-    
     if (!currentTeamRoster || currentTeamRoster.length === 0) {
         console.log('No team roster available for dropdowns');
         return;
@@ -991,8 +934,7 @@ function populatePlayerDropdowns(weekNumber) {
         dropdown.innerHTML = '<option value="">Select Player</option>';
         
         // Add available players
-        currentTeamRoster.forEach((player, index) => {
-            console.log(`Player ${index}:`, player);
+        currentTeamRoster.forEach(player => {
             if (player && player.name) {
                 const isSelected = Object.values(weeklyLineups[weekNumber].players).includes(player.name);
                 const isCurrentSelection = currentValue === player.name;
@@ -1006,10 +948,7 @@ function populatePlayerDropdowns(weekNumber) {
                         option.selected = true;
                     }
                     dropdown.appendChild(option);
-                    console.log(`Added ${player.name} to dropdown`);
                 }
-            } else {
-                console.log(`Invalid player at index ${index}:`, player);
             }
         });
     });
