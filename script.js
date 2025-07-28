@@ -334,6 +334,9 @@ function showSection(sectionName) {
     
     // Scroll to top of page
     window.scrollTo(0, 0);
+    
+    // Hide loading overlay if it's still visible (edge case)
+    hideLoadingOverlay();
 }
 
 // Restore the last viewed section on page refresh
@@ -353,7 +356,27 @@ function restoreCurrentSection() {
         // Default to info section and scroll to top
         window.scrollTo(0, 0);
     }
+    
+    // Hide the loading overlay after restoration is complete
+    hideLoadingOverlay();
 }
+
+// Hide the loading overlay with a smooth transition
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('page-loading-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        // Remove the overlay from DOM after transition completes
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
+    }
+}
+
+// Fallback to hide loading overlay after maximum time
+setTimeout(() => {
+    hideLoadingOverlay();
+}, 2000); // Hide after 2 seconds regardless
 
 // Initialize My Team section for captains
 async function initializeMyTeamSection() {
