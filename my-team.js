@@ -29,6 +29,11 @@ async function initializeMyTeam(userId, teamId) {
         
     } catch (error) {
         console.error('Error initializing My Team:', error);
+        // Even if there's an error, try to render the roster table with placeholders
+        console.log('Error occurred during initialization, attempting to render placeholder table...');
+        if (currentTeamData) {
+            renderTeamRoster();
+        }
         showTeamError('Failed to load team data. Please try again.');
     }
 }
@@ -129,10 +134,12 @@ async function loadTeamRoster(teamId) {
         }
         
         console.log('Team roster loaded:', currentTeamRoster);
+        console.log('Roster loading complete. Will render table with placeholders if empty.');
         
     } catch (error) {
         console.error('Error loading team roster:', error);
         currentTeamRoster = [];
+        console.log('Error occurred, setting empty roster. Table will show placeholders.');
     }
 }
 
@@ -178,7 +185,7 @@ function renderTeamRoster() {
     const container = document.getElementById('team-roster-container');
     if (!container) return;
     
-    if (!currentTeamData || currentTeamRoster.length === 0) {
+    if (!currentTeamData) {
         container.innerHTML = `
             <p style="text-align: center; color: #666; margin: 40px 0;">
                 Team roster will be displayed here once teams are assigned.
@@ -187,9 +194,17 @@ function renderTeamRoster() {
         return;
     }
     
+    // Always show the table structure, even with empty roster (for styling purposes)
+    console.log('Rendering team roster. Current roster length:', currentTeamRoster.length);
+    
     const teamName = currentTeamData.teamName || `Team ${currentTeamData.teamId}`;
     const captain = currentTeamRoster.find(player => player.id === currentTeamData.captain);
     const regularPlayers = currentTeamRoster.filter(player => player.id !== currentTeamData.captain);
+    
+    console.log('Team name:', teamName);
+    console.log('Captain data:', captain);
+    console.log('Regular players:', regularPlayers);
+    console.log('Current team captain ID:', currentTeamData.captain);
     
     container.innerHTML = `
         <div class="team-header">
@@ -242,6 +257,8 @@ function renderTeamRoster() {
                     ${Array.from({length: 5}, (_, i) => {
                         const player = regularPlayers[i];
                         const position = i + 2; // Positions 2-6
+                        
+                        console.log(`Position ${position}: player =`, player);
                         
                         return `
                             <tr class="player-row">
@@ -451,6 +468,30 @@ async function saveLineup(weekNumber) {
         showTeamError('Failed to save lineup. Please try again.');
     }
 }
+
+// Debug function to force render the roster table for styling purposes
+window.forceRenderRoster = function() {
+    console.log('Force rendering roster table for styling...');
+    
+    // Set up minimal team data if none exists
+    if (!currentTeamData) {
+        currentTeamData = {
+            id: 'test-team',
+            teamId: 1,
+            teamName: 'Test Team',
+            captain: null,
+            players: []
+        };
+    }
+    
+    // Clear roster to show placeholders
+    currentTeamRoster = [];
+    
+    // Force render
+    renderTeamRoster();
+    
+    console.log('Roster table rendered with placeholders for styling purposes');
+};
 
 // ===== UTILITY FUNCTIONS =====
 
