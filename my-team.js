@@ -326,7 +326,7 @@ function renderLineupManagement() {
         </div>
         
         <div id="lineup-editor" style="display: none;">
-            <!-- Lineup editor will be populated when week is selected -->
+            <!-- Will show lineup editor and scorecard for selected week -->
         </div>
     `;
 }
@@ -364,44 +364,159 @@ function renderLineupEditor(weekNumber) {
     
     const existingLineup = currentLineup[weekNumber] || {};
     const selectedPlayers = existingLineup.players || [];
+    const weekData = getUpcomingWeeks().find(w => w.number == weekNumber);
     
     container.innerHTML = `
         <div class="lineup-week-header">
-            <h4>Week ${weekNumber} Lineup</h4>
+            <h4>Week ${weekNumber} - ${weekData ? weekData.date : 'TBD'}</h4>
             <p>Select 4 players to play this week (2 will sit out)</p>
         </div>
         
-        <div class="player-selection">
-            ${currentTeamRoster.map(player => `
-                <div class="player-selector">
-                    <label>
-                        <input type="checkbox" 
-                               value="${player.id}" 
-                               ${selectedPlayers.includes(player.id) ? 'checked' : ''}
-                               onchange="updateLineupSelection()"
-                               class="player-checkbox">
-                        <span class="player-name">${player.name}</span>
-                        ${player.teamCaptain ? '<span class="captain-badge">CAPTAIN</span>' : ''}
-                    </label>
+        <div class="week-content-container">
+            <!-- Lineup Selection Section -->
+            <div class="lineup-selection-section">
+                <h5>Set Lineup</h5>
+                <div class="player-selection">
+                    ${currentTeamRoster.map(player => `
+                        <div class="player-selector">
+                            <label>
+                                <input type="checkbox" 
+                                       value="${player.id}" 
+                                       ${selectedPlayers.includes(player.id) ? 'checked' : ''}
+                                       onchange="updateLineupSelection()"
+                                       class="player-checkbox">
+                                <span class="player-name">${player.name}</span>
+                                ${player.teamCaptain ? '<span class="captain-badge">CAPTAIN</span>' : ''}
+                            </label>
+                        </div>
+                    `).join('')}
                 </div>
-            `).join('')}
-        </div>
-        
-        <div class="lineup-summary">
-            <p id="selection-count">Selected: <span id="selected-count">0</span>/4 players</p>
-        </div>
-        
-        <div class="lineup-actions">
-            <button onclick="saveLineup(${weekNumber})" 
-                    id="save-lineup-btn" 
-                    class="save-btn" 
-                    disabled>
-                Save Lineup
-            </button>
+                
+                <div class="lineup-summary">
+                    <p id="selection-count">Selected: <span id="selected-count">0</span>/4 players</p>
+                </div>
+                
+                <div class="lineup-actions">
+                    <button onclick="saveLineup(${weekNumber})" 
+                            id="save-lineup-btn" 
+                            class="save-btn" 
+                            disabled>
+                        Save Lineup
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Scorecard Section -->
+            <div class="scorecard-section">
+                <h5>Match Scorecard</h5>
+                ${renderWeekScorecard(weekNumber)}
+            </div>
         </div>
     `;
     
     updateLineupSelection(); // Update initial state
+}
+
+// Render scorecard for specific week
+function renderWeekScorecard(weekNumber) {
+    const teamName = currentTeamData.teamName || `Team ${currentTeamData.teamId}`;
+    
+    // Get current selection from checkboxes (for real-time preview)
+    const checkboxes = document.querySelectorAll('.player-checkbox:checked');
+    const currentSelection = Array.from(checkboxes).map(cb => cb.value);
+    
+    // Use current selection if available, otherwise use saved lineup
+    const existingLineup = currentLineup[weekNumber] || {};
+    const selectedPlayers = currentSelection.length > 0 ? currentSelection : (existingLineup.players || []);
+    
+    // Get selected players data
+    const lineupPlayers = selectedPlayers.map(playerId => 
+        currentTeamRoster.find(player => player.id === playerId)
+    ).filter(player => player); // Remove any null/undefined
+    
+    // If no lineup set yet, show placeholder
+    if (lineupPlayers.length === 0) {
+        return `
+            <div class="scorecard-placeholder">
+                <p style="text-align: center; color: #666; font-style: italic; padding: 40px;">
+                    Select your lineup above to view the match scorecard
+                </p>
+            </div>
+        `;
+    }
+    
+    // Ensure we have exactly 4 players (fill with placeholders if needed)
+    const displayPlayers = [...lineupPlayers];
+    while (displayPlayers.length < 4) {
+        displayPlayers.push({ name: 'Player TBD', id: null });
+    }
+    
+    return `
+        <div class="captain-scorecard">
+            <div class="scorecard-header">
+                <div class="match-info">
+                    <span class="match-teams">${teamName} vs TBD</span>
+                    <span class="match-format">Format TBD</span>
+                </div>
+            </div>
+            
+            <div class="scorecard-notice">
+                <p style="text-align: center; color: #666; font-style: italic; margin: 10px 0;">
+                    Scorecard will be populated after match completion
+                </p>
+            </div>
+            
+            <div class="golf-scorecard-mini">
+                <table class="scorecard-table">
+                    <thead>
+                        <tr class="holes-row">
+                            <th class="player-col">Player</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>8</th>
+                            <th>9</th>
+                            <th class="total-col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${displayPlayers.map((player, index) => `
+                            <tr class="player-row ${player.id ? 'lineup-player' : 'placeholder-player'}">
+                                <td class="player-name">${player.name}</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="score-cell">-</td>
+                                <td class="total-cell">-</td>
+                            </tr>
+                        `).join('')}
+                        <tr class="team-score-row">
+                            <td class="team-score-label">${teamName} Score</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-total-cell">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
 }
 
 // Update lineup selection state
@@ -429,6 +544,9 @@ function updateLineupSelection() {
         }
     }
     
+    // Update scorecard preview when lineup changes
+    updateScorecardPreview();
+    
     // Disable unchecked checkboxes if 4 are selected
     checkboxes.forEach(checkbox => {
         if (!checkbox.checked && selectedCount >= 4) {
@@ -437,6 +555,21 @@ function updateLineupSelection() {
             checkbox.disabled = false;
         }
     });
+}
+
+// Update scorecard preview when lineup changes
+function updateScorecardPreview() {
+    const weekSelect = document.getElementById('week-select');
+    if (weekSelect && weekSelect.value) {
+        const scorecardSection = document.querySelector('.scorecard-section');
+        if (scorecardSection) {
+            const newScorecard = renderWeekScorecard(weekSelect.value);
+            scorecardSection.innerHTML = `
+                <h5>Match Scorecard</h5>
+                ${newScorecard}
+            `;
+        }
+    }
 }
 
 // Save lineup to Firestore
@@ -464,6 +597,9 @@ async function saveLineup(weekNumber) {
         
         // Update local data
         currentLineup[weekNumber] = lineupData;
+        
+        // Refresh scorecard to show saved lineup
+        updateScorecardPreview();
         
         showTeamSuccess(`Week ${weekNumber} lineup saved successfully!`);
         

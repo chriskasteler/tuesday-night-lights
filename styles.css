@@ -1318,6 +1318,116 @@ body.captain-logged-in .captain-only {
     border-radius: 8px;
 }
 
+/* Week Content Layout */
+.week-content-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.lineup-selection-section,
+.scorecard-section {
+    background: #f8f9f8;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.lineup-selection-section h5,
+.scorecard-section h5 {
+    margin: 0 0 15px 0;
+    color: #2d4a2d;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Captain Scorecard Styles */
+.captain-scorecard {
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.captain-scorecard .scorecard-header {
+    background: #2d4a2d;
+    color: white;
+    padding: 10px 15px;
+}
+
+.captain-scorecard .match-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.scorecard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.scorecard-table th {
+    background: #f8f9f8;
+    padding: 8px 6px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-weight: 600;
+    color: #333;
+}
+
+.scorecard-table .player-col {
+    text-align: left;
+    min-width: 120px;
+    max-width: 120px;
+}
+
+.scorecard-table .total-col {
+    background: #e8f5e8;
+    font-weight: 600;
+}
+
+.scorecard-table td {
+    padding: 8px 6px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.scorecard-table .player-name {
+    text-align: left;
+    font-weight: 500;
+    color: #333;
+}
+
+.lineup-player .player-name {
+    color: #2d4a2d;
+    font-weight: 600;
+}
+
+.placeholder-player .player-name {
+    color: #999;
+    font-style: italic;
+}
+
+.team-score-row {
+    background: #e8f5e8;
+    font-weight: 600;
+}
+
+.team-score-row .team-score-label {
+    color: #2d4a2d;
+    text-align: left;
+}
+
+.scorecard-placeholder {
+    background: #f8f9f8;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
 .lineup-controls {
     margin-bottom: 20px;
 }
@@ -1441,6 +1551,32 @@ body.captain-logged-in .captain-only {
         margin-top: 4px;
         margin-left: 0;
         width: fit-content;
+    }
+    
+    /* Mobile Week Content Layout */
+    .week-content-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .scorecard-table {
+        font-size: 0.75rem;
+        min-width: 600px;
+    }
+    
+    .scorecard-section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .scorecard-table .player-col {
+        min-width: 100px;
+        max-width: 100px;
+    }
+    
+    .scorecard-table th,
+    .scorecard-table td {
+        padding: 6px 4px;
     }
 }
 
