@@ -344,13 +344,13 @@ function loadWeekLineup() {
         return;
     }
     
-    // Team matchups for each week
+    // Team matchups for each week  
     const weekMatchups = {
-        '1': { team1: 'Team 1', team2: 'Team 2' },
-        '2': { team1: 'Team 3', team2: 'Team 4' },
-        '3': { team1: 'Team 5', team2: 'Team 6' },
-        '4': { team1: 'Team 1', team2: 'Team 3' },
-        '5': { team1: 'Team 2', team2: 'Team 4' }
+        '1': { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format' },
+        '2': { team1: 'Team 1', team2: 'Team 3', format: 'Alternate Shot Format' },
+        '3': { team1: 'Team 1', team2: 'Team 4', format: 'Scramble Format' },
+        '4': { team1: 'Team 1', team2: 'Team 5', format: 'High-Low Format' },
+        '5': { team1: 'Team 1', team2: 'Team 6', format: 'Modified Stableford Format' }
     };
     
     const matchup = weekMatchups[selectedWeek];
@@ -359,7 +359,7 @@ function loadWeekLineup() {
         <div class="captain-scorecard">
             <div class="scorecard-header">
                 <div class="match-info">
-                    <span class="match-title">${matchup.team1} vs ${matchup.team2} - Best Ball Format</span>
+                    <span class="match-title">${matchup.team1} vs ${matchup.team2} - ${matchup.format}</span>
                 </div>
             </div>
             
