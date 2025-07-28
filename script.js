@@ -72,7 +72,7 @@ async function initializeUserRole(user) {
     }
 }
 
-// Helper function to add captain role to a user (for future use)
+// Assign captain role to a user
 async function assignCaptainRole(userEmail, teamId) {
     try {
         // Find user by email
@@ -95,14 +95,65 @@ async function assignCaptainRole(userEmail, teamId) {
         // Update user with captain role and team assignment
         await userDoc.ref.update({
             roles: currentRoles,
-            teamId: teamId
+            teamId: teamId,
+            lastUpdated: new Date().toISOString()
         });
         
         console.log(`Assigned captain role: ${userEmail} -> Team ${teamId}`);
+        
+        // If this is the current user, refresh their roles immediately
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser && currentUser.email === userEmail) {
+            await refreshCurrentUserRoles();
+        }
+        
         return true;
     } catch (error) {
         console.error('Error assigning captain role:', error);
         return false;
+    }
+}
+
+// Refresh current user's roles without logging out
+async function refreshCurrentUserRoles() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    
+    try {
+        console.log('Refreshing user roles...');
+        const userData = await initializeUserRole(user);
+        
+        // Clear existing role classes
+        document.body.classList.remove('admin-logged-in', 'captain-logged-in');
+        
+        const userRoles = userData?.roles || [userData?.role || 'guest'];
+        
+        let buttonText = 'Logout';
+        let isAdmin = false;
+        let isCaptain = false;
+        
+        if (userRoles.includes('admin')) {
+            document.body.classList.add('admin-logged-in');
+            isAdmin = true;
+            console.log('Admin role detected');
+        }
+        if (userRoles.includes('captain')) {
+            document.body.classList.add('captain-logged-in');
+            isCaptain = true;
+            console.log('Captain role detected - team:', userData?.teamId || 'not assigned');
+        }
+        
+        // Set button text based on roles
+        if (isAdmin && isCaptain) { buttonText = 'Logout'; }
+        else if (isAdmin) { buttonText = 'Admin Logout'; }
+        else if (isCaptain) { buttonText = 'Captain Logout'; }
+        
+        document.getElementById('admin-login-btn').textContent = buttonText;
+        
+        console.log('User roles refreshed successfully');
+        
+    } catch (error) {
+        console.error('Error refreshing user roles:', error);
     }
 }
 

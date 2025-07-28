@@ -250,7 +250,7 @@ async function saveTeamName(button) {
 }
 
 // Update team roster when player selection changes
-function updateTeamRoster(selectElement) {
+async function updateTeamRoster(selectElement) {
     const card = selectElement.closest('.team-management-card');
     const teamId = parseInt(card.getAttribute('data-team-id'));
     
@@ -261,30 +261,119 @@ function updateTeamRoster(selectElement) {
     const players = Array.from(playerSelects).map(select => select.value).filter(value => value);
     const captain = captainSelect.value || null;
     
+    // Check if captain changed
+    const teamIndex = currentTeams.findIndex(t => t.teamId === teamId);
+    const previousCaptain = teamIndex !== -1 ? currentTeams[teamIndex].captain : null;
+    const captainChanged = captain !== previousCaptain;
+    
     // Add captain to players array if not already there
     if (captain && !players.includes(captain)) {
         players.unshift(captain);
     }
     
     // Update currentTeams array
-    const teamIndex = currentTeams.findIndex(t => t.teamId === teamId);
     if (teamIndex !== -1) {
         currentTeams[teamIndex].players = players;
         currentTeams[teamIndex].captain = captain;
+    }
+    
+    // If captain changed, handle role assignment
+    if (captainChanged) {
+        await handleCaptainRoleAssignment(captain, teamId, previousCaptain);
     }
     
     // Re-render to update available players in other teams
     renderTeamsManagement();
 }
 
+// Handle captain role assignment and removal
+async function handleCaptainRoleAssignment(newCaptainId, teamId, previousCaptainId) {
+    try {
+        // Remove captain role from previous captain if there was one
+        if (previousCaptainId) {
+            const previousPlayer = allPlayers.find(p => p.id === previousCaptainId);
+            if (previousPlayer) {
+                await removeCaptainRole(previousPlayer.email);
+            }
+        }
+        
+        // Assign captain role to new captain if there is one
+        if (newCaptainId) {
+            const newPlayer = allPlayers.find(p => p.id === newCaptainId);
+            if (newPlayer) {
+                const success = await assignCaptainRole(newPlayer.email, teamId);
+                if (success) {
+                    showStatusMessage(`${newPlayer.name} assigned as captain for Team ${teamId}`, 'success');
+                } else {
+                    showStatusMessage(`Warning: Failed to assign captain role to ${newPlayer.name}`, 'warning');
+                }
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error handling captain role assignment:', error);
+        showStatusMessage('Error updating captain roles', 'error');
+    }
+}
+
+// Remove captain role from a user
+async function removeCaptainRole(userEmail) {
+    try {
+        // Find user by email
+        const usersSnapshot = await db.collection('users').where('email', '==', userEmail).get();
+        
+        if (usersSnapshot.empty) {
+            console.log(`User with email ${userEmail} not found for role removal`);
+            return false;
+        }
+        
+        const userDoc = usersSnapshot.docs[0];
+        const userData = userDoc.data();
+        const currentRoles = userData.roles || [userData.role || 'guest'];
+        
+        // Remove captain role if present
+        const updatedRoles = currentRoles.filter(role => role !== 'captain');
+        
+        // Update user document
+        await userDoc.ref.update({
+            roles: updatedRoles,
+            teamId: null, // Remove team assignment
+            lastUpdated: new Date().toISOString()
+        });
+        
+        console.log(`Captain role removed from ${userEmail}`);
+        
+        // If this is the current user, refresh their roles immediately
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser && currentUser.email === userEmail) {
+            await refreshCurrentUserRoles();
+        }
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Error removing captain role:', error);
+        return false;
+    }
+}
+
 // Remove player from team
-function removePlayerFromTeam(teamId, slotIdentifier) {
+async function removePlayerFromTeam(teamId, slotIdentifier) {
     const teamIndex = currentTeams.findIndex(t => t.teamId === teamId);
     if (teamIndex === -1) return;
     
     if (slotIdentifier === 'captain') {
         // Remove captain
         const captainId = currentTeams[teamIndex].captain;
+        
+        // Remove captain role from user
+        if (captainId) {
+            const captainPlayer = allPlayers.find(p => p.id === captainId);
+            if (captainPlayer) {
+                await removeCaptainRole(captainPlayer.email);
+            }
+        }
+        
         currentTeams[teamIndex].captain = null;
         
         // Also remove from players array if they're in there
@@ -298,8 +387,12 @@ function removePlayerFromTeam(teamId, slotIdentifier) {
             // Remove from players array
             currentTeams[teamIndex].players.splice(slotIdentifier, 1);
             
-            // If this player was also the captain, remove captain status
+            // If this player was also the captain, remove captain status and role
             if (currentTeams[teamIndex].captain === playerId) {
+                const captainPlayer = allPlayers.find(p => p.id === playerId);
+                if (captainPlayer) {
+                    await removeCaptainRole(captainPlayer.email);
+                }
                 currentTeams[teamIndex].captain = null;
             }
         }
