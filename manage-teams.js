@@ -165,6 +165,37 @@ window.cleanupTeams = async function() {
     return removed;
 };
 
+// Debug function to manually save all teams
+window.saveAllTeamsManually = async function() {
+    console.log('Manually saving all teams to database...');
+    
+    for (const team of currentTeams) {
+        try {
+            console.log(`Saving team ${team.teamId} (doc: ${team.id})`);
+            console.log(`Players:`, team.players);
+            console.log(`Captain:`, team.captain);
+            
+            await db.collection('teams').doc(team.id).set({
+                teamId: team.teamId,
+                teamName: team.teamName || `Team ${team.teamId}`,
+                players: team.players || [],
+                captain: team.captain || null,
+                wins: team.wins || 0,
+                losses: team.losses || 0,
+                lastUpdated: new Date().toISOString()
+            });
+            
+            console.log(`✅ Saved team ${team.teamId}`);
+            
+        } catch (error) {
+            console.error(`❌ Error saving team ${team.teamId}:`, error);
+        }
+    }
+    
+    console.log('Manual save complete');
+    return true;
+};
+
 // Enhanced cleanup that also fixes the captain assignment issue
 window.fixTeamCaptainIssue = async function() {
     console.log('Fixing team captain assignment issue...');
@@ -480,20 +511,38 @@ async function updateTeamRoster(selectElement) {
         currentTeams[teamIndex].players = players;
         currentTeams[teamIndex].captain = captain;
         
-        // Save team data to Firestore
+        // Save team data to Firestore using the correct document ID
         try {
-            await db.collection('teams').doc(`team-${teamId}`).set({
+            const team = currentTeams[teamIndex];
+            const docId = team.id; // Use the actual document ID from the loaded team
+            
+            console.log(`Updating team ${teamId} with document ID: ${docId}`);
+            console.log(`Players being saved:`, players);
+            console.log(`Captain being saved:`, captain);
+            
+            await db.collection('teams').doc(docId).set({
                 teamId: teamId,
-                teamName: `Team ${teamId}`,
+                teamName: team.teamName || `Team ${teamId}`,
                 players: players,
                 captain: captain,
-                wins: currentTeams[teamIndex].wins || 0,
-                losses: currentTeams[teamIndex].losses || 0,
+                wins: team.wins || 0,
+                losses: team.losses || 0,
                 lastUpdated: new Date().toISOString()
             });
-            console.log(`Saved team ${teamId} data to Firestore`);
+            
+            console.log(`✅ Successfully saved team ${teamId} data to Firestore (doc: ${docId})`);
+            
+            // Verify the save by reading it back
+            const savedDoc = await db.collection('teams').doc(docId).get();
+            if (savedDoc.exists) {
+                console.log(`✅ Verification: Team ${teamId} data in database:`, savedDoc.data());
+            } else {
+                console.error(`❌ Verification failed: Document ${docId} not found after save`);
+            }
+            
         } catch (error) {
-            console.error(`Error saving team ${teamId} data:`, error);
+            console.error(`❌ Error saving team ${teamId} data:`, error);
+            showStatusMessage(`Error saving team ${teamId}: ${error.message}`, 'error');
         }
     }
     
