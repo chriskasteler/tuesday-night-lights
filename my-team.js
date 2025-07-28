@@ -503,6 +503,19 @@ function loadWeekLineup() {
                             <td class="team-score-cell">-</td>
                             <td class="team-total-cell">-</td>
                         </tr>
+                        <tr class="match-status-row">
+                            <td class="match-status-label">${matchup.team1} Status</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-total">AS</td>
+                        </tr>
                         <tr style="height: 10px;"><td colspan="11"></td></tr>
                         <tr class="player-row">
                             <td class="player-name">${matchup.team2} Player ${matchup.match === 1 ? 'A' : 'C'}</td>
@@ -542,6 +555,19 @@ function loadWeekLineup() {
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-total-cell">-</td>
+                        </tr>
+                        <tr class="match-status-row">
+                            <td class="match-status-label">${matchup.team2} Status</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-cell">AS</td>
+                            <td class="match-status-total">AS</td>
                         </tr>
                     </tbody>
                 </table>

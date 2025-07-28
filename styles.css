@@ -1419,6 +1419,28 @@ body.captain-logged-in .captain-only {
     font-weight: 600;
 }
 
+.match-status-row {
+    background: #fff3cd;
+    font-weight: 600;
+    color: #856404;
+}
+
+.match-status-label {
+    text-align: left;
+    color: #856404;
+}
+
+.match-status-cell {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.match-status-total {
+    background: #ffeaa7;
+    font-weight: 700;
+}
+
 .team-score-row .team-score-label {
     color: #2d4a2d;
     text-align: left;
