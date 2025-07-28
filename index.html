@@ -95,8 +95,19 @@
 
     <div class="container">
         <div class="hero">
-            <img src="logo.png" alt="Braemar Highland League" class="logo">
-            <p class="subtitle"><em>"Tuesday Night Lights"</em></p>
+            <div class="logo-container">
+                <img src="logo.png" alt="Braemar Highland League" class="logo">
+                <svg class="curved-text" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <path id="circle-path" d="M 60,220 A 120,120 0 0,0 260,220" />
+                    </defs>
+                    <text class="curved-subtitle">
+                        <textPath href="#circle-path" startOffset="50%">
+                            "Tuesday Night Lights"
+                        </textPath>
+                    </text>
+                </svg>
+            </div>
         </div>
 
         <div class="main-content">
