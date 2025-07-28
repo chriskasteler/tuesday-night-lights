@@ -13,7 +13,8 @@ body {
     font-weight: 400;
     letter-spacing: -0.01em;
     overflow-x: hidden;
-    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
@@ -58,22 +59,17 @@ body {
 
 .navigation-bar {
     background: white;
-    margin-bottom: 0;
-    position: relative;
     border-bottom: 2px solid #f0f0f0;
     z-index: 100;
     width: 100%;
-    top: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .mobile-nav-header {
     display: none;
-    padding: 15px 20px;
     justify-content: space-between;
     align-items: center;
-    min-height: 60px;
-    background: white;
-    border-bottom: 2px solid #f0f0f0;
 }
 
 .nav-menu {
@@ -399,13 +395,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    .navigation-bar {
-        position: relative;
-        z-index: 100;
-        width: 100%;
-        top: auto;
-    }
-
     .main-content {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -442,6 +431,7 @@ body {
         display: flex;
         min-height: 60px;
         align-items: center;
+        padding: 0 20px;
     }
 
     .mobile-menu-toggle {
@@ -449,15 +439,10 @@ body {
     }
 
     .nav-menu {
-        position: relative;
         width: 100%;
     }
 
     .nav-list {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
         background: white;
         flex-direction: column;
         max-height: 0;
@@ -465,7 +450,8 @@ body {
         transition: max-height 0.3s ease;
         z-index: 999;
         border-bottom: 1px solid #f0f0f0;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin: 0;
+        padding: 0;
     }
 
     .nav-list.mobile-open {
@@ -487,11 +473,6 @@ body {
         padding: 18px 20px;
         width: 100%;
         display: block;
-    }
-
-    .container {
-        margin-top: 0;
-        padding-top: 0;
     }
 
 }
