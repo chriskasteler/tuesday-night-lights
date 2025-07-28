@@ -44,14 +44,16 @@ function showSection(sectionName) {
     // Add active class to clicked nav link
     event.target.classList.add('active');
     
-    // Show/hide hero section - only visible on League Info (home page)
+    // Show/hide hero section and countdown - only visible on League Info (home page)
     const heroSection = document.querySelector('.hero');
-    if (heroSection) {
-        if (sectionName === 'info') {
-            heroSection.style.display = 'block';
-        } else {
-            heroSection.style.display = 'none';
-        }
+    const countdownSection = document.querySelector('.countdown-container');
+    
+    if (sectionName === 'info') {
+        if (heroSection) heroSection.style.display = 'block';
+        if (countdownSection) countdownSection.style.display = 'block';
+    } else {
+        if (heroSection) heroSection.style.display = 'none';
+        if (countdownSection) countdownSection.style.display = 'none';
     }
     
     // Update mobile page title
