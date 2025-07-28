@@ -301,7 +301,7 @@ async function handleCaptainRoleAssignment(newCaptainId, teamId, previousCaptain
         if (newCaptainId) {
             const newPlayer = allPlayers.find(p => p.id === newCaptainId);
             if (newPlayer) {
-                const success = await assignCaptainRole(newPlayer.email, teamId);
+                const success = await assignCaptainRole(newPlayer.email, String(teamId));
                 if (success) {
                     showStatusMessage(`${newPlayer.name} assigned as captain for Team ${teamId}`, 'success');
                 } else {

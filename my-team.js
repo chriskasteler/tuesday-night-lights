@@ -38,13 +38,36 @@ async function initializeMyTeam(userId, teamId) {
 // Load team information from Firestore
 async function loadTeamData(teamId) {
     try {
-        const teamDoc = await db.collection('teams').doc(teamId).get();
+        // Ensure teamId is a string for document lookup
+        const teamIdStr = String(teamId);
+        const teamIdNum = parseInt(teamId);
+        console.log(`Loading team data for teamId: "${teamIdStr}" (also checking ${teamIdNum})`);
+        
+        // Try to get team by document ID first
+        let teamDoc = await db.collection('teams').doc(teamIdStr).get();
+        
+        // If not found by document ID, try searching by teamId field
+        if (!teamDoc.exists) {
+            console.log('Team not found by document ID, searching by teamId field...');
+            
+            // Try with string teamId
+            let teamsSnapshot = await db.collection('teams').where('teamId', '==', teamIdStr).get();
+            
+            // Try with number teamId if string didn't work
+            if (teamsSnapshot.empty) {
+                teamsSnapshot = await db.collection('teams').where('teamId', '==', teamIdNum).get();
+            }
+            
+            if (!teamsSnapshot.empty) {
+                teamDoc = teamsSnapshot.docs[0];
+            }
+        }
         
         if (teamDoc.exists) {
             currentTeamData = { id: teamDoc.id, ...teamDoc.data() };
             console.log('Team data loaded:', currentTeamData);
         } else {
-            throw new Error(`Team ${teamId} not found`);
+            throw new Error(`Team ${teamIdStr} not found`);
         }
     } catch (error) {
         console.error('Error loading team data:', error);
@@ -57,11 +80,25 @@ async function loadTeamRoster(teamId) {
     try {
         currentTeamRoster = [];
         
-        // Method 1: Try to find participants with teamId field
-        const participantsSnapshot = await db.collection('participants')
-            .where('teamId', '==', teamId)
+        // Ensure teamId is a string and also try as number for compatibility
+        const teamIdStr = String(teamId);
+        const teamIdNum = parseInt(teamId);
+        
+        console.log(`Loading roster for team: "${teamIdStr}" (also checking ${teamIdNum})`);
+        
+        // Method 1: Try to find participants with teamId field (try both string and number)
+        let participantsSnapshot = await db.collection('participants')
+            .where('teamId', '==', teamIdStr)
             .orderBy('name', 'asc')
             .get();
+        
+        // If no results with string, try with number
+        if (participantsSnapshot.empty) {
+            participantsSnapshot = await db.collection('participants')
+                .where('teamId', '==', teamIdNum)
+                .orderBy('name', 'asc')
+                .get();
+        }
         
         participantsSnapshot.forEach((doc) => {
             currentTeamRoster.push({ id: doc.id, ...doc.data() });
@@ -102,9 +139,23 @@ async function loadTeamRoster(teamId) {
 // Load existing lineups for this team
 async function loadTeamLineups(teamId) {
     try {
-        const lineupsSnapshot = await db.collection('lineups')
-            .where('teamId', '==', teamId)
+        // Ensure teamId is a string and also try as number for compatibility
+        const teamIdStr = String(teamId);
+        const teamIdNum = parseInt(teamId);
+        
+        console.log(`Loading lineups for team: "${teamIdStr}" (also checking ${teamIdNum})`);
+        
+        // Try with string first
+        let lineupsSnapshot = await db.collection('lineups')
+            .where('teamId', '==', teamIdStr)
             .get();
+        
+        // If no results with string, try with number
+        if (lineupsSnapshot.empty) {
+            lineupsSnapshot = await db.collection('lineups')
+                .where('teamId', '==', teamIdNum)
+                .get();
+        }
         
         currentLineup = {};
         lineupsSnapshot.forEach((doc) => {
@@ -379,7 +430,7 @@ async function saveLineup(weekNumber) {
         }
         
         const lineupData = {
-            teamId: currentTeamData.id,
+            teamId: String(currentTeamData.id), // Ensure teamId is a string
             week: weekNumber,
             players: selectedPlayerIds,
             submittedAt: new Date().toISOString(),

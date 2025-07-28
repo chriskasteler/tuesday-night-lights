@@ -323,7 +323,7 @@ async function initializeMyTeamSection() {
             
             if (userRoles.includes('captain') && userData.teamId) {
                 // User is a captain with assigned team
-                await initializeMyTeam(user.uid, userData.teamId);
+                await initializeMyTeam(user.uid, String(userData.teamId));
             } else {
                 console.log('User is not a captain or has no team assigned');
                 // Show message that team assignment is pending
