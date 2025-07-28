@@ -664,9 +664,9 @@ window.forceRenderLineup = function() {
     console.log('Lineup section rendered with dropdown and scorecard preview');
 };
 
-// Simple function to show lineup dropdown and scorecard anywhere on the page
-window.showLineupDemo = function() {
-    console.log('Creating lineup demo...');
+// Simple dropdown and scorecard display
+window.showWeekScorecard = function() {
+    console.log('Creating week scorecard demo...');
     
     // Create container if it doesn't exist
     let container = document.getElementById('demo-lineup-container');
@@ -677,21 +677,19 @@ window.showLineupDemo = function() {
         document.body.appendChild(container);
     }
     
-    // Simple dropdown and scorecard demo
+    // Simple dropdown
     container.innerHTML = `
-        <h3>Lineup Demo</h3>
-        <div class="lineup-controls">
-            <div class="week-selector">
-                <label for="demo-week-select">Select Week:</label>
-                <select id="demo-week-select" onchange="updateDemoScorecard()">
-                    <option value="">Choose a week...</option>
-                    <option value="1">Week 1 - Aug 19</option>
-                    <option value="2">Week 2 - Aug 26</option>
-                    <option value="3">Week 3 - Sep 2</option>
-                    <option value="4">Week 4 - Sep 9</option>
-                    <option value="5">Week 5 - Sep 23</option>
-                </select>
-            </div>
+        <h3>Week Scorecard</h3>
+        <div class="week-selector">
+            <label for="demo-week-select">Select Week:</label>
+            <select id="demo-week-select" onchange="showSelectedWeekScorecard()">
+                <option value="">Choose a week...</option>
+                <option value="1">Week 1</option>
+                <option value="2">Week 2</option>
+                <option value="3">Week 3</option>
+                <option value="4">Week 4</option>
+                <option value="5">Week 5</option>
+            </select>
         </div>
         
         <div id="demo-scorecard-container" style="margin-top: 20px;">
@@ -699,11 +697,11 @@ window.showLineupDemo = function() {
         </div>
     `;
     
-    console.log('Lineup demo created! Select a week from the dropdown.');
+    console.log('Week scorecard demo created! Select a week from the dropdown.');
 };
 
-// Update demo scorecard when week is selected
-window.updateDemoScorecard = function() {
+// Show scorecard when week is selected
+window.showSelectedWeekScorecard = function() {
     const select = document.getElementById('demo-week-select');
     const container = document.getElementById('demo-scorecard-container');
     
@@ -715,27 +713,24 @@ window.updateDemoScorecard = function() {
         return;
     }
     
-    const weekData = [
-        { number: 1, date: 'Aug 19' },
-        { number: 2, date: 'Aug 26' },
-        { number: 3, date: 'Sep 2' },
-        { number: 4, date: 'Sep 9' },
-        { number: 5, date: 'Sep 23' }
-    ].find(w => w.number == weekNumber);
+    // Team matchups for each week
+    const weekMatchups = {
+        '1': { team1: 'Team 1', team2: 'Team 2' },
+        '2': { team1: 'Team 3', team2: 'Team 4' },
+        '3': { team1: 'Team 5', team2: 'Team 6' },
+        '4': { team1: 'Team 1', team2: 'Team 3' },
+        '5': { team1: 'Team 2', team2: 'Team 4' }
+    };
+    
+    const matchup = weekMatchups[weekNumber];
     
     container.innerHTML = `
         <div class="captain-scorecard">
             <div class="scorecard-header">
                 <div class="match-info">
-                    <span class="match-teams">Test Team vs TBD</span>
-                    <span class="match-format">Format TBD</span>
+                    <span class="match-teams">${matchup.team1} vs ${matchup.team2}</span>
+                    <span class="match-format">Best Ball Format</span>
                 </div>
-            </div>
-            
-            <div class="scorecard-notice">
-                <p style="text-align: center; color: #666; font-style: italic; margin: 10px 0;">
-                    Week ${weekNumber} - ${weekData ? weekData.date : 'TBD'} | Scorecard will be populated after match completion
-                </p>
             </div>
             
             <div class="golf-scorecard-mini">
@@ -756,8 +751,8 @@ window.updateDemoScorecard = function() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="player-row lineup-player">
-                            <td class="player-name">John Smith</td>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team1} Player 1</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -769,34 +764,8 @@ window.updateDemoScorecard = function() {
                             <td class="score-cell">-</td>
                             <td class="total-cell">-</td>
                         </tr>
-                        <tr class="player-row lineup-player">
-                            <td class="player-name">Mike Johnson</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="total-cell">-</td>
-                        </tr>
-                        <tr class="player-row lineup-player">
-                            <td class="player-name">David Wilson</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="score-cell">-</td>
-                            <td class="total-cell">-</td>
-                        </tr>
-                        <tr class="player-row lineup-player">
-                            <td class="player-name">Chris Brown</td>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team1} Player 2</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -809,7 +778,47 @@ window.updateDemoScorecard = function() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="team-score-row">
-                            <td class="team-score-label">Test Team Score</td>
+                            <td class="team-score-label">${matchup.team1} Score</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-total-cell">-</td>
+                        </tr>
+                        <tr style="height: 10px;"><td colspan="11"></td></tr>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team2} Player 1</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team2} Player 2</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="team-score-row">
+                            <td class="team-score-label">${matchup.team2} Score</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
@@ -826,8 +835,6 @@ window.updateDemoScorecard = function() {
             </div>
         </div>
     `;
-    
-    console.log(`Scorecard updated for Week ${weekNumber}`);
 };
 
 // ===== UTILITY FUNCTIONS =====
