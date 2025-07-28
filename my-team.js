@@ -6,6 +6,7 @@ let currentTeamData = null;
 let currentTeamRoster = [];
 let currentLineup = {};
 let availableWeeks = [];
+let currentUserId = null;
 
 // ===== INITIALIZATION =====
 
@@ -13,6 +14,9 @@ let availableWeeks = [];
 async function initializeMyTeam(userId, teamId) {
     try {
         console.log(`Initializing My Team for user: ${userId}, team: ${teamId}`);
+        
+        // Set current user ID
+        currentUserId = userId;
         
         // Load team data
         await loadTeamData(teamId);
@@ -465,7 +469,14 @@ function loadWeekLineup() {
                     </thead>
                     <tbody>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team1} Player ${matchup.match === 1 ? 'A' : 'C'}</td>
+                            <td class="player-selection-cell">
+                                <div class="player-dropdown-container" data-week="${selectedWeek}" data-match="${matchup.match}" data-position="${matchup.match === 1 ? 'A' : 'C'}">
+                                    <select class="player-dropdown" id="player-${selectedWeek}-${matchup.match}-${matchup.match === 1 ? 'A' : 'C'}" onchange="handlePlayerSelection(this, '${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'A' : 'C'}')">
+                                        <option value="">Select Player ${matchup.match === 1 ? 'A' : 'C'}</option>
+                                    </select>
+                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'A' : 'C'}')" style="display: none;">Remove</button>
+                                </div>
+                            </td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -478,7 +489,14 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team1} Player ${matchup.match === 1 ? 'B' : 'D'}</td>
+                            <td class="player-selection-cell">
+                                <div class="player-dropdown-container" data-week="${selectedWeek}" data-match="${matchup.match}" data-position="${matchup.match === 1 ? 'B' : 'D'}">
+                                    <select class="player-dropdown" id="player-${selectedWeek}-${matchup.match}-${matchup.match === 1 ? 'B' : 'D'}" onchange="handlePlayerSelection(this, '${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'B' : 'D'}')">
+                                        <option value="">Select Player ${matchup.match === 1 ? 'B' : 'D'}</option>
+                                    </select>
+                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'B' : 'D'}')" style="display: none;">Remove</button>
+                                </div>
+                            </td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -573,7 +591,21 @@ function loadWeekLineup() {
                 </table>
             </div>
         </div>
-    `).join('');
+    `).join('') + `
+        <div class="lineup-submission-section">
+            <div class="lineup-status" id="lineup-status-${selectedWeek}">
+                <span class="status-text">Lineup not submitted</span>
+            </div>
+            <button class="submit-lineup-btn" id="submit-lineup-${selectedWeek}" onclick="submitLineup('${selectedWeek}')">
+                Submit Lineup for Week ${selectedWeek}
+            </button>
+        </div>
+    `;
+    
+    // Initialize player dropdowns after rendering
+    setTimeout(() => {
+        initializePlayerDropdowns(selectedWeek);
+    }, 100);
 }
 
 // Render lineup editor for specific week
@@ -863,6 +895,236 @@ window.forceRenderLineup = function() {
 };
 
 
+
+// ===== PLAYER DROPDOWN MANAGEMENT =====
+
+// Track selected players for each week
+let weeklyLineups = {};
+
+// Initialize player dropdowns after loading week lineup
+function initializePlayerDropdowns(weekNumber) {
+    // Initialize weekly lineup tracking if not exists
+    if (!weeklyLineups[weekNumber]) {
+        weeklyLineups[weekNumber] = {
+            submitted: false,
+            players: {}
+        };
+    }
+    
+    // Populate all dropdowns with available players
+    populatePlayerDropdowns(weekNumber);
+    
+    // Check if lineup is already submitted (from database)
+    checkLineupSubmissionStatus(weekNumber);
+}
+
+// Populate dropdowns with available players
+function populatePlayerDropdowns(weekNumber) {
+    if (!currentTeamRoster || currentTeamRoster.length === 0) {
+        console.log('No team roster available for dropdowns');
+        return;
+    }
+    
+    // Get all dropdowns for this week
+    const dropdowns = document.querySelectorAll(`select[id*="player-${weekNumber}-"]`);
+    
+    dropdowns.forEach(dropdown => {
+        const currentValue = dropdown.value;
+        
+        // Clear existing options except the default
+        dropdown.innerHTML = '<option value="">Select Player</option>';
+        
+        // Add available players
+        currentTeamRoster.forEach(player => {
+            if (player && player.name) {
+                const isSelected = Object.values(weeklyLineups[weekNumber].players).includes(player.name);
+                const isCurrentSelection = currentValue === player.name;
+                
+                // Only add if not selected elsewhere or is current selection
+                if (!isSelected || isCurrentSelection) {
+                    const option = document.createElement('option');
+                    option.value = player.name;
+                    option.textContent = player.name;
+                    if (isCurrentSelection) {
+                        option.selected = true;
+                    }
+                    dropdown.appendChild(option);
+                }
+            }
+        });
+    });
+}
+
+// Handle player selection
+function handlePlayerSelection(selectElement, weekNumber, match, position) {
+    const playerId = `${match}-${position}`;
+    const selectedPlayer = selectElement.value;
+    
+    if (selectedPlayer) {
+        // Add to weekly lineup
+        weeklyLineups[weekNumber].players[playerId] = selectedPlayer;
+        
+        // Show remove button
+        const container = selectElement.parentElement;
+        const removeBtn = container.querySelector('.remove-player-btn');
+        if (removeBtn) {
+            removeBtn.style.display = 'inline-block';
+        }
+        
+        // Update all dropdowns to remove this player from others
+        populatePlayerDropdowns(weekNumber);
+        
+        console.log(`Selected ${selectedPlayer} for Week ${weekNumber}, Match ${match}, Position ${position}`);
+    }
+    
+    // Check if all 4 positions are filled
+    updateSubmitButtonState(weekNumber);
+}
+
+// Remove player from lineup
+function removePlayer(weekNumber, match, position) {
+    const playerId = `${match}-${position}`;
+    const dropdown = document.getElementById(`player-${weekNumber}-${match}-${position}`);
+    
+    if (dropdown) {
+        // Remove from weekly lineup
+        delete weeklyLineups[weekNumber].players[playerId];
+        
+        // Reset dropdown
+        dropdown.value = '';
+        
+        // Hide remove button
+        const container = dropdown.parentElement;
+        const removeBtn = container.querySelector('.remove-player-btn');
+        if (removeBtn) {
+            removeBtn.style.display = 'none';
+        }
+        
+        // Update all dropdowns
+        populatePlayerDropdowns(weekNumber);
+        
+        console.log(`Removed player from Week ${weekNumber}, Match ${match}, Position ${position}`);
+    }
+    
+    // Update submit button state
+    updateSubmitButtonState(weekNumber);
+}
+
+// Update submit button state based on selections
+function updateSubmitButtonState(weekNumber) {
+    const submitBtn = document.getElementById(`submit-lineup-${weekNumber}`);
+    const statusElement = document.getElementById(`lineup-status-${weekNumber}`);
+    
+    if (!submitBtn || !statusElement) return;
+    
+    const lineup = weeklyLineups[weekNumber];
+    const selectedCount = Object.keys(lineup.players).length;
+    
+    if (lineup.submitted) {
+        submitBtn.style.display = 'none';
+        statusElement.innerHTML = '<span class="status-submitted">✓ Lineup Submitted</span>';
+        setDropdownsReadOnly(weekNumber, true);
+    } else if (selectedCount === 4) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = `Submit Lineup for Week ${weekNumber}`;
+        statusElement.innerHTML = '<span class="status-ready">Ready to submit (4/4 players selected)</span>';
+    } else {
+        submitBtn.disabled = true;
+        submitBtn.textContent = `Submit Lineup (${selectedCount}/4 players selected)`;
+        statusElement.innerHTML = `<span class="status-pending">Select ${4 - selectedCount} more players</span>`;
+    }
+}
+
+// Submit lineup to database
+async function submitLineup(weekNumber) {
+    const lineup = weeklyLineups[weekNumber];
+    
+    if (!lineup || Object.keys(lineup.players).length !== 4) {
+        showTeamError('Please select all 4 players before submitting');
+        return;
+    }
+    
+    try {
+        // Mark as submitted locally
+        lineup.submitted = true;
+        
+        // Save to Firestore
+        await db.collection('lineups').doc(`${currentUserId}-week-${weekNumber}`).set({
+            userId: currentUserId,
+            teamId: currentTeamData.id,
+            week: weekNumber,
+            players: lineup.players,
+            submittedAt: new Date().toISOString(),
+            submittedBy: firebase.auth().currentUser?.email
+        });
+        
+        showTeamSuccess(`Week ${weekNumber} lineup submitted successfully!`);
+        updateSubmitButtonState(weekNumber);
+        
+        console.log(`Lineup submitted for Week ${weekNumber}:`, lineup.players);
+        
+    } catch (error) {
+        console.error('Error submitting lineup:', error);
+        showTeamError('Failed to submit lineup. Please try again.');
+        lineup.submitted = false; // Revert on error
+    }
+}
+
+// Set dropdowns to read-only state
+function setDropdownsReadOnly(weekNumber, readOnly) {
+    const dropdowns = document.querySelectorAll(`select[id*="player-${weekNumber}-"]`);
+    const removeButtons = document.querySelectorAll(`button[onclick*="removePlayer('${weekNumber}'"]`);
+    
+    dropdowns.forEach(dropdown => {
+        dropdown.disabled = readOnly;
+        if (readOnly) {
+            dropdown.style.background = '#f5f5f5';
+            dropdown.style.cursor = 'not-allowed';
+        }
+    });
+    
+    removeButtons.forEach(btn => {
+        if (readOnly) {
+            btn.style.display = 'none';
+        }
+    });
+}
+
+// Check if lineup is already submitted (from database)
+async function checkLineupSubmissionStatus(weekNumber) {
+    try {
+        const lineupDoc = await db.collection('lineups').doc(`${currentUserId}-week-${weekNumber}`).get();
+        
+        if (lineupDoc.exists) {
+            const lineupData = lineupDoc.data();
+            weeklyLineups[weekNumber] = {
+                submitted: true,
+                players: lineupData.players || {}
+            };
+            
+            // Set dropdown values from saved lineup
+            Object.entries(lineupData.players).forEach(([position, playerName]) => {
+                const [match, pos] = position.split('-');
+                const dropdown = document.getElementById(`player-${weekNumber}-${match}-${pos}`);
+                if (dropdown) {
+                    dropdown.value = playerName;
+                    
+                    // Show player name and hide remove button since it's submitted
+                    const container = dropdown.parentElement;
+                    const removeBtn = container.querySelector('.remove-player-btn');
+                    if (removeBtn) {
+                        removeBtn.style.display = 'none';
+                    }
+                }
+            });
+            
+            updateSubmitButtonState(weekNumber);
+        }
+        
+    } catch (error) {
+        console.error('Error checking lineup status:', error);
+    }
+}
 
 // ===== UTILITY FUNCTIONS =====
 
