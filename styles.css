@@ -120,6 +120,8 @@ body {
 .admin-button-section {
     display: flex;
     justify-content: flex-end;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 15px 20px;
     background: white;
     border-bottom: 1px solid #f0f0f0;
@@ -130,7 +132,6 @@ body {
     color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
@@ -406,6 +407,7 @@ body {
     
     .admin-button-section {
         padding: 10px 15px;
+        max-width: none;
     }
     
     .admin-btn {
