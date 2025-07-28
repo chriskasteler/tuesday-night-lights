@@ -926,7 +926,7 @@ function initializePlayerDropdowns(weekNumber) {
     // First, hide all remove buttons by default
     const removeButtons = document.querySelectorAll(`button[onclick*="removePlayer('${weekNumber}'"]`);
     removeButtons.forEach(btn => {
-        btn.style.display = 'none';
+        btn.classList.remove('show');
     });
     
     // Populate all dropdowns with available players
@@ -978,14 +978,10 @@ function populatePlayerDropdowns(weekNumber) {
             // Check if dropdown has a meaningful selection (not empty or default)
             const hasSelection = currentValue && currentValue !== '' && currentValue !== 'Select Player';
             
-            console.log(`Dropdown ${dropdown.id}: currentValue="${currentValue}", hasSelection=${hasSelection}`);
-            
             if (hasSelection) {
-                removeBtn.style.display = 'inline-block';
-                console.log(`Showing remove button for ${dropdown.id}`);
+                removeBtn.classList.add('show');
             } else {
-                removeBtn.style.display = 'none';
-                console.log(`Hiding remove button for ${dropdown.id}`);
+                removeBtn.classList.remove('show');
             }
         }
     });
@@ -1004,20 +1000,20 @@ function handlePlayerSelection(selectElement, weekNumber, match, position) {
         
         // Show remove button
         if (removeBtn) {
-            removeBtn.style.display = 'inline-block';
+            removeBtn.classList.add('show');
         }
         
-        console.log(`Selected ${selectedPlayer} for Week ${weekNumber}, Match ${match}, Position ${position}`);
+
     } else {
         // No player selected - remove from lineup and hide remove button
         delete weeklyLineups[weekNumber].players[playerId];
         
         // Hide remove button
         if (removeBtn) {
-            removeBtn.style.display = 'none';
+            removeBtn.classList.remove('show');
         }
         
-        console.log(`Cleared selection for Week ${weekNumber}, Match ${match}, Position ${position}`);
+
     }
     
     // Update all dropdowns to remove this player from others
@@ -1131,7 +1127,7 @@ function setDropdownsReadOnly(weekNumber, readOnly) {
     
     removeButtons.forEach(btn => {
         if (readOnly) {
-            btn.style.display = 'none';
+            btn.classList.remove('show');
         }
     });
 }
@@ -1159,7 +1155,7 @@ async function checkLineupSubmissionStatus(weekNumber) {
                     const container = dropdown.parentElement;
                     const removeBtn = container.querySelector('.remove-player-btn');
                     if (removeBtn) {
-                        removeBtn.style.display = 'none';
+                        removeBtn.classList.remove('show');
                     }
                 }
             });
