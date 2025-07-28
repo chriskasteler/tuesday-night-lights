@@ -96,22 +96,25 @@ async function loadTeamRoster(teamId) {
         console.log(`Loading roster for team: "${teamIdStr}" (also checking ${teamIdNum})`);
         
         // Method 1: Try to find participants with teamId field (try both string and number)
+        // Remove orderBy to avoid index requirement
         let participantsSnapshot = await db.collection('participants')
             .where('teamId', '==', teamIdStr)
-            .orderBy('name', 'asc')
             .get();
         
         // If no results with string, try with number
         if (participantsSnapshot.empty) {
             participantsSnapshot = await db.collection('participants')
                 .where('teamId', '==', teamIdNum)
-                .orderBy('name', 'asc')
                 .get();
         }
         
         participantsSnapshot.forEach((doc) => {
-            currentTeamRoster.push({ id: doc.id, ...doc.data() });
+            const playerData = { id: doc.id, ...doc.data() };
+            console.log('Found participant for team:', playerData.name, playerData.email);
+            currentTeamRoster.push(playerData);
         });
+        
+        console.log(`Found ${currentTeamRoster.length} participants with teamId ${teamIdStr}`);
         
         // Method 2: If no participants found with teamId, get players from team.players array
         if (currentTeamRoster.length === 0 && currentTeamData?.players) {
@@ -162,11 +165,26 @@ async function loadTeamRoster(teamId) {
                     console.log('User teamId:', userData.teamId, 'Expected teamId:', teamIdStr);
                     
                     // Add user to roster if they're missing
-                    currentTeamRoster.push({ id: doc.id, ...userData });
-                    console.log('Added current user to roster');
+                    const userDataWithTeam = { id: doc.id, ...userData, teamId: teamIdStr };
+                    currentTeamRoster.push(userDataWithTeam);
+                    console.log('Added current user to roster:', userData.name);
                 });
             } else {
                 console.log('User not found in participants collection at all!');
+                console.log('Creating temporary roster entry for current user...');
+                
+                // Add current user as a temporary entry
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    currentTeamRoster.push({
+                        id: 'temp-current-user',
+                        name: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        teamId: teamIdStr,
+                        status: 'active'
+                    });
+                    console.log('Added temporary user entry');
+                }
             }
         }
         
