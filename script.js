@@ -44,6 +44,16 @@ function showSection(sectionName) {
     // Add active class to clicked nav link
     event.target.classList.add('active');
     
+    // Show/hide hero section - only visible on League Info (home page)
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) {
+        if (sectionName === 'info') {
+            heroSection.style.display = 'block';
+        } else {
+            heroSection.style.display = 'none';
+        }
+    }
+    
     // Update mobile page title
     updateMobilePageTitle(sectionName);
     
