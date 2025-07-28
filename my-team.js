@@ -486,7 +486,7 @@ function loadWeekLineup() {
                                     <select class="player-dropdown" id="player-${selectedWeek}-${matchup.match}-${matchup.match === 1 ? 'A' : 'C'}" onchange="handlePlayerSelection(this, '${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'A' : 'C'}')">
                                         <option value="">Select Player ${matchup.match === 1 ? 'A' : 'C'}</option>
                                     </select>
-                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'A' : 'C'}')" style="display: none;">Remove</button>
+                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'A' : 'C'}')">Remove</button>
                                 </div>
                             </td>
                             <td class="score-cell">-</td>
@@ -506,7 +506,7 @@ function loadWeekLineup() {
                                     <select class="player-dropdown" id="player-${selectedWeek}-${matchup.match}-${matchup.match === 1 ? 'B' : 'D'}" onchange="handlePlayerSelection(this, '${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'B' : 'D'}')">
                                         <option value="">Select Player ${matchup.match === 1 ? 'B' : 'D'}</option>
                                     </select>
-                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'B' : 'D'}')" style="display: none;">Remove</button>
+                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'B' : 'D'}')">Remove</button>
                                 </div>
                             </td>
                             <td class="score-cell">-</td>
@@ -923,6 +923,12 @@ function initializePlayerDropdowns(weekNumber) {
         };
     }
     
+    // First, hide all remove buttons by default
+    const removeButtons = document.querySelectorAll(`button[onclick*="removePlayer('${weekNumber}'"]`);
+    removeButtons.forEach(btn => {
+        btn.style.display = 'none';
+    });
+    
     // Populate all dropdowns with available players
     populatePlayerDropdowns(weekNumber);
     
@@ -969,10 +975,17 @@ function populatePlayerDropdowns(weekNumber) {
         
         // Show/hide remove button based on whether a player is selected
         if (removeBtn) {
-            if (currentValue && currentValue !== '') {
+            // Check if dropdown has a meaningful selection (not empty or default)
+            const hasSelection = currentValue && currentValue !== '' && currentValue !== 'Select Player';
+            
+            console.log(`Dropdown ${dropdown.id}: currentValue="${currentValue}", hasSelection=${hasSelection}`);
+            
+            if (hasSelection) {
                 removeBtn.style.display = 'inline-block';
+                console.log(`Showing remove button for ${dropdown.id}`);
             } else {
                 removeBtn.style.display = 'none';
+                console.log(`Hiding remove button for ${dropdown.id}`);
             }
         }
     });
