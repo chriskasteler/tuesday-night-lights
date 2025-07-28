@@ -300,33 +300,23 @@ function renderLineupManagement() {
     const container = document.getElementById('lineup-container');
     if (!container) return;
     
-    if (!currentTeamData || currentTeamRoster.length === 0) {
-        container.innerHTML = `
-            <p style="text-align: center; color: #666; margin: 40px 0;">
-                Lineup management will be available here during the season.
-            </p>
-        `;
-        return;
-    }
-    
-    // Get upcoming weeks (this will be more sophisticated later)
-    const upcomingWeeks = getUpcomingWeeks();
-    
     container.innerHTML = `
         <div class="lineup-controls">
             <div class="week-selector">
                 <label for="week-select">Select Week:</label>
                 <select id="week-select" onchange="loadWeekLineup()">
                     <option value="">Choose a week...</option>
-                    ${upcomingWeeks.map(week => `
-                        <option value="${week.number}">Week ${week.number} - ${week.date}</option>
-                    `).join('')}
+                    <option value="1">Week 1</option>
+                    <option value="2">Week 2</option>
+                    <option value="3">Week 3</option>
+                    <option value="4">Week 4</option>
+                    <option value="5">Week 5</option>
                 </select>
             </div>
         </div>
         
-        <div id="lineup-editor" style="display: none;">
-            <!-- Will show lineup editor and scorecard for selected week -->
+        <div id="lineup-editor" style="margin-top: 20px;">
+            <p style="color: #666; text-align: center; padding: 20px;">Select a week to see the scorecard</p>
         </div>
     `;
 }
@@ -347,14 +337,135 @@ function getUpcomingWeeks() {
 function loadWeekLineup() {
     const weekSelect = document.getElementById('week-select');
     const selectedWeek = weekSelect.value;
+    const container = document.getElementById('lineup-editor');
     
     if (!selectedWeek) {
-        document.getElementById('lineup-editor').style.display = 'none';
+        container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Select a week to see the scorecard</p>';
         return;
     }
     
-    renderLineupEditor(selectedWeek);
-    document.getElementById('lineup-editor').style.display = 'block';
+    // Team matchups for each week
+    const weekMatchups = {
+        '1': { team1: 'Team 1', team2: 'Team 2' },
+        '2': { team1: 'Team 3', team2: 'Team 4' },
+        '3': { team1: 'Team 5', team2: 'Team 6' },
+        '4': { team1: 'Team 1', team2: 'Team 3' },
+        '5': { team1: 'Team 2', team2: 'Team 4' }
+    };
+    
+    const matchup = weekMatchups[selectedWeek];
+    
+    container.innerHTML = `
+        <div class="captain-scorecard">
+            <div class="scorecard-header">
+                <div class="match-info">
+                    <span class="match-teams">${matchup.team1} vs ${matchup.team2}</span>
+                    <span class="match-format">Best Ball Format</span>
+                </div>
+            </div>
+            
+            <div class="golf-scorecard-mini">
+                <table class="scorecard-table">
+                    <thead>
+                        <tr class="holes-row">
+                            <th class="player-col">Player</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>8</th>
+                            <th>9</th>
+                            <th class="total-col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team1} Player 1</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team1} Player 2</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="team-score-row">
+                            <td class="team-score-label">${matchup.team1} Score</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-total-cell">-</td>
+                        </tr>
+                        <tr style="height: 10px;"><td colspan="11"></td></tr>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team2} Player 1</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="player-row">
+                            <td class="player-name">${matchup.team2} Player 2</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="score-cell">-</td>
+                            <td class="total-cell">-</td>
+                        </tr>
+                        <tr class="team-score-row">
+                            <td class="team-score-label">${matchup.team2} Score</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-score-cell">-</td>
+                            <td class="team-total-cell">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
 }
 
 // Render lineup editor for specific week
@@ -635,184 +746,15 @@ window.forceRenderRoster = function() {
 
 // Debug function to force render the lineup section for styling purposes
 window.forceRenderLineup = function() {
-    console.log('Force rendering lineup section for styling...');
-    
-    // Set up minimal team data if none exists
-    if (!currentTeamData) {
-        currentTeamData = {
-            id: 'test-team',
-            teamId: 1,
-            teamName: 'Test Team',
-            captain: null,
-            players: []
-        };
-    }
-    
-    // Set up some fake roster data for the scorecard
-    currentTeamRoster = [
-        { id: 'player1', name: 'John Smith' },
-        { id: 'player2', name: 'Mike Johnson' },
-        { id: 'player3', name: 'David Wilson' },
-        { id: 'player4', name: 'Chris Brown' },
-        { id: 'player5', name: 'Tom Davis' },
-        { id: 'player6', name: 'Steve Miller' }
-    ];
+    console.log('Force rendering lineup section...');
     
     // Force render lineup section
     renderLineupManagement();
     
-    console.log('Lineup section rendered with dropdown and scorecard preview');
+    console.log('Lineup section with dropdown and scorecard rendered on My Team page');
 };
 
-// Simple dropdown and scorecard display
-window.showDropdown = function() {
-    // Remove any existing demo
-    const existing = document.getElementById('simple-demo');
-    if (existing) existing.remove();
-    
-    // Create new container
-    const demo = document.createElement('div');
-    demo.id = 'simple-demo';
-    demo.style.cssText = 'position: fixed; top: 50px; right: 20px; background: white; border: 2px solid #333; padding: 20px; z-index: 9999; width: 400px;';
-    
-    demo.innerHTML = `
-        <h3>Week Scorecard Demo</h3>
-        <select onchange="showWeekCard(this.value)" style="width: 100%; padding: 8px; margin: 10px 0;">
-            <option value="">Choose a week...</option>
-            <option value="1">Week 1</option>
-            <option value="2">Week 2</option>
-            <option value="3">Week 3</option>
-            <option value="4">Week 4</option>
-            <option value="5">Week 5</option>
-        </select>
-        <div id="card-display" style="margin-top: 20px; min-height: 100px; border: 1px solid #ccc; padding: 10px;">
-            Select a week to see the scorecard
-        </div>
-        <button onclick="document.getElementById('simple-demo').remove()" style="margin-top: 10px; background: red; color: white; padding: 5px 10px; border: none;">Close</button>
-    `;
-    
-    document.body.appendChild(demo);
-    console.log('Dropdown created!');
-};
 
-// Show scorecard for selected week
-window.showWeekCard = function(weekNumber) {
-    const container = document.getElementById('card-display');
-    if (!container) return;
-    
-    if (!weekNumber) {
-        container.innerHTML = 'Select a week to see the scorecard';
-        return;
-    }
-    
-    // Team matchups
-    const matchups = {
-        '1': { team1: 'Team 1', team2: 'Team 2' },
-        '2': { team1: 'Team 3', team2: 'Team 4' },
-        '3': { team1: 'Team 5', team2: 'Team 6' },
-        '4': { team1: 'Team 1', team2: 'Team 3' },
-        '5': { team1: 'Team 2', team2: 'Team 4' }
-    };
-    
-    const match = matchups[weekNumber];
-    
-    container.innerHTML = `
-        <h4>${match.team1} vs ${match.team2}</h4>
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-            <tr style="background: #2d4a2d; color: white;">
-                <th style="border: 1px solid #ddd; padding: 4px;">Player</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">1</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">2</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">3</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">4</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">5</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">6</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">7</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">8</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">9</th>
-                <th style="border: 1px solid #ddd; padding: 4px;">Total</th>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 4px;">${match.team1} P1</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 4px;">${match.team1} P2</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-            </tr>
-            <tr style="background: #e8f5e8;">
-                <td style="border: 1px solid #ddd; padding: 4px; font-weight: bold;">${match.team1} Score</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 4px;">${match.team2} P1</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 4px;">${match.team2} P2</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-            </tr>
-            <tr style="background: #e8f5e8;">
-                <td style="border: 1px solid #ddd; padding: 4px; font-weight: bold;">${match.team2} Score</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center;">-</td>
-            </tr>
-        </table>
-    `;
-};
 
 // ===== UTILITY FUNCTIONS =====
 
