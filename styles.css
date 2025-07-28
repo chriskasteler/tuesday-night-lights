@@ -36,6 +36,14 @@ body {
     letter-spacing: -0.02em;
 }
 
+.hero .logo {
+    max-width: 280px;
+    height: auto;
+    margin: 0 auto 10px auto;
+    display: block;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
 .hero .subtitle {
     font-size: 1.4rem;
     margin-bottom: 15px;
@@ -363,6 +371,10 @@ body {
     
     .hero h1 {
         font-size: 2.5rem;
+    }
+    
+    .hero .logo {
+        max-width: 200px;
     }
     
     .info-grid {
