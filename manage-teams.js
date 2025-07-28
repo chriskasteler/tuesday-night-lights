@@ -275,6 +275,22 @@ async function updateTeamRoster(selectElement) {
     if (teamIndex !== -1) {
         currentTeams[teamIndex].players = players;
         currentTeams[teamIndex].captain = captain;
+        
+        // Save team data to Firestore
+        try {
+            await db.collection('teams').doc(`team-${teamId}`).set({
+                teamId: teamId,
+                teamName: `Team ${teamId}`,
+                players: players,
+                captain: captain,
+                wins: currentTeams[teamIndex].wins || 0,
+                losses: currentTeams[teamIndex].losses || 0,
+                lastUpdated: new Date().toISOString()
+            });
+            console.log(`Saved team ${teamId} data to Firestore`);
+        } catch (error) {
+            console.error(`Error saving team ${teamId} data:`, error);
+        }
     }
     
     // If captain changed, handle role assignment
