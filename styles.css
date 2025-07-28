@@ -1124,7 +1124,14 @@ body.admin-logged-in .remove-player-btn {
     display: inline-block !important;
 }
 
+/* Captain Styles */
+.captain-only {
+    display: none !important;
+}
 
+body.captain-logged-in .captain-only {
+    display: block !important;
+}
 
 .admin-modal {
     position: fixed;
