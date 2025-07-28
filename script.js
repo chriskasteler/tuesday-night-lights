@@ -143,11 +143,72 @@ function showSection(sectionName) {
         if (countdownSection) countdownSection.style.display = 'none';
     }
     
+    // Initialize specific sections
+    if (sectionName === 'my-team') {
+        initializeMyTeamSection();
+    }
+    
     // Update mobile page title
     updateMobilePageTitle(sectionName);
     
     // Close mobile menu if it's open
     closeMobileMenu();
+}
+
+// Initialize My Team section for captains
+async function initializeMyTeamSection() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('No user logged in for My Team');
+        return;
+    }
+    
+    try {
+        // Get user data to find their team
+        const userRef = db.collection('users').doc(user.uid);
+        const userDoc = await userRef.get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            const userRoles = userData.roles || [userData.role || 'guest'];
+            
+            if (userRoles.includes('captain') && userData.teamId) {
+                // User is a captain with assigned team
+                await initializeMyTeam(user.uid, userData.teamId);
+            } else {
+                console.log('User is not a captain or has no team assigned');
+                // Show message that team assignment is pending
+                showTeamAssignmentPending();
+            }
+        }
+    } catch (error) {
+        console.error('Error initializing My Team section:', error);
+    }
+}
+
+// Show message when team assignment is pending
+function showTeamAssignmentPending() {
+    const rosterContainer = document.getElementById('team-roster-container');
+    const lineupContainer = document.getElementById('lineup-container');
+    
+    const pendingMessage = `
+        <div style="text-align: center; padding: 40px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; margin: 20px 0;">
+            <h4 style="color: #856404; margin-bottom: 10px;">Team Assignment Pending</h4>
+            <p style="color: #856404; margin: 0;">You will be able to manage your team once teams are finalized and you are assigned as a captain.</p>
+        </div>
+    `;
+    
+    if (rosterContainer) {
+        rosterContainer.innerHTML = pendingMessage;
+    }
+    
+    if (lineupContainer) {
+        lineupContainer.innerHTML = `
+            <p style="text-align: center; color: #666; margin: 40px 0;">
+                Lineup management will be available once your team is assigned.
+            </p>
+        `;
+    }
 }
 
 // Update mobile page title

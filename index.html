@@ -62,9 +62,6 @@
             <li class="nav-item captain-only" style="display: none;">
                 <a class="nav-link" onclick="showSection('my-team')">My Team</a>
             </li>
-            <li class="nav-item captain-only" style="display: none;">
-                <a class="nav-link" onclick="showSection('set-lineup')">Set Lineup</a>
-            </li>
             </ul>
         </nav>
     </div>
@@ -694,19 +691,27 @@
             <div id="my-team-section" class="content-section">
                 <div class="info-section">
                     <h2>My Team</h2>
-                    <p style="text-align: center; color: #666; margin: 40px 0;">
-                        Team information will be displayed here once teams are assigned.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Set Lineup Section (Captain Only) -->
-            <div id="set-lineup-section" class="content-section">
-                <div class="info-section">
-                    <h2>Set Lineup</h2>
-                    <p style="text-align: center; color: #666; margin: 40px 0;">
-                        Lineup management will be available here during the season.
-                    </p>
+                    
+                    <!-- Team Roster Section -->
+                    <div class="team-roster-section">
+                        <h3>Team Roster</h3>
+                        <div id="team-roster-container">
+                            <p style="text-align: center; color: #666; margin: 40px 0;">
+                                Team roster will be displayed here once teams are assigned.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Lineup Management Section -->
+                    <div class="lineup-management-section">
+                        <h3>Set Weekly Lineup</h3>
+                        <div id="lineup-container">
+                            <p style="text-align: center; color: #666; margin: 40px 0;">
+                                Lineup management will be available here during the season.
+                            </p>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
 
@@ -1127,5 +1132,6 @@
     
     <script src="script.js"></script>
     <script src="manage-teams.js"></script>
+    <script src="my-team.js"></script>
 </body>
 </html>
