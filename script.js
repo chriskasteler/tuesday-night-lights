@@ -295,8 +295,16 @@ function showSection(sectionName) {
     // Show selected section
     document.getElementById(sectionName + '-section').classList.add('active');
     
-    // Add active class to clicked nav link
-    event.target.classList.add('active');
+    // Add active class to clicked nav link (if event exists)
+    if (event && event.target) {
+        event.target.classList.add('active');
+    } else {
+        // Find and activate the correct nav link
+        const navLink = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
+        if (navLink) {
+            navLink.classList.add('active');
+        }
+    }
     
     // Show/hide hero section and countdown - only visible on Home page
     const heroSection = document.querySelector('.hero');
@@ -320,6 +328,31 @@ function showSection(sectionName) {
     
     // Close mobile menu if it's open
     closeMobileMenu();
+    
+    // Save current section to localStorage for page refresh persistence
+    localStorage.setItem('currentSection', sectionName);
+    
+    // Scroll to top of page
+    window.scrollTo(0, 0);
+}
+
+// Restore the last viewed section on page refresh
+function restoreCurrentSection() {
+    const savedSection = localStorage.getItem('currentSection');
+    
+    // If we have a saved section, restore it
+    if (savedSection && savedSection !== 'info') {
+        // Check if the section element exists
+        const sectionElement = document.getElementById(savedSection + '-section');
+        if (sectionElement) {
+            // Call showSection without event (it will handle missing event)
+            showSection(savedSection);
+            console.log(`Restored section: ${savedSection}`);
+        }
+    } else {
+        // Default to info section and scroll to top
+        window.scrollTo(0, 0);
+    }
 }
 
 // Initialize My Team section for captains
@@ -860,6 +893,9 @@ auth.onAuthStateChanged(async user => {
         document.getElementById('admin-login-btn').onclick = showAdminLogin;
         console.log('No user logged in');
     }
+    
+    // Restore the current section after auth state is determined
+    restoreCurrentSection();
 });
 
 // Show admin login modal
