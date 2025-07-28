@@ -55,23 +55,47 @@ async function loadTeamData(teamId) {
 // Load team roster (players assigned to this team)
 async function loadTeamRoster(teamId) {
     try {
-        // Get all participants assigned to this team
+        currentTeamRoster = [];
+        
+        // Method 1: Try to find participants with teamId field
         const participantsSnapshot = await db.collection('participants')
             .where('teamId', '==', teamId)
             .orderBy('name', 'asc')
             .get();
         
-        currentTeamRoster = [];
         participantsSnapshot.forEach((doc) => {
             currentTeamRoster.push({ id: doc.id, ...doc.data() });
         });
+        
+        // Method 2: If no participants found with teamId, get players from team.players array
+        if (currentTeamRoster.length === 0 && currentTeamData?.players) {
+            console.log('No participants found with teamId, checking team.players array');
+            
+            const playerIds = [...currentTeamData.players];
+            if (currentTeamData.captain && !playerIds.includes(currentTeamData.captain)) {
+                playerIds.push(currentTeamData.captain);
+            }
+            
+            // Get participant details for each player ID
+            for (const playerId of playerIds) {
+                if (playerId) {
+                    try {
+                        const playerDoc = await db.collection('participants').doc(playerId).get();
+                        if (playerDoc.exists) {
+                            currentTeamRoster.push({ id: playerDoc.id, ...playerDoc.data() });
+                        }
+                    } catch (err) {
+                        console.log(`Could not find participant ${playerId}:`, err);
+                    }
+                }
+            }
+        }
         
         console.log('Team roster loaded:', currentTeamRoster);
         
     } catch (error) {
         console.error('Error loading team roster:', error);
-        // Fallback - roster might be stored in team document
-        currentTeamRoster = currentTeamData?.players || [];
+        currentTeamRoster = [];
     }
 }
 
@@ -112,7 +136,9 @@ function renderTeamRoster() {
         return;
     }
     
-    const teamName = currentTeamData.name || `Team ${currentTeamData.teamId}`;
+    const teamName = currentTeamData.teamName || `Team ${currentTeamData.teamId}`;
+    const captain = currentTeamRoster.find(player => player.id === currentTeamData.captain);
+    const regularPlayers = currentTeamRoster.filter(player => player.id !== currentTeamData.captain);
     
     container.innerHTML = `
         <div class="team-header">
@@ -120,19 +146,77 @@ function renderTeamRoster() {
             <p>Season Record: ${currentTeamData.wins || 0} - ${currentTeamData.losses || 0}</p>
         </div>
         
-        <div class="roster-grid">
-            ${currentTeamRoster.map(player => `
-                <div class="player-card">
-                    <div class="player-info">
-                        <span class="player-name">${player.name}</span>
-                        ${player.teamCaptain ? '<span class="captain-badge">CAPTAIN</span>' : ''}
-                    </div>
-                    <div class="player-stats">
-                        <span>Games: ${player.gamesPlayed || 0}</span>
-                        <span>Avg: ${player.average || 'N/A'}</span>
-                    </div>
-                </div>
-            `).join('')}
+        <div class="roster-table-container">
+            <table class="roster-table">
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Player Name</th>
+                        <th>Status</th>
+                        <th>Games Played</th>
+                        <th>Average</th>
+                        <th>Total Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${captain ? `
+                        <tr class="captain-row">
+                            <td class="position-cell">C</td>
+                            <td class="player-name-cell">
+                                <span class="player-name">${captain.name}</span>
+                                <span class="captain-badge">CAPTAIN</span>
+                            </td>
+                            <td class="status-cell">
+                                <span class="status-active">Active</span>
+                            </td>
+                            <td class="stats-cell">${captain.gamesPlayed || 0}</td>
+                            <td class="stats-cell">${captain.average || 'N/A'}</td>
+                            <td class="stats-cell">${captain.totalPoints || 0}</td>
+                        </tr>
+                    ` : `
+                        <tr class="captain-row">
+                            <td class="position-cell">C</td>
+                            <td class="player-name-cell">
+                                <span class="placeholder-text">Captain TBD</span>
+                            </td>
+                            <td class="status-cell">
+                                <span class="status-pending">Pending</span>
+                            </td>
+                            <td class="stats-cell">-</td>
+                            <td class="stats-cell">-</td>
+                            <td class="stats-cell">-</td>
+                        </tr>
+                    `}
+                    
+                    ${Array.from({length: 5}, (_, i) => {
+                        const player = regularPlayers[i];
+                        const position = i + 2; // Positions 2-6
+                        
+                        return `
+                            <tr class="player-row">
+                                <td class="position-cell">${position}</td>
+                                <td class="player-name-cell">
+                                    ${player ? `
+                                        <span class="player-name">${player.name}</span>
+                                    ` : `
+                                        <span class="placeholder-text">Player ${position} TBD</span>
+                                    `}
+                                </td>
+                                <td class="status-cell">
+                                    ${player ? `
+                                        <span class="status-active">Active</span>
+                                    ` : `
+                                        <span class="status-open">Open</span>
+                                    `}
+                                </td>
+                                <td class="stats-cell">${player ? (player.gamesPlayed || 0) : '-'}</td>
+                                <td class="stats-cell">${player ? (player.average || 'N/A') : '-'}</td>
+                                <td class="stats-cell">${player ? (player.totalPoints || 0) : '-'}</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
         </div>
     `;
 }
