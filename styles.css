@@ -443,24 +443,25 @@ body {
     }
 
     .nav-list {
+        display: none;
         background: white;
         flex-direction: column;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
         z-index: 999;
-        border-bottom: 1px solid #f0f0f0;
         margin: 0;
         padding: 0;
+        border-bottom: 1px solid #f0f0f0;
+        min-height: auto;
     }
 
     .nav-list.mobile-open {
-        max-height: 500px;
+        display: flex;
     }
 
     .nav-item {
         width: 100%;
         border-bottom: 1px solid rgba(45, 74, 45, 0.1);
+        flex: none;
+        text-align: left;
     }
 
     .nav-item:last-child {
