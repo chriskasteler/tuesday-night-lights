@@ -1281,6 +1281,36 @@ body.captain-logged-in .captain-only {
     font-weight: 500;
 }
 
+.remaining-cell {
+    font-weight: 600;
+    width: 90px;
+}
+
+/* Color coding for remaining matches */
+.remaining-3 {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border-radius: 4px;
+}
+
+.remaining-2 {
+    color: #856404;
+    background-color: #fff3cd;
+    border-radius: 4px;
+}
+
+.remaining-1 {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-radius: 4px;
+}
+
+.remaining-0 {
+    color: #155724;
+    background-color: #d4edda;
+    border-radius: 4px;
+}
+
 .lineup-management-section {
     padding: 20px;
     background: #fff;
@@ -1389,7 +1419,7 @@ body.captain-logged-in .captain-only {
     }
     
     .roster-table {
-        min-width: 600px; /* Prevents squishing on small screens */
+        min-width: 700px; /* Increased for additional column */
         font-size: 0.9rem;
     }
     

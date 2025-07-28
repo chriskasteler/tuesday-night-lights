@@ -220,6 +220,7 @@ function renderTeamRoster() {
                         <th>Player Name</th>
                         <th>Status</th>
                         <th>Matches Played</th>
+                        <th title="Matches remaining to meet 3-match minimum requirement">Remaining</th>
                         <th>Record</th>
                         <th>Points</th>
                     </tr>
@@ -236,6 +237,7 @@ function renderTeamRoster() {
                                 <span class="status-active">Active</span>
                             </td>
                             <td class="stats-cell">${captain.matchesPlayed || captain.gamesPlayed || 0}</td>
+                            <td class="stats-cell remaining-cell remaining-${Math.max(0, 3 - (captain.matchesPlayed || captain.gamesPlayed || 0))}">${Math.max(0, 3 - (captain.matchesPlayed || captain.gamesPlayed || 0))}</td>
                             <td class="stats-cell">${captain.record || captain.average || 'N/A'}</td>
                             <td class="stats-cell">${captain.points || captain.totalPoints || 0}</td>
                         </tr>
@@ -249,6 +251,7 @@ function renderTeamRoster() {
                                 <span class="status-pending">Pending</span>
                             </td>
                             <td class="stats-cell">-</td>
+                            <td class="stats-cell remaining-cell">-</td>
                             <td class="stats-cell">-</td>
                             <td class="stats-cell">-</td>
                         </tr>
@@ -278,6 +281,7 @@ function renderTeamRoster() {
                                     `}
                                 </td>
                                 <td class="stats-cell">${player ? (player.matchesPlayed || player.gamesPlayed || 0) : '-'}</td>
+                                <td class="stats-cell remaining-cell ${player ? `remaining-${Math.max(0, 3 - (player.matchesPlayed || player.gamesPlayed || 0))}` : ''}">${player ? Math.max(0, 3 - (player.matchesPlayed || player.gamesPlayed || 0)) : '-'}</td>
                                 <td class="stats-cell">${player ? (player.record || player.average || 'N/A') : '-'}</td>
                                 <td class="stats-cell">${player ? (player.points || player.totalPoints || 0) : '-'}</td>
                             </tr>
