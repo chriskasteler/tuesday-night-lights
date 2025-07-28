@@ -352,9 +352,8 @@ body {
 
 /* Mobile hamburger menu */
 .mobile-menu-toggle {
-    background: rgba(0, 0, 0, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
+    background: none;
+    border: none;
     cursor: pointer;
     padding: 12px;
     display: none;
@@ -366,14 +365,13 @@ body {
 }
 
 .mobile-menu-toggle:hover {
-    background: rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.5);
+    opacity: 0.7;
 }
 
 .hamburger-line {
     width: 25px;
     height: 3px;
-    background-color: white;
+    background-color: #2d4a2d;
     border-radius: 2px;
     transition: all 0.3s ease;
 }
@@ -437,12 +435,13 @@ body {
 
     .nav-list {
         position: static;
-        background: #1e3a1e;
+        background: white;
         flex-direction: column;
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease;
         z-index: 999;
+        border-bottom: 1px solid #f0f0f0;
     }
 
     .nav-list.mobile-open {
@@ -451,7 +450,7 @@ body {
 
     .nav-item {
         width: 100%;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(45, 74, 45, 0.1);
     }
 
     .nav-item:last-child {
