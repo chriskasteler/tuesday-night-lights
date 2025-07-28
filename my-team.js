@@ -486,7 +486,7 @@ function loadWeekLineup() {
                                     <select class="player-dropdown" id="player-${selectedWeek}-${matchup.match}-${matchup.match === 1 ? 'A' : 'C'}" onchange="handlePlayerSelection(this, '${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'A' : 'C'}')">
                                         <option value="">Select Player ${matchup.match === 1 ? 'A' : 'C'}</option>
                                     </select>
-                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'A' : 'C'}')">Remove</button>
+
                                 </div>
                             </td>
                             <td class="score-cell">-</td>
@@ -506,7 +506,7 @@ function loadWeekLineup() {
                                     <select class="player-dropdown" id="player-${selectedWeek}-${matchup.match}-${matchup.match === 1 ? 'B' : 'D'}" onchange="handlePlayerSelection(this, '${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'B' : 'D'}')">
                                         <option value="">Select Player ${matchup.match === 1 ? 'B' : 'D'}</option>
                                     </select>
-                                    <button class="remove-player-btn" onclick="removePlayer('${selectedWeek}', '${matchup.match}', '${matchup.match === 1 ? 'B' : 'D'}')">Remove</button>
+
                                 </div>
                             </td>
                             <td class="score-cell">-</td>
@@ -923,10 +923,10 @@ function initializePlayerDropdowns(weekNumber) {
         };
     }
     
-    // First, hide all remove buttons by default
+    // Remove any existing remove buttons (start fresh)
     const removeButtons = document.querySelectorAll(`button[onclick*="removePlayer('${weekNumber}'"]`);
     removeButtons.forEach(btn => {
-        btn.classList.remove('show');
+        btn.remove();
     });
     
     // Populate all dropdowns with available players
@@ -973,16 +973,27 @@ function populatePlayerDropdowns(weekNumber) {
             }
         });
         
-        // Show/hide remove button based on whether a player is selected
-        if (removeBtn) {
-            // Check if dropdown has a meaningful selection (not empty or default)
-            const hasSelection = currentValue && currentValue !== '' && currentValue !== 'Select Player';
+        // Create/remove button based on whether a player is selected
+        const hasSelection = currentValue && currentValue !== '' && currentValue !== 'Select Player';
+        
+        if (hasSelection && !removeBtn) {
+            // Create remove button if player is selected but button doesn't exist
+            removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-player-btn';
+            removeBtn.textContent = 'Remove';
             
-            if (hasSelection) {
-                removeBtn.classList.add('show');
-            } else {
-                removeBtn.classList.remove('show');
-            }
+            // Extract week, match, position from dropdown ID
+            const idParts = dropdown.id.split('-'); // player-1-1-A
+            const week = idParts[1];
+            const match = idParts[2]; 
+            const pos = idParts[3];
+            
+            removeBtn.onclick = () => removePlayer(week, match, pos);
+            container.appendChild(removeBtn);
+            
+        } else if (!hasSelection && removeBtn) {
+            // Remove button if no selection and button exists
+            removeBtn.remove();
         }
     });
 }
@@ -992,28 +1003,30 @@ function handlePlayerSelection(selectElement, weekNumber, match, position) {
     const playerId = `${match}-${position}`;
     const selectedPlayer = selectElement.value;
     const container = selectElement.parentElement;
-    const removeBtn = container.querySelector('.remove-player-btn');
+    let removeBtn = container.querySelector('.remove-player-btn');
     
     if (selectedPlayer) {
         // Add to weekly lineup
         weeklyLineups[weekNumber].players[playerId] = selectedPlayer;
         
-        // Show remove button
-        if (removeBtn) {
-            removeBtn.classList.add('show');
+        // Create remove button if it doesn't exist
+        if (!removeBtn) {
+            removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-player-btn';
+            removeBtn.textContent = 'Remove';
+            removeBtn.onclick = () => removePlayer(weekNumber, match, position);
+            container.appendChild(removeBtn);
         }
         
-
     } else {
-        // No player selected - remove from lineup and hide remove button
+        // No player selected - remove from lineup and remove button
         delete weeklyLineups[weekNumber].players[playerId];
         
-        // Hide remove button
+        // Remove the button from DOM
         if (removeBtn) {
-            removeBtn.classList.remove('show');
+            removeBtn.remove();
         }
         
-
     }
     
     // Update all dropdowns to remove this player from others
@@ -1035,17 +1048,17 @@ function removePlayer(weekNumber, match, position) {
         // Reset dropdown
         dropdown.value = '';
         
-        // Hide remove button
+        // Remove the button from DOM
         const container = dropdown.parentElement;
         const removeBtn = container.querySelector('.remove-player-btn');
         if (removeBtn) {
-            removeBtn.style.display = 'none';
+            removeBtn.remove();
         }
         
         // Update all dropdowns
         populatePlayerDropdowns(weekNumber);
         
-        console.log(`Removed player from Week ${weekNumber}, Match ${match}, Position ${position}`);
+
     }
     
     // Update submit button state
@@ -1127,7 +1140,7 @@ function setDropdownsReadOnly(weekNumber, readOnly) {
     
     removeButtons.forEach(btn => {
         if (readOnly) {
-            btn.classList.remove('show');
+            btn.remove();
         }
     });
 }
@@ -1151,11 +1164,11 @@ async function checkLineupSubmissionStatus(weekNumber) {
                 if (dropdown) {
                     dropdown.value = playerName;
                     
-                    // Show player name and hide remove button since it's submitted
+                    // Show player name and remove button since it's submitted
                     const container = dropdown.parentElement;
                     const removeBtn = container.querySelector('.remove-player-btn');
                     if (removeBtn) {
-                        removeBtn.classList.remove('show');
+                        removeBtn.remove();
                     }
                 }
             });

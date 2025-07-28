@@ -1486,11 +1486,6 @@ body.captain-logged-in .captain-only {
     font-size: 0.75rem;
     cursor: pointer;
     white-space: nowrap;
-    display: none !important; /* Hidden by default with high specificity */
-}
-
-.remove-player-btn.show {
-    display: inline-block !important;
 }
 
 .remove-player-btn:hover {
