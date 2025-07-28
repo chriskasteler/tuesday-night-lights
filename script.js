@@ -72,6 +72,43 @@ async function initializeUserRole(user) {
     }
 }
 
+// Fix email mismatch for current user
+async function fixCurrentUserEmail() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('No user logged in');
+        return;
+    }
+    
+    try {
+        // Find participant record with gmail.com email
+        const participantsSnapshot = await db.collection('participants')
+            .where('email', '==', 'chris.kasteler@gmail.com')
+            .get();
+        
+        if (!participantsSnapshot.empty) {
+            const participantDoc = participantsSnapshot.docs[0];
+            console.log('Found participant with gmail.com email:', participantDoc.data());
+            
+            // Update to use the correct me.com email
+            await participantDoc.ref.update({
+                email: user.email, // This will be chris.kasteler@me.com
+                lastUpdated: new Date().toISOString()
+            });
+            
+            console.log(`Updated participant email from gmail.com to ${user.email}`);
+            return true;
+        } else {
+            console.log('No participant found with gmail.com email');
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('Error fixing email:', error);
+        return false;
+    }
+}
+
 // Debug function to check current user info
 async function debugCurrentUser() {
     const user = firebase.auth().currentUser;
