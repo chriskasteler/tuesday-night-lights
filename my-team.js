@@ -344,7 +344,8 @@ function loadWeekLineup() {
         return;
     }
     
-    // Full league schedule - each team plays the SAME opponent TWICE per week
+    // Full league schedule - each week has 2 matches between same teams with different players
+    // Match 1: 2 players from each team, Match 2: 2 different players from each team
     const leagueSchedule = {
         '1': [
             { team1: 'Team 1', team2: 'Team 2', format: 'Best Ball Format', match: 1 },
@@ -464,7 +465,7 @@ function loadWeekLineup() {
                     </thead>
                     <tbody>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team1} Player 1</td>
+                            <td class="player-name">${matchup.team1} Player ${matchup.match === 1 ? 'A' : 'C'}</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -477,7 +478,7 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team1} Player 2</td>
+                            <td class="player-name">${matchup.team1} Player ${matchup.match === 1 ? 'B' : 'D'}</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -490,7 +491,7 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="team-score-row">
-                            <td class="team-score-label">${matchup.team1} Score</td>
+                            <td class="team-score-label">${matchup.team1} Team Score</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
@@ -504,7 +505,7 @@ function loadWeekLineup() {
                         </tr>
                         <tr style="height: 10px;"><td colspan="11"></td></tr>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team2} Player 1</td>
+                            <td class="player-name">${matchup.team2} Player ${matchup.match === 1 ? 'A' : 'C'}</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -517,7 +518,7 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team2} Player 2</td>
+                            <td class="player-name">${matchup.team2} Player ${matchup.match === 1 ? 'B' : 'D'}</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -530,7 +531,7 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="team-score-row">
-                            <td class="team-score-label">${matchup.team2} Score</td>
+                            <td class="team-score-label">${matchup.team2} Team Score</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
