@@ -16,7 +16,7 @@ body {
 
 .container {
     max-width: 1200px;
-    margin: 40px auto 0 auto;
+    margin: 0 auto;
     padding: 20px;
 }
 
@@ -57,7 +57,6 @@ body {
 .navigation-bar {
     background: white;
     margin-bottom: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     position: relative;
     border-bottom: 2px solid #f0f0f0;
 }
@@ -96,14 +95,11 @@ body {
     font-weight: 500;
     font-size: 1rem;
     transition: all 0.3s ease;
-    border-right: 1px solid rgba(45, 74, 45, 0.2);
     cursor: pointer;
     letter-spacing: -0.01em;
 }
 
-.nav-item:last-child .nav-link {
-    border-right: none;
-}
+
 
 .nav-link:hover {
     background: rgba(45, 74, 45, 0.1);
