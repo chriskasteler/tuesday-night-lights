@@ -24,7 +24,7 @@ body {
     text-align: center;
     background: linear-gradient(135deg, #2d4a2d 0%, #1e3a1e 100%);
     color: white;
-    padding: 20px 0;
+    padding: 20px 0 50px 0;
     margin-bottom: 0;
 }
 
@@ -39,7 +39,7 @@ body {
 .hero .logo-container {
     position: relative;
     display: inline-block;
-    margin: 0 auto 10px auto;
+    margin: 0 auto 30px auto;
 }
 
 .hero .logo {
