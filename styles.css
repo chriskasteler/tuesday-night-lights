@@ -2014,11 +2014,11 @@ body.captain-logged-in .captain-only {
     }
 }
 
-/* Very small screens - handle 5 buttons */
+/* Very small screens - handle 6 buttons */
 @media (max-width: 360px) {
     .admin-sub-btn {
-        font-size: 0.8rem;
-        padding: 8px 10px;
+        font-size: 0.75rem;
+        padding: 8px 8px;
     }
 }
 
