@@ -321,6 +321,9 @@ function showSection(sectionName) {
     // Initialize specific sections
     if (sectionName === 'my-team') {
         initializeMyTeamSection();
+    } else if (sectionName === 'manage-teams') {
+        // Restore admin sub-section when admin tools is activated
+        restoreAdminSubSection();
     }
     
     // Update mobile page title
@@ -337,6 +340,54 @@ function showSection(sectionName) {
     
     // Hide loading overlay if it's still visible (edge case)
     hideLoadingOverlay();
+}
+
+// Show admin sub-section
+function showAdminSubSection(subSectionName) {
+    // Hide all admin sub-sections
+    document.querySelectorAll('.admin-sub-section').forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('active');
+    });
+    
+    // Remove active class from all admin sub-nav buttons
+    document.querySelectorAll('.admin-sub-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected sub-section
+    const targetSection = document.getElementById(`admin-${subSectionName}`);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+        targetSection.classList.add('active');
+    }
+    
+    // Add active class to clicked button
+    const activeButton = document.querySelector(`[data-section="${subSectionName}"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+    
+    // Save current admin sub-section to localStorage
+    localStorage.setItem('currentAdminSubSection', subSectionName);
+    
+    console.log(`Switched to admin sub-section: ${subSectionName}`);
+}
+
+// Restore admin sub-section on page refresh
+function restoreAdminSubSection() {
+    const savedSubSection = localStorage.getItem('currentAdminSubSection');
+    
+    // Only restore if we're on the admin tools page
+    const adminSection = document.getElementById('manage-teams-section');
+    if (adminSection && adminSection.classList.contains('active')) {
+        if (savedSubSection) {
+            showAdminSubSection(savedSubSection);
+        } else {
+            // Default to manage-teams if no saved state
+            showAdminSubSection('manage-teams');
+        }
+    }
 }
 
 // Restore the last viewed section on page refresh
@@ -359,6 +410,9 @@ function restoreCurrentSection() {
     
     // Hide the loading overlay after restoration is complete
     hideLoadingOverlay();
+    
+    // Also restore admin sub-section if we're on admin tools
+    restoreAdminSubSection();
 }
 
 // Hide the loading overlay with a smooth transition
