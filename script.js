@@ -523,7 +523,6 @@ function updateMobilePageTitle(sectionName) {
         'teams': 'Teams',
         'schedule': 'Schedule',
         'standings': 'Standings',
-        'enter-scores': 'Enter Scores',
         'manage-teams': 'Admin Tools'
     };
     

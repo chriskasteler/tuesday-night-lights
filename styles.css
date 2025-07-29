@@ -2010,7 +2010,15 @@ body.captain-logged-in .captain-only {
 @media (max-width: 480px) {
     .admin-sub-btn {
         font-size: 0.85rem;
-        padding: 10px 15px;
+        padding: 10px 12px;
+    }
+}
+
+/* Very small screens - handle 5 buttons */
+@media (max-width: 360px) {
+    .admin-sub-btn {
+        font-size: 0.8rem;
+        padding: 8px 10px;
     }
 }
 
