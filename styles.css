@@ -2039,6 +2039,48 @@ body.captain-logged-in .captain-only {
     }
 }
 
+/* Manage Requests Mobile Layout */
+@media (max-width: 768px) {
+    .manage-requests-section {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    #membership-counter {
+        padding: 8px !important;
+        margin-bottom: 12px !important;
+        font-size: 0.85rem !important;
+        text-align: center;
+        word-wrap: break-word;
+    }
+    
+    #pending-requests-list > div {
+        padding: 12px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    #pending-requests-list > div > div {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    #pending-requests-list > div > div > div:last-child {
+        margin-left: 0 !important;
+        margin-top: 12px !important;
+        display: flex !important;
+        gap: 8px !important;
+        justify-content: flex-start !important;
+    }
+    
+    #pending-requests-list button {
+        font-size: 0.85rem !important;
+        padding: 8px 12px !important;
+        flex: 1 !important;
+        max-width: 120px !important;
+        white-space: nowrap;
+    }
+}
+
 /* Smaller screens - adjust button text size */
 @media (max-width: 480px) {
     .container {
@@ -2049,6 +2091,20 @@ body.captain-logged-in .captain-only {
         font-size: 0.9rem;
         padding: 12px 15px;
         width: 100%;
+    }
+    
+    #pending-requests-list button {
+        font-size: 0.8rem !important;
+        padding: 6px 10px !important;
+        max-width: 100px !important;
+    }
+    
+    .manage-requests-section {
+        padding: 10px !important;
+    }
+    
+    #membership-counter {
+        font-size: 0.8rem !important;
     }
 }
 
