@@ -7,6 +7,7 @@ let currentTeamRoster = [];
 let currentLineup = {};
 let availableWeeks = [];
 let currentUserId = null;
+let allTeamsData = {}; // Store all teams for name mapping
 
 // ===== INITIALIZATION =====
 
@@ -17,6 +18,9 @@ async function initializeMyTeam(userId, teamId) {
         
         // Set current user ID
         currentUserId = userId;
+        
+        // Load all teams for name mapping
+        await loadAllTeams();
         
         // Load team data
         await loadTeamData(teamId);
@@ -49,6 +53,50 @@ async function initializeMyTeam(userId, teamId) {
 }
 
 // ===== DATA LOADING =====
+
+// Load all teams from Firestore for name mapping
+async function loadAllTeams() {
+    try {
+        console.log('Loading all teams for name mapping...');
+        const teamsSnapshot = await db.collection('teams').get();
+        
+        allTeamsData = {};
+        teamsSnapshot.forEach(doc => {
+            const teamData = doc.data();
+            const teamId = teamData.teamId || doc.id;
+            
+            // Create mapping from both "Team X" format and actual team name
+            const teamIdStr = String(teamId);
+            const defaultName = `Team ${teamId}`;
+            const actualName = teamData.teamName || teamData.name || defaultName;
+            
+            // Map both formats to the actual name
+            allTeamsData[defaultName] = actualName;
+            allTeamsData[actualName] = actualName;
+            
+            console.log(`Team mapping: "${defaultName}" -> "${actualName}"`);
+        });
+        
+        console.log('All teams loaded:', allTeamsData);
+        
+    } catch (error) {
+        console.error('Error loading all teams:', error);
+        // Set up default mapping as fallback
+        allTeamsData = {
+            'Team 1': 'Team 1',
+            'Team 2': 'Team 2',
+            'Team 3': 'Team 3',
+            'Team 4': 'Team 4',
+            'Team 5': 'Team 5',
+            'Team 6': 'Team 6'
+        };
+    }
+}
+
+// Get actual team name from schedule team name
+function getActualTeamName(scheduleTeamName) {
+    return allTeamsData[scheduleTeamName] || scheduleTeamName;
+}
 
 // Load team information from Firestore
 async function loadTeamData(teamId) {
@@ -464,7 +512,7 @@ function loadWeekLineup() {
         <div class="captain-scorecard" style="margin-bottom: 30px;">
             <div class="scorecard-header">
                 <div class="match-info">
-                    <span class="match-title">${matchup.team1} vs ${matchup.team2} - ${matchup.format} (Match ${matchup.match})</span>
+                    <span class="match-title">${getActualTeamName(matchup.team1)} vs ${getActualTeamName(matchup.team2)} - ${matchup.format} (Match ${matchup.match})</span>
                 </div>
             </div>
             
@@ -527,7 +575,7 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="team-score-row">
-                            <td class="team-score-label">${matchup.team1} Team Score</td>
+                            <td class="team-score-label">${getActualTeamName(matchup.team1)} Team Score</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
@@ -540,7 +588,7 @@ function loadWeekLineup() {
                             <td class="team-total-cell">-</td>
                         </tr>
                         <tr class="match-status-row">
-                            <td class="match-status-label">${matchup.team1} Status</td>
+                            <td class="match-status-label">${getActualTeamName(matchup.team1)} Status</td>
                             <td class="match-status-cell">AS</td>
                             <td class="match-status-cell">AS</td>
                             <td class="match-status-cell">AS</td>
@@ -554,7 +602,7 @@ function loadWeekLineup() {
                         </tr>
                         <tr style="height: 10px;"><td colspan="11"></td></tr>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team2} Player ${matchup.match === 1 ? 'A' : 'C'}</td>
+                            <td class="player-name">${getActualTeamName(matchup.team2)} Player ${matchup.match === 1 ? 'A' : 'C'}</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -567,7 +615,7 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="player-row">
-                            <td class="player-name">${matchup.team2} Player ${matchup.match === 1 ? 'B' : 'D'}</td>
+                            <td class="player-name">${getActualTeamName(matchup.team2)} Player ${matchup.match === 1 ? 'B' : 'D'}</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
                             <td class="score-cell">-</td>
@@ -580,7 +628,7 @@ function loadWeekLineup() {
                             <td class="total-cell">-</td>
                         </tr>
                         <tr class="team-score-row">
-                            <td class="team-score-label">${matchup.team2} Team Score</td>
+                            <td class="team-score-label">${getActualTeamName(matchup.team2)} Team Score</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
                             <td class="team-score-cell">-</td>
@@ -593,7 +641,7 @@ function loadWeekLineup() {
                             <td class="team-total-cell">-</td>
                         </tr>
                         <tr class="match-status-row">
-                            <td class="match-status-label">${matchup.team2} Status</td>
+                            <td class="match-status-label">${getActualTeamName(matchup.team2)} Status</td>
                             <td class="match-status-cell">AS</td>
                             <td class="match-status-cell">AS</td>
                             <td class="match-status-cell">AS</td>
