@@ -2005,3 +2005,11 @@ body.captain-logged-in .captain-only {
         border-bottom: none;
     }
 }
+
+/* Smaller screens - adjust button text size */
+@media (max-width: 480px) {
+    .admin-sub-btn {
+        font-size: 0.85rem;
+        padding: 10px 15px;
+    }
+}
