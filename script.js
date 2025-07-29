@@ -432,11 +432,33 @@ setTimeout(() => {
     hideLoadingOverlay();
 }, 2000); // Hide after 2 seconds regardless
 
+// Show My Team loading state
+function showMyTeamLoading() {
+    const loadingOverlay = document.getElementById('my-team-loading');
+    const content = document.getElementById('my-team-content');
+    
+    if (loadingOverlay) loadingOverlay.style.display = 'flex';
+    if (content) content.style.display = 'none';
+}
+
+// Hide My Team loading state
+function hideMyTeamLoading() {
+    const loadingOverlay = document.getElementById('my-team-loading');
+    const content = document.getElementById('my-team-content');
+    
+    if (loadingOverlay) loadingOverlay.style.display = 'none';
+    if (content) content.style.display = 'block';
+}
+
 // Initialize My Team section for captains
 async function initializeMyTeamSection() {
+    // Show loading immediately
+    showMyTeamLoading();
+    
     const user = firebase.auth().currentUser;
     if (!user) {
         console.log('No user logged in for My Team');
+        hideMyTeamLoading();
         return;
     }
     
@@ -456,10 +478,12 @@ async function initializeMyTeamSection() {
                 console.log('User is not a captain or has no team assigned');
                 // Show message that team assignment is pending
                 showTeamAssignmentPending();
+                hideMyTeamLoading();
             }
         }
     } catch (error) {
         console.error('Error initializing My Team section:', error);
+        hideMyTeamLoading();
     }
 }
 

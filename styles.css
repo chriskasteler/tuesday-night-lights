@@ -2013,3 +2013,40 @@ body.captain-logged-in .captain-only {
         padding: 10px 15px;
     }
 }
+
+/* My Team Loading Overlay */
+.my-team-loading-overlay {
+    position: relative;
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.my-team-loading-content {
+    text-align: center;
+    color: #666;
+}
+
+.my-team-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f0f0f0;
+    border-top: 3px solid #4a5d4a;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
+}
+
+.my-team-loading-content p {
+    margin: 0;
+    font-size: 1rem;
+    color: #666;
+}
+
+.my-team-content {
+    animation: fadeIn 0.4s ease;
+}

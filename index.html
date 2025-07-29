@@ -755,6 +755,17 @@
                 <div class="info-section">
                     <h2>My Team</h2>
                     
+                    <!-- My Team Loading Overlay -->
+                    <div id="my-team-loading" class="my-team-loading-overlay">
+                        <div class="my-team-loading-content">
+                            <div class="my-team-loading-spinner"></div>
+                            <p>Loading team data...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Team Content (hidden during loading) -->
+                    <div id="my-team-content" class="my-team-content" style="display: none;">
+                    
                     <!-- Team Roster Section -->
                     <div class="team-roster-section">
                         <h3>Team Roster</h3>
@@ -775,6 +786,7 @@
                         </div>
                     </div>
                     
+                    </div> <!-- End my-team-content -->
                 </div>
             </div>
 

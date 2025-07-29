@@ -31,6 +31,9 @@ async function initializeMyTeam(userId, teamId) {
         renderTeamRoster();
         renderLineupManagement();
         
+        // Hide loading overlay - data is loaded
+        hideMyTeamLoading();
+        
     } catch (error) {
         console.error('Error initializing My Team:', error);
         // Even if there's an error, try to render the roster table with placeholders
@@ -39,6 +42,9 @@ async function initializeMyTeam(userId, teamId) {
             renderTeamRoster();
         }
         showTeamError('Failed to load team data. Please try again.');
+        
+        // Hide loading overlay even on error
+        hideMyTeamLoading();
     }
 }
 
