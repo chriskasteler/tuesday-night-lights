@@ -12,9 +12,9 @@ function formatName(name) {
         .join(' ');
 }
 
-// Initialize the manage teams functionality
+// Initialize the admin tools functionality
 function initializeManageTeams() {
-    console.log('Initializing manage teams...');
+    console.log('Initializing admin tools...');
     loadPlayersAndTeams();
 }
 
@@ -346,7 +346,7 @@ function renderTeamsManagement() {
     const unassignedList = document.getElementById('unassigned-players-list');
     
     if (!teamsGrid || !unassignedList) {
-        console.log('Manage teams elements not found - probably not on manage teams page');
+        console.log('Admin tools elements not found - probably not on admin tools page');
         return;
     }
 
@@ -1398,7 +1398,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load signup visibility setting on every page load
     loadSignupVisibility();
     
-    // Only initialize manage teams if we're on that section
+    // Only initialize admin tools if we're on that section
     if (document.getElementById('teams-grid')) {
         initializeManageTeams();
         loadPendingRequests(); // Also load pending requests

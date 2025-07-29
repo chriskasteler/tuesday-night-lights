@@ -446,7 +446,7 @@ function updateMobilePageTitle(sectionName) {
         'schedule': 'Schedule',
         'standings': 'Standings',
         'enter-scores': 'Enter Scores',
-        'manage-teams': 'Manage Teams'
+        'manage-teams': 'Admin Tools'
     };
     
     titleElement.textContent = titles[sectionName] || 'Home';
