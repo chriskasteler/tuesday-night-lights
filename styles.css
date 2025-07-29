@@ -1693,39 +1693,125 @@ body.captain-logged-in .captain-only {
     }
     
     .roster-table {
-        min-width: 700px; /* Increased for additional column */
-        font-size: 0.9rem;
+        min-width: 100%;
+        width: 100%;
+        font-size: 0.85rem;
     }
     
     .roster-table th,
     .roster-table td {
-        padding: 10px 12px;
+        padding: 8px 6px;
+        word-wrap: break-word;
+    }
+    
+    .position-cell {
+        width: 35px;
+        font-size: 0.8rem;
     }
     
     .player-name-cell {
-        min-width: 150px;
+        min-width: 120px;
+        max-width: 140px;
     }
     
-    .stats-cell {
-        width: 70px;
+    .player-name {
+        font-size: 0.85rem;
+        line-height: 1.2;
     }
     
     .captain-badge {
         display: block;
-        margin-top: 4px;
+        margin-top: 2px;
         margin-left: 0;
         width: fit-content;
+        font-size: 0.65rem;
+        padding: 1px 4px;
+    }
+    
+    .stats-cell {
+        width: 50px;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    
+    .remaining-cell {
+        width: 50px;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    
+    /* Hide less critical columns on very small screens */
+    @media (max-width: 480px) {
+        .roster-table th:nth-child(4),
+        .roster-table td:nth-child(4) {
+            display: none; /* Hide Points column */
+        }
+        
+        .roster-table {
+            font-size: 0.8rem;
+        }
+        
+        .roster-table th,
+        .roster-table td {
+            padding: 6px 4px;
+        }
+        
+        .player-name-cell {
+            min-width: 100px;
+            max-width: 120px;
+        }
+        
+        .player-name {
+            font-size: 0.8rem;
+        }
+        
+        .captain-badge {
+            font-size: 0.6rem;
+            padding: 1px 3px;
+        }
+        
+        .stats-cell,
+        .remaining-cell {
+            width: 45px;
+            font-size: 0.75rem;
+        }
+        
+        .position-cell {
+            width: 30px;
+            font-size: 0.75rem;
+        }
+        
+        .scorecard-table .player-col {
+            min-width: 70px;
+            max-width: 75px;
+            font-size: 0.65rem;
+        }
+        
+        .scorecard-table .total-col {
+            width: 40px;
+            font-size: 0.65rem;
+        }
+        
+        .captain-scorecard .match-title {
+            font-size: 0.75rem;
+        }
+        
+        .player-dropdown {
+            font-size: 0.7rem;
+            padding: 3px 4px;
+            min-width: 65px;
+        }
+        
+        .remove-player-btn {
+            font-size: 0.65rem;
+            padding: 1px 4px;
+        }
     }
     
     /* Mobile Week Content Layout */
     .week-content-container {
         grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .scorecard-table {
-        font-size: 0.75rem;
-        min-width: 600px;
+        gap: 15px;
     }
     
     .scorecard-section {
@@ -1733,9 +1819,53 @@ body.captain-logged-in .captain-only {
         -webkit-overflow-scrolling: touch;
     }
     
+    .scorecard-table {
+        font-size: 0.75rem;
+        min-width: 100%;
+        width: 100%;
+    }
+    
     .scorecard-table .player-col {
-        min-width: 100px;
-        max-width: 100px;
+        min-width: 80px;
+        max-width: 90px;
+        font-size: 0.7rem;
+    }
+    
+    .scorecard-table .total-col {
+        width: 50px;
+        font-size: 0.7rem;
+    }
+    
+    .captain-scorecard .match-info {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .captain-scorecard .match-title {
+        font-size: 0.8rem;
+        line-height: 1.2;
+    }
+    
+    .player-dropdown {
+        font-size: 0.75rem;
+        padding: 4px 6px;
+        min-width: 75px;
+    }
+    
+    .remove-player-btn {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        margin-top: 2px;
+    }
+    
+    /* Captain's Tools Mobile Loading */
+    .my-team-loading-overlay {
+        min-height: 200px;
+        padding: 20px;
+    }
+    
+    .my-team-loading-content p {
+        font-size: 0.9rem;
     }
     
     .scorecard-table th,
