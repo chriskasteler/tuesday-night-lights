@@ -320,7 +320,7 @@ function showSection(sectionName) {
     
     // Initialize specific sections
     if (sectionName === 'my-team') {
-        initializeMyTeamSection();
+        initializeMyTeamSection(); // Captain's Tools
     } else if (sectionName === 'manage-teams') {
         // Restore admin sub-section when admin tools is activated
         restoreAdminSubSection();
@@ -432,7 +432,7 @@ setTimeout(() => {
     hideLoadingOverlay();
 }, 2000); // Hide after 2 seconds regardless
 
-// Show My Team loading state
+// Show Captain's Tools loading state
 function showMyTeamLoading() {
     const loadingOverlay = document.getElementById('my-team-loading');
     const content = document.getElementById('my-team-content');
@@ -441,7 +441,7 @@ function showMyTeamLoading() {
     if (content) content.style.display = 'none';
 }
 
-// Hide My Team loading state
+// Hide Captain's Tools loading state
 function hideMyTeamLoading() {
     const loadingOverlay = document.getElementById('my-team-loading');
     const content = document.getElementById('my-team-content');
@@ -450,14 +450,14 @@ function hideMyTeamLoading() {
     if (content) content.style.display = 'block';
 }
 
-// Initialize My Team section for captains
+// Initialize Captain's Tools section for captains
 async function initializeMyTeamSection() {
     // Show loading immediately
     showMyTeamLoading();
     
     const user = firebase.auth().currentUser;
     if (!user) {
-        console.log('No user logged in for My Team');
+        console.log('No user logged in for Captain\'s Tools');
         hideMyTeamLoading();
         return;
     }
@@ -482,7 +482,7 @@ async function initializeMyTeamSection() {
             }
         }
     } catch (error) {
-        console.error('Error initializing My Team section:', error);
+        console.error('Error initializing Captain\'s Tools section:', error);
         hideMyTeamLoading();
     }
 }
@@ -523,7 +523,8 @@ function updateMobilePageTitle(sectionName) {
         'teams': 'Teams',
         'schedule': 'Schedule',
         'standings': 'Standings',
-        'manage-teams': 'Admin Tools'
+        'manage-teams': 'Admin Tools',
+        'my-team': 'Captain\'s Tools'
     };
     
     titleElement.textContent = titles[sectionName] || 'Home';

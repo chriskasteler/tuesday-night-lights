@@ -1,4 +1,4 @@
-// My Team JavaScript - Captain functionality
+// Captain's Tools JavaScript - Captain functionality
 // Handles team roster display and lineup management
 
 // ===== TEAM DATA =====
@@ -10,10 +10,10 @@ let currentUserId = null;
 
 // ===== INITIALIZATION =====
 
-// Initialize My Team page when captain accesses it
+// Initialize Captain's Tools page when captain accesses it
 async function initializeMyTeam(userId, teamId) {
     try {
-        console.log(`Initializing My Team for user: ${userId}, team: ${teamId}`);
+        console.log(`Initializing Captain's Tools for user: ${userId}, team: ${teamId}`);
         
         // Set current user ID
         currentUserId = userId;
@@ -35,7 +35,7 @@ async function initializeMyTeam(userId, teamId) {
         hideMyTeamLoading();
         
     } catch (error) {
-        console.error('Error initializing My Team:', error);
+        console.error('Error initializing Captain\'s Tools:', error);
         // Even if there's an error, try to render the roster table with placeholders
         console.log('Error occurred during initialization, attempting to render placeholder table...');
         if (currentTeamData) {
@@ -909,7 +909,7 @@ window.forceRenderLineup = function() {
     // Force render lineup section
     renderLineupManagement();
     
-    console.log('Lineup section with dropdown and scorecard rendered on My Team page');
+            console.log('Lineup section with dropdown and scorecard rendered on Captain\'s Tools page');
 };
 
 
