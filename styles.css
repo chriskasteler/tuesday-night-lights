@@ -15,6 +15,11 @@ body {
     overflow-x: hidden;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: border-box;
 }
 
 .container {
@@ -395,9 +400,30 @@ body {
 }
 
 @media (max-width: 768px) {
+    .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 15px;
+        width: 100%;
+    }
+    
+    .navigation-bar {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .info-section {
+        padding: 15px;
+        width: 100%;
+    }
+    
     .main-content {
         grid-template-columns: 1fr;
         gap: 20px;
+        width: 100%;
+        margin: 0;
+        padding: 0;
     }
     
     .hero h1 {
@@ -1994,11 +2020,18 @@ body.captain-logged-in .captain-only {
     .admin-sub-nav {
         flex-direction: column;
         gap: 0;
+        width: 100%;
+        margin: 20px 0 30px 0;
+        border-radius: 8px;
     }
     
     .admin-sub-btn {
         border-right: none;
         border-bottom: 1px solid #4a5d4a;
+        padding: 15px 20px;
+        font-size: 1rem;
+        width: 100%;
+        text-align: center;
     }
     
     .admin-sub-btn:last-child {
@@ -2008,17 +2041,27 @@ body.captain-logged-in .captain-only {
 
 /* Smaller screens - adjust button text size */
 @media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
     .admin-sub-btn {
-        font-size: 0.85rem;
-        padding: 10px 12px;
+        font-size: 0.9rem;
+        padding: 12px 15px;
+        width: 100%;
     }
 }
 
 /* Very small screens - handle 6 buttons */
 @media (max-width: 360px) {
+    .container {
+        padding: 8px;
+    }
+    
     .admin-sub-btn {
-        font-size: 0.75rem;
-        padding: 8px 8px;
+        font-size: 0.85rem;
+        padding: 10px 12px;
+        width: 100%;
     }
 }
 
