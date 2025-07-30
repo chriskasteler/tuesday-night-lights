@@ -1851,9 +1851,6 @@ function makeDesktopEditable(cell) {
     input.focus();
     input.select();
     
-    // Auto-advance timeout variable
-    let autoAdvanceTimeout;
-    
     function saveValue() {
         const value = input.value.trim();
         const score = value === '' ? '-' : value;
@@ -1871,38 +1868,31 @@ function makeDesktopEditable(cell) {
         }
     }
     
-    input.addEventListener('blur', () => {
-        // Clear auto-advance timeout on blur
-        if (autoAdvanceTimeout) {
-            clearTimeout(autoAdvanceTimeout);
-        }
-        saveValue();
-    });
+    input.addEventListener('blur', saveValue);
     
     // Auto-advance when a valid number is entered
     input.addEventListener('input', (e) => {
         const value = e.target.value.trim();
         
-        // Clear any existing timeout
-        if (autoAdvanceTimeout) {
-            clearTimeout(autoAdvanceTimeout);
-        }
+
         
-        // If it's a valid single or double digit score, set timeout to advance
-        if (value && !isNaN(value) && value >= 1 && value <= 12) {
-            autoAdvanceTimeout = setTimeout(() => {
+        if (value && !isNaN(value)) {
+            const numValue = parseInt(value);
+            
+            // For single digits 1-9, advance immediately
+            if (numValue >= 1 && numValue <= 9) {
                 saveValue();
-                advanceToNextHoleDesktop(cell);
-            }, 800); // Longer delay for double digits
+                setTimeout(() => advanceToNextHoleDesktop(cell), 100);
+            }
+            // For valid double digits 10-12, advance immediately
+            else if (numValue >= 10 && numValue <= 12) {
+                saveValue();
+                setTimeout(() => advanceToNextHoleDesktop(cell), 100);
+            }
         }
     });
     
     input.addEventListener('keydown', (e) => {
-        // Clear auto-advance timeout on manual key actions
-        if (autoAdvanceTimeout) {
-            clearTimeout(autoAdvanceTimeout);
-        }
-        
         if (e.key === 'Enter') {
             saveValue();
             // Auto-advance to next hole
