@@ -1474,8 +1474,21 @@ async function loadAdminWeekScores() {
     try {
         const weekScorecardDoc = await db.collection('weekScorecards').doc(`week-${selectedWeek}`).get();
         if (weekScorecardDoc.exists) {
-            window.currentWeekScorecard = weekScorecardDoc.data();
-            console.log(`✅ Loaded scorecard for Week ${selectedWeek}:`, window.currentWeekScorecard.scorecardName);
+            const weekScorecardData = weekScorecardDoc.data();
+            
+            // Verify that the referenced scorecard still exists
+            const referencedScorecardDoc = await db.collection('scorecards').doc(weekScorecardData.scorecardId).get();
+            
+            if (referencedScorecardDoc.exists) {
+                window.currentWeekScorecard = weekScorecardData;
+                console.log(`✅ Loaded scorecard for Week ${selectedWeek}:`, window.currentWeekScorecard.scorecardName);
+            } else {
+                // Scorecard was deleted, clean up the week assignment
+                console.log(`🧹 Scorecard "${weekScorecardData.scorecardName}" no longer exists, cleaning up week assignment`);
+                await db.collection('weekScorecards').doc(`week-${selectedWeek}`).delete();
+                window.currentWeekScorecard = null;
+                console.log(`ℹ️ Cleaned up invalid scorecard assignment for Week ${selectedWeek}`);
+            }
         } else {
             window.currentWeekScorecard = null;
             console.log(`ℹ️ No scorecard assigned to Week ${selectedWeek}`);
@@ -2357,8 +2370,23 @@ async function editScorecard(scorecardId) {
 }
 
 function deleteScorecard(scorecardId, scorecardName) {
-    if (confirm(`Are you sure you want to delete "${scorecardName}"?`)) {
+    if (confirm(`Are you sure you want to delete "${scorecardName}"?\n\nThis will also remove it from any weeks where it's currently assigned.`)) {
+        // First delete the scorecard
         db.collection('scorecards').doc(scorecardId).delete()
+            .then(() => {
+                console.log('✅ Scorecard deleted');
+                
+                // Clean up any week assignments that reference this scorecard
+                return db.collection('weekScorecards').where('scorecardId', '==', scorecardId).get();
+            })
+            .then(weekAssignments => {
+                const deletePromises = [];
+                weekAssignments.forEach(doc => {
+                    console.log(`🧹 Cleaning up week assignment: ${doc.id}`);
+                    deletePromises.push(doc.ref.delete());
+                });
+                return Promise.all(deletePromises);
+            })
             .then(() => {
                 alert('Scorecard deleted successfully!');
                 loadScorecards();
