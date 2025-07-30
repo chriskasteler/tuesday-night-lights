@@ -1470,6 +1470,21 @@ async function loadAdminWeekScores() {
         await loadAdminTeamsData();
     }
     
+    // Check if a scorecard has been assigned to this week
+    try {
+        const weekScorecardDoc = await db.collection('weekScorecards').doc(`week-${selectedWeek}`).get();
+        if (weekScorecardDoc.exists) {
+            window.currentWeekScorecard = weekScorecardDoc.data();
+            console.log(`✅ Loaded scorecard for Week ${selectedWeek}:`, window.currentWeekScorecard.scorecardName);
+        } else {
+            window.currentWeekScorecard = null;
+            console.log(`ℹ️ No scorecard assigned to Week ${selectedWeek}`);
+        }
+    } catch (error) {
+        console.error('❌ Error loading week scorecard:', error);
+        window.currentWeekScorecard = null;
+    }
+    
     // Full league schedule - same as Captain's Tools
     const leagueSchedule = {
         '1': [
@@ -1609,19 +1624,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                        </tr>
                    </thead>
                    <tbody>
-                       <tr class="par-row" style="background: #fff3cd;">
-                           <td class="par-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600; text-align: left;">Par</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">3</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">5</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">3</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">5</td>
-                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">3</td>
-                           <td class="par-total" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">35</td>
-                       </tr>
+                       ${generateParRow(weekNumber)}
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
                            ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
@@ -2350,5 +2353,167 @@ function deleteScorecard(scorecardId, scorecardName) {
                 console.error('❌ Error deleting scorecard:', error);
                 alert('Error deleting scorecard. Please try again.');
             });
+    }
+}
+
+// Generate par row based on whether a scorecard is assigned
+function generateParRow(weekNumber) {
+    if (window.currentWeekScorecard && window.currentWeekScorecard.weekNumber == weekNumber) {
+        // Show actual par values
+        const parValues = window.currentWeekScorecard.parValues;
+        const total = window.currentWeekScorecard.total;
+        const scorecardName = window.currentWeekScorecard.scorecardName;
+        
+        return `
+            <tr class="par-row" style="background: #fff3cd;" id="par-row-week-${weekNumber}">
+                <td class="par-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600; text-align: left;">Par</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['1']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['2']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['3']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['4']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['5']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['6']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['7']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['8']}</td>
+                <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${parValues['9']}</td>
+                <td class="par-total" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">${total}</td>
+            </tr>
+            <tr>
+                <td colspan="11" style="text-align: center; padding: 4px; font-size: 0.7rem; color: #666; border: none;">
+                    Using: ${scorecardName} • <button onclick="showScorecardSelector(${weekNumber})" style="background: none; border: none; color: #4a5d4a; text-decoration: underline; cursor: pointer; font-size: 0.7rem;">Change</button>
+                </td>
+            </tr>
+        `;
+    } else {
+        // Show scorecard selection button
+        return `
+            <tr class="par-row" style="background: #fff3cd;" id="par-row-week-${weekNumber}">
+                <td class="par-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600; text-align: left;">Par</td>
+                <td colspan="10" class="scorecard-selection" style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                    <button onclick="showScorecardSelector(${weekNumber})" style="background: #4a5d4a; color: white; border: none; padding: 8px 20px; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
+                        Please Select Scorecard for Week ${weekNumber}
+                    </button>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Show scorecard selector for a specific week
+async function showScorecardSelector(weekNumber) {
+    try {
+        // Fetch available scorecards
+        const scorecardsSnapshot = await db.collection('scorecards').orderBy('name').get();
+        
+        if (scorecardsSnapshot.empty) {
+            alert('No scorecards available. Please create a scorecard in Scorecard Setup first.');
+            return;
+        }
+        
+        // Create selection modal
+        const modalHTML = `
+            <div id="scorecard-selector-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; border-radius: 8px; padding: 20px; max-width: 500px; width: 90%; max-height: 80%; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    <h3 style="margin: 0 0 20px 0; color: #2d4a2d;">Select Scorecard for Week ${weekNumber}</h3>
+                    <div class="scorecard-options">
+                        ${scorecardsSnapshot.docs.map(doc => {
+                            const data = doc.data();
+                            return `
+                                <div class="scorecard-option" style="border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 10px; cursor: pointer; background: #f8f9fa;" onclick="selectScorecardForWeek('${doc.id}', '${data.name}', ${weekNumber})">
+                                    <h4 style="margin: 0 0 8px 0; color: #4a5d4a;">${data.name}</h4>
+                                    <div style="font-size: 0.9rem; color: #666;">
+                                        <span><strong>Par Total:</strong> ${data.total}</span>
+                                    </div>
+                                    <div style="margin-top: 8px; font-size: 0.8rem;">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="padding: 2px 4px; border: 1px solid #dee2e6; text-align: center; background: #fff; font-weight: 600; font-size: 0.7rem;">Hole</td>
+                                                ${Object.keys(data.parValues).sort((a, b) => parseInt(a) - parseInt(b)).map(hole => 
+                                                    `<td style="padding: 2px 4px; border: 1px solid #dee2e6; text-align: center; background: #fff; font-size: 0.7rem;">${hole}</td>`
+                                                ).join('')}
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 2px 4px; border: 1px solid #dee2e6; text-align: center; background: #fff3cd; font-weight: 600; font-size: 0.7rem;">Par</td>
+                                                ${Object.keys(data.parValues).sort((a, b) => parseInt(a) - parseInt(b)).map(hole => 
+                                                    `<td style="padding: 2px 4px; border: 1px solid #dee2e6; text-align: center; background: #fff3cd; font-size: 0.7rem;">${data.parValues[hole]}</td>`
+                                                ).join('')}
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="closeScorecardSelector()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+    } catch (error) {
+        console.error('❌ Error loading scorecards:', error);
+        alert('Error loading scorecards. Please try again.');
+    }
+}
+
+// Select a scorecard for a specific week
+async function selectScorecardForWeek(scorecardId, scorecardName, weekNumber) {
+    try {
+        // Get the scorecard data
+        const scorecardDoc = await db.collection('scorecards').doc(scorecardId).get();
+        if (!scorecardDoc.exists) {
+            alert('Scorecard not found.');
+            return;
+        }
+        
+        const scorecardData = scorecardDoc.data();
+        
+        // Save the week-scorecard association
+        await db.collection('weekScorecards').doc(`week-${weekNumber}`).set({
+            weekNumber: weekNumber,
+            scorecardId: scorecardId,
+            scorecardName: scorecardName,
+            parValues: scorecardData.parValues,
+            total: scorecardData.total,
+            assignedAt: new Date(),
+            assignedBy: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email || 'unknown') : 'unknown'
+        });
+        
+        // Update the global scorecard data
+        window.currentWeekScorecard = {
+            weekNumber: weekNumber,
+            scorecardId: scorecardId,
+            scorecardName: scorecardName,
+            parValues: scorecardData.parValues,
+            total: scorecardData.total
+        };
+        
+        // Close modal
+        closeScorecardSelector();
+        
+        // Reload the week scores to show updated par values
+        loadAdminWeekScores();
+        
+        console.log(`✅ Scorecard "${scorecardName}" assigned to Week ${weekNumber}`);
+        
+    } catch (error) {
+        console.error('❌ Error selecting scorecard:', error);
+        alert('Error selecting scorecard. Please try again.');
+    }
+}
+
+
+
+// Close scorecard selector modal
+function closeScorecardSelector() {
+    const modal = document.getElementById('scorecard-selector-modal');
+    if (modal) {
+        modal.remove();
     }
 } 
