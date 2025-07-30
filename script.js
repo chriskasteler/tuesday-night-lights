@@ -368,6 +368,14 @@ function showAdminSubSection(subSectionName) {
         activeButton.classList.add('active');
     }
     
+    // Load data for specific sections
+    if (subSectionName === 'scorecard-setup') {
+        // Load scorecards when switching to scorecard setup
+        if (typeof loadScorecards === 'function') {
+            loadScorecards();
+        }
+    }
+    
     // Save current admin sub-section to localStorage
     localStorage.setItem('currentAdminSubSection', subSectionName);
     

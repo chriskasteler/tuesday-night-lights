@@ -1934,15 +1934,130 @@ function advanceToNextHoleDesktop(currentCell) {
     }
 }
 
+// Load and display existing scorecards
+async function loadScorecards() {
+    try {
+        const scorecardsContainer = document.querySelector('.scorecard-list-section');
+        if (!scorecardsContainer) return;
+        
+        // Show loading state
+        scorecardsContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div style="font-size: 1.5rem; margin-bottom: 10px;">⏳</div>
+                <p style="color: #666;">Loading scorecards...</p>
+            </div>
+        `;
+        
+        // Fetch scorecards from Firebase
+        const scorecardsSnapshot = await db.collection('scorecards').orderBy('createdAt', 'desc').get();
+        
+        if (scorecardsSnapshot.empty) {
+            // Show "no scorecards" state
+            showNoScorecardsState();
+        } else {
+            // Show scorecards list
+            showScorecardsList(scorecardsSnapshot.docs);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading scorecards:', error);
+        const scorecardsContainer = document.querySelector('.scorecard-list-section');
+        if (scorecardsContainer) {
+            scorecardsContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #dc3545;">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">⚠️</div>
+                    <p>Error loading scorecards. Please try again.</p>
+                    <button onclick="loadScorecards()" style="background: #4a5d4a; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">
+                        Retry
+                    </button>
+                </div>
+            `;
+        }
+    }
+}
+
+// Show "no scorecards" empty state
+function showNoScorecardsState() {
+    const scorecardsContainer = document.querySelector('.scorecard-list-section');
+    if (!scorecardsContainer) return;
+    
+    scorecardsContainer.innerHTML = `
+        <div class="no-scorecards-state" style="text-align: center; padding: 40px 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+            <div style="font-size: 2.5rem; margin-bottom: 20px; color: #6c757d;">📋</div>
+            <h4 style="color: #495057; margin-bottom: 15px; font-size: 1.2rem;">No Scorecards Configured</h4>
+            <p style="color: #6c757d; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5;">
+                Create your first scorecard configuration to set par values for each hole.<br/>
+                This will enable automatic birdie, par, and bogey calculations during score entry.
+            </p>
+            
+            <button class="add-scorecard-btn" onclick="showNewScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer;">
+                ⛳ Add New Scorecard
+            </button>
+        </div>
+    `;
+}
+
+// Show list of existing scorecards
+function showScorecardsList(scorecards) {
+    const scorecardsContainer = document.querySelector('.scorecard-list-section');
+    if (!scorecardsContainer) return;
+    
+    let scorecardsHTML = `
+        <div class="scorecards-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h4 style="color: #4a5d4a; margin: 0;">Saved Scorecards</h4>
+            <button onclick="showNewScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer;">
+                ⛳ Add New Scorecard
+            </button>
+        </div>
+        <div class="scorecards-list">
+    `;
+    
+    scorecards.forEach(scorecard => {
+        const data = scorecard.data();
+        const createdDate = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Unknown';
+        
+        scorecardsHTML += `
+            <div class="scorecard-item" style="border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div class="scorecard-item-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h5 style="margin: 0; color: #2d4a2d; font-size: 1.1rem;">${data.name}</h5>
+                    <div class="scorecard-actions">
+                        <button onclick="editScorecard('${scorecard.id}')" style="background: #ffc107; color: #212529; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; margin-right: 8px;">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="deleteScorecard('${scorecard.id}', '${data.name}')" style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+                <div class="scorecard-summary" style="font-size: 0.9rem; color: #666;">
+                    <span><strong>Par Total:</strong> ${data.total}</span> • 
+                    <span><strong>Created:</strong> ${createdDate}</span>
+                    ${data.createdBy ? ` • <span><strong>By:</strong> ${data.createdBy}</span>` : ''}
+                </div>
+                <div class="par-values-preview" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-size: 0.85rem;">
+                    <strong>Par Values:</strong> 
+                    ${Object.keys(data.parValues).sort((a, b) => parseInt(a) - parseInt(b)).map(hole => 
+                        `Hole ${hole}: ${data.parValues[hole]}`
+                    ).join(' • ')}
+                </div>
+            </div>
+        `;
+    });
+    
+    scorecardsHTML += `
+        </div>
+    `;
+    
+    scorecardsContainer.innerHTML = scorecardsHTML;
+}
+
 // Show new scorecard configuration form
 function showNewScorecardForm() {
-    const noScorecardsState = document.querySelector('.no-scorecards-state');
     const scorecardsContainer = document.querySelector('.scorecard-list-section');
+    if (!scorecardsContainer) return;
     
-    // Hide the "no scorecards" message
-    if (noScorecardsState) {
-        noScorecardsState.style.display = 'none';
-    }
+    // Hide existing content
+    scorecardsContainer.innerHTML = '';
     
     // Create new scorecard configuration interface
     const scorecardConfigHTML = `
@@ -2127,8 +2242,9 @@ async function saveScorecardConfig() {
         // Show success message
         alert(`Scorecard "${scorecardName}" saved successfully!`);
         
-        // Return to empty state
+        // Return to empty state and reload scorecards
         cancelScorecardConfig();
+        loadScorecards();
         
     } catch (error) {
         console.error('❌ Error saving scorecard:', error);
@@ -2139,15 +2255,31 @@ async function saveScorecardConfig() {
 // Cancel scorecard configuration
 function cancelScorecardConfig() {
     const configContainer = document.querySelector('.scorecard-config-container');
-    const noScorecardsState = document.querySelector('.no-scorecards-state');
     
     // Remove the config interface
     if (configContainer) {
         configContainer.remove();
     }
     
-    // Show the "no scorecards" message again
-    if (noScorecardsState) {
-        noScorecardsState.style.display = 'block';
+    // Reload scorecards list
+    loadScorecards();
+}
+
+// Placeholder functions for edit and delete (to be implemented)
+function editScorecard(scorecardId) {
+    alert('Edit functionality coming soon!');
+}
+
+function deleteScorecard(scorecardId, scorecardName) {
+    if (confirm(`Are you sure you want to delete "${scorecardName}"?`)) {
+        db.collection('scorecards').doc(scorecardId).delete()
+            .then(() => {
+                alert('Scorecard deleted successfully!');
+                loadScorecards();
+            })
+            .catch(error => {
+                console.error('❌ Error deleting scorecard:', error);
+                alert('Error deleting scorecard. Please try again.');
+            });
     }
 } 
