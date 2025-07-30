@@ -2496,8 +2496,9 @@ function applyScoreTypeStyle(cell, score) {
             // Red text with double circle around number
             cell.innerHTML = `<span style="
                 color: red; 
-                border: 3px solid red; 
+                border: 2px solid red; 
                 border-radius: 50%; 
+                box-shadow: 0 0 0 2px white, 0 0 0 4px red;
                 width: 24px; 
                 height: 24px; 
                 display: inline-flex; 
@@ -2543,11 +2544,12 @@ function applyScoreTypeStyle(cell, score) {
             break;
             
         case 'double':
-            // Black text with thick square around number
+            // Black text with double square around number
             cell.innerHTML = `<span style="
                 color: black; 
-                border: 3px solid black; 
+                border: 2px solid black; 
                 border-radius: 0; 
+                box-shadow: 0 0 0 2px white, 0 0 0 4px black;
                 width: 24px; 
                 height: 24px; 
                 display: inline-flex; 
