@@ -759,7 +759,7 @@
                         <div class="score-entry-section">
                             <div class="week-selection-section">
                                 <h4>Select Week</h4>
-                                <select id="admin-week-selector" class="week-dropdown" onchange="loadWeekScorecards(this.value)">
+                                <select id="admin-week-selector" class="week-dropdown" onchange="handleWeekSelection(this.value)">
                                     <option value="">Select Week</option>
                                     <option value="1">Week 1</option>
                                     <option value="2">Week 2</option>
@@ -1267,5 +1267,27 @@
     <script src="manage-teams.js"></script>
     <script src="my-team.js"></script>
     <script src="admin-scores.js"></script>
+    
+    <!-- Fallback for admin score functions -->
+    <script>
+        function handleWeekSelection(weekNumber) {
+            console.log('handleWeekSelection called with:', weekNumber);
+            if (typeof window.loadWeekScorecards === 'function') {
+                window.loadWeekScorecards(weekNumber);
+            } else if (typeof loadWeekScorecards === 'function') {
+                loadWeekScorecards(weekNumber);
+            } else {
+                console.error('loadWeekScorecards function not found. Script may not be loaded yet.');
+                // Try again after a short delay
+                setTimeout(() => {
+                    if (typeof window.loadWeekScorecards === 'function') {
+                        window.loadWeekScorecards(weekNumber);
+                    } else {
+                        console.error('loadWeekScorecards still not available after delay');
+                    }
+                }, 100);
+            }
+        }
+    </script>
 </body>
 </html>
