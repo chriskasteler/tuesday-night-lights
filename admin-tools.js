@@ -1692,6 +1692,13 @@ function isMobileDevice() {
 
 // Open score pad for mobile score entry
 function openScorePad(cell) {
+    // Check if a scorecard has been selected for this week
+    const weekNumber = cell.dataset.week;
+    if (!window.currentWeekScorecard || window.currentWeekScorecard.weekNumber != weekNumber) {
+        alert(`Please select a scorecard for Week ${weekNumber} before entering scores.\n\nClick the red "Please Select Scorecard" button above to choose the appropriate scorecard configuration.`);
+        return;
+    }
+    
     if (!isMobileDevice()) {
         // On desktop, allow direct keyboard input
         makeDesktopEditable(cell);
@@ -1850,6 +1857,13 @@ function advanceToNextHole() {
 
 // Desktop editing functionality
 function makeDesktopEditable(cell) {
+    // Check if a scorecard has been selected for this week
+    const weekNumber = cell.dataset.week;
+    if (!window.currentWeekScorecard || window.currentWeekScorecard.weekNumber != weekNumber) {
+        alert(`Please select a scorecard for Week ${weekNumber} before entering scores.\n\nClick the red "Please Select Scorecard" button above to choose the appropriate scorecard configuration.`);
+        return;
+    }
+    
     const currentValue = cell.textContent.trim();
     const input = document.createElement('input');
     input.type = 'number';
