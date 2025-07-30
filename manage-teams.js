@@ -1546,29 +1546,29 @@ function renderAdminMatchGroup(matchPair, weekNumber, groupIndex) {
     const [match1, match2] = matchPair;
     
     return `
-        <div class="admin-match-group" style="margin-bottom: 40px; border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white;">
+                 <div class="admin-match-group" style="margin-bottom: 40px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <div class="match-group-header" style="text-align: center; margin-bottom: 20px;">
                 <h5 style="margin: 0; color: #2d4a2d;">${getAdminTeamName(match1.team1)} vs ${getAdminTeamName(match1.team2)}</h5>
                 <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9rem;">${match1.format}</p>
             </div>
             
-            <div class="admin-scorecards-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                ${renderAdminScorecard(match1, weekNumber, groupIndex, 1)}
-                ${renderAdminScorecard(match2, weekNumber, groupIndex, 2)}
-            </div>
+                         <div class="admin-scorecards-row" style="display: flex; flex-direction: column; gap: 20px;">
+                 ${renderAdminScorecard(match1, weekNumber, groupIndex, 1)}
+                 ${renderAdminScorecard(match2, weekNumber, groupIndex, 2)}
+             </div>
         </div>
     `;
 }
 
 // Render individual scorecard for admin scoring
 function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
-    return `
-        <div class="admin-scorecard">
-            <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 10px; border-radius: 6px 6px 0 0;">
-                <div class="match-info" style="text-align: center;">
-                    <span class="match-title" style="font-weight: 600;">Match ${matchNum}</span>
-                </div>
-            </div>
+         return `
+         <div class="admin-scorecard" style="width: 100%; max-width: 100%; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+             <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 10px;">
+                 <div class="match-info" style="text-align: center;">
+                     <span class="match-title" style="font-weight: 600;">Match ${matchNum}</span>
+                 </div>
+             </div>
             
             <div class="golf-scorecard-mini">
                 <table class="scorecard-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
