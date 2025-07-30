@@ -2256,7 +2256,7 @@ async function saveScorecardConfig() {
                 parValues: parValues,
                 total: total,
                 updatedAt: new Date(),
-                updatedBy: auth.currentUser ? auth.currentUser.email : 'unknown'
+                updatedBy: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email || 'unknown') : 'unknown'
             };
             
             await db.collection('scorecards').doc(editingIdInput.value).update(scorecardConfig);
@@ -2271,7 +2271,7 @@ async function saveScorecardConfig() {
                 parValues: parValues,
                 total: total,
                 createdAt: new Date(),
-                createdBy: auth.currentUser ? auth.currentUser.email : 'unknown'
+                createdBy: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email || 'unknown') : 'unknown'
             };
             
             const docRef = await db.collection('scorecards').add(scorecardConfig);
