@@ -1943,8 +1943,7 @@ async function loadScorecards() {
         // Show loading state
         scorecardsContainer.innerHTML = `
             <div style="text-align: center; padding: 40px;">
-                <div style="font-size: 1.5rem; margin-bottom: 10px;">⏳</div>
-                <p style="color: #666;">Loading scorecards...</p>
+                <p style="color: #666; font-size: 1.1rem;">Loading scorecards...</p>
             </div>
         `;
         
@@ -1965,9 +1964,8 @@ async function loadScorecards() {
         if (scorecardsContainer) {
             scorecardsContainer.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: #dc3545;">
-                    <div style="font-size: 1.5rem; margin-bottom: 10px;">⚠️</div>
-                    <p>Error loading scorecards. Please try again.</p>
-                    <button onclick="loadScorecards()" style="background: #4a5d4a; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">
+                    <p style="font-size: 1.1rem; margin-bottom: 15px;">Error loading scorecards. Please try again.</p>
+                    <button onclick="loadScorecards()" style="background: #4a5d4a; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
                         Retry
                     </button>
                 </div>
@@ -1983,7 +1981,6 @@ function showNoScorecardsState() {
     
     scorecardsContainer.innerHTML = `
         <div class="no-scorecards-state" style="text-align: center; padding: 40px 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
-            <div style="font-size: 2.5rem; margin-bottom: 20px; color: #6c757d;">📋</div>
             <h4 style="color: #495057; margin-bottom: 15px; font-size: 1.2rem;">No Scorecards Configured</h4>
             <p style="color: #6c757d; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5;">
                 Create your first scorecard configuration to set par values for each hole.<br/>
@@ -1991,7 +1988,7 @@ function showNoScorecardsState() {
             </p>
             
             <button class="add-scorecard-btn" onclick="showNewScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer;">
-                ⛳ Add New Scorecard
+                Add New Scorecard
             </button>
         </div>
     `;
@@ -2006,7 +2003,7 @@ function showScorecardsList(scorecards) {
         <div class="scorecards-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h4 style="color: #4a5d4a; margin: 0;">Saved Scorecards</h4>
             <button onclick="showNewScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer;">
-                ⛳ Add New Scorecard
+                Add New Scorecard
             </button>
         </div>
         <div class="scorecards-list">
@@ -2022,10 +2019,10 @@ function showScorecardsList(scorecards) {
                     <h5 style="margin: 0; color: #2d4a2d; font-size: 1.1rem;">${data.name}</h5>
                     <div class="scorecard-actions">
                         <button onclick="editScorecard('${scorecard.id}')" style="background: #ffc107; color: #212529; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; margin-right: 8px;">
-                            ✏️ Edit
+                            Edit
                         </button>
                         <button onclick="deleteScorecard('${scorecard.id}', '${data.name}')" style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">
-                            🗑️ Delete
+                            Delete
                         </button>
                     </div>
                 </div>
@@ -2034,11 +2031,21 @@ function showScorecardsList(scorecards) {
                     <span><strong>Created:</strong> ${createdDate}</span>
                     ${data.createdBy ? ` • <span><strong>By:</strong> ${data.createdBy}</span>` : ''}
                 </div>
-                <div class="par-values-preview" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-size: 0.85rem;">
-                    <strong>Par Values:</strong> 
-                    ${Object.keys(data.parValues).sort((a, b) => parseInt(a) - parseInt(b)).map(hole => 
-                        `Hole ${hole}: ${data.parValues[hole]}`
-                    ).join(' • ')}
+                <div class="par-values-preview" style="margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                        <tr>
+                            <td style="padding: 4px 6px; border: 1px solid #dee2e6; text-align: center; background: #fff; font-weight: 600;">Hole</td>
+                            ${Object.keys(data.parValues).sort((a, b) => parseInt(a) - parseInt(b)).map(hole => 
+                                `<td style="padding: 4px 6px; border: 1px solid #dee2e6; text-align: center; background: #fff;">${hole}</td>`
+                            ).join('')}
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 6px; border: 1px solid #dee2e6; text-align: center; background: #fff3cd; font-weight: 600;">Par</td>
+                            ${Object.keys(data.parValues).sort((a, b) => parseInt(a) - parseInt(b)).map(hole => 
+                                `<td style="padding: 4px 6px; border: 1px solid #dee2e6; text-align: center; background: #fff3cd;">${data.parValues[hole]}</td>`
+                            ).join('')}
+                        </tr>
+                    </table>
                 </div>
             </div>
         `;
@@ -2174,7 +2181,7 @@ function showNewScorecardForm() {
                  
                  <div class="save-section" style="padding: 20px; background: #f8f9fa; border-top: 1px solid #ddd; text-align: center;">
                      <button onclick="saveScorecardConfig()" style="background: #4a5d4a; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-right: 10px;">
-                         💾 Save Scorecard
+                         Save Scorecard
                      </button>
                      <button onclick="cancelScorecardConfig()" style="background: #6c757d; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 1rem; cursor: pointer;">
                          Cancel
