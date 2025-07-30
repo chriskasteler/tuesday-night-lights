@@ -1572,6 +1572,8 @@ async function loadAdminWeekScores() {
     if (window.currentWeekScorecard && window.currentWeekScorecard.weekNumber == selectedWeek) {
         setTimeout(() => {
             reapplyScoringStylesForWeek(selectedWeek);
+            // Recalculate all player totals
+            recalculateAllTotals();
         }, 100);
     }
 }
@@ -1814,6 +1816,9 @@ function selectScore(score) {
     if (!currentPlayerScores[player]) currentPlayerScores[player] = {};
     currentPlayerScores[player][hole] = score;
     
+    // Update player total
+    updatePlayerTotal(player);
+    
     // Auto-advance to next hole
     setTimeout(() => {
         closeScorePad();
@@ -1835,6 +1840,9 @@ function clearScore() {
     if (currentPlayerScores[player]) {
         delete currentPlayerScores[player][hole];
     }
+    
+    // Update player total
+    updatePlayerTotal(player);
     
     closeScorePad();
 }
@@ -1877,6 +1885,60 @@ function advanceToNextHole() {
             }
         }
     }
+}
+
+// Recalculate totals for all players
+function recalculateAllTotals() {
+    // Get all unique players from currentPlayerScores
+    const players = Object.keys(currentPlayerScores);
+    
+    players.forEach(player => {
+        updatePlayerTotal(player);
+    });
+}
+
+// Update player total in the scorecard
+function updatePlayerTotal(player) {
+    // Calculate total from player's scores
+    let total = 0;
+    let hasScores = false;
+    
+    if (currentPlayerScores[player]) {
+        for (let hole = 1; hole <= 9; hole++) {
+            if (currentPlayerScores[player][hole]) {
+                total += parseInt(currentPlayerScores[player][hole]);
+                hasScores = true;
+            }
+        }
+    }
+    
+    // Find all total cells for this player (there may be multiple scorecards on the page)
+    const totalCells = document.querySelectorAll(`td.total-cell`);
+    
+    totalCells.forEach(cell => {
+        // Find the row this total cell belongs to
+        const row = cell.closest('tr.player-row');
+        if (!row) return;
+        
+        // Check if this row has score cells for the same player
+        const scoreCells = row.querySelectorAll('td.score-cell');
+        if (scoreCells.length > 0) {
+            const firstScoreCell = scoreCells[0];
+            if (firstScoreCell && firstScoreCell.dataset.player === player) {
+                // This is the total cell for our player
+                cell.textContent = hasScores ? total : '-';
+                
+                // Add visual styling to the total
+                if (hasScores) {
+                    cell.style.fontWeight = '600';
+                    cell.style.color = '#2d4a2d';
+                } else {
+                    cell.style.fontWeight = '600';
+                    cell.style.color = '#666';
+                }
+            }
+        }
+    });
 }
 
 // Desktop editing functionality
@@ -1922,6 +1984,9 @@ function makeDesktopEditable(cell) {
         } else if (currentPlayerScores[player]) {
             delete currentPlayerScores[player][hole];
         }
+        
+        // Update player total
+        updatePlayerTotal(player);
     }
     
     input.addEventListener('blur', saveValue);
