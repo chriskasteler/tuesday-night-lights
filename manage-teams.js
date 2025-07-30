@@ -1560,188 +1560,329 @@ function renderAdminMatchGroup(matchPair, weekNumber, groupIndex) {
     `;
 }
 
+// Generate score cells for a player row
+function generateScoreCells(player, matchNum, groupIndex, weekNumber) {
+    let cells = '';
+    for (let hole = 1; hole <= 9; hole++) {
+        cells += `<td class="score-cell editable-score" 
+                     data-player="${player}" 
+                     data-hole="${hole}" 
+                     data-match="${matchNum}" 
+                     data-group="${groupIndex}" 
+                     data-week="${weekNumber}"
+                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; position: relative;"
+                     onclick="openScorePad(this)">-</td>`;
+    }
+    return cells;
+}
+
 // Render individual scorecard for admin scoring
 function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
-         return `
-         <div class="admin-scorecard" style="width: 100%; max-width: 100%; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-             <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 10px;">
-                 <div class="match-info" style="text-align: center;">
-                     <span class="match-title" style="font-weight: 600;">Match ${matchNum}</span>
-                 </div>
-             </div>
-            
-            <div class="golf-scorecard-mini">
-                <table class="scorecard-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-                    <thead>
-                        <tr class="holes-row">
-                            <th class="player-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd;">Player</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">1</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">2</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">3</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">4</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">5</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">6</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">7</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">8</th>
-                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">9</th>
-                            <th class="total-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="player-row">
-                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                        </tr>
-                        <tr class="player-row">
-                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                        </tr>
-                        <tr class="team-score-row" style="background: #f8f9fa;">
-                            <td class="team-score-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">${getAdminTeamName(matchup.team1)} Team Score</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                        </tr>
-                        <tr style="height: 10px;"><td colspan="11" style="border: none;"></td></tr>
-                        <tr class="player-row">
-                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                        </tr>
-                        <tr class="player-row">
-                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                                <input type="number" min="1" max="12" style="width: 30px; text-align: center; border: none; background: transparent;" />
-                            </td>
-                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                        </tr>
-                        <tr class="team-score-row" style="background: #f8f9fa;">
-                            <td class="team-score-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">${getAdminTeamName(matchup.team2)} Team Score</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                        </tr>
-                    </tbody>
-                </table>
+    const team1Player1 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'A' : 'C'}`;
+    const team1Player2 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'B' : 'D'}`;
+    const team2Player1 = `${getAdminTeamName(matchup.team2)}-${matchNum === 1 ? 'A' : 'C'}`;
+    const team2Player2 = `${getAdminTeamName(matchup.team2)}-${matchNum === 1 ? 'B' : 'D'}`;
+
+    return `
+        <div class="admin-scorecard" style="width: 100%; max-width: 100%; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 10px;">
+                <div class="match-info" style="text-align: center;">
+                    <span class="match-title" style="font-weight: 600;">Match ${matchNum}</span>
+                </div>
+            </div>
+           
+           <div class="golf-scorecard-mini">
+               <table class="scorecard-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                   <thead>
+                       <tr class="holes-row">
+                           <th class="player-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd;">Player</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">1</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">2</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">3</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">4</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">5</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">6</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">7</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">8</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">9</th>
+                           <th class="total-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">Total</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <tr class="player-row">
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
+                           ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="player-row">
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
+                           ${generateScoreCells(team1Player2, matchNum, groupIndex, weekNumber)}
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="team-score-row" style="background: #f8f9fa;">
+                           <td class="team-score-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">${getAdminTeamName(matchup.team1)} Team Score</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr style="height: 10px;"><td colspan="11" style="border: none;"></td></tr>
+                       <tr class="player-row">
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
+                           ${generateScoreCells(team2Player1, matchNum, groupIndex, weekNumber)}
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="player-row">
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
+                           ${generateScoreCells(team2Player2, matchNum, groupIndex, weekNumber)}
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="team-score-row" style="background: #f8f9fa;">
+                           <td class="team-score-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">${getAdminTeamName(matchup.team2)} Team Score</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                   </tbody>
+               </table>
+           </div>
+       </div>
+   `;
+}
+
+// ===== MOBILE SCORE PAD FUNCTIONALITY =====
+
+// Global variables for score pad
+let currentScoreCell = null;
+let currentPlayerScores = {};
+
+// Check if device is mobile
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+}
+
+// Open score pad for mobile score entry
+function openScorePad(cell) {
+    if (!isMobileDevice()) {
+        // On desktop, allow direct keyboard input
+        makeDesktopEditable(cell);
+        return;
+    }
+    
+    currentScoreCell = cell;
+    const scorePad = getOrCreateScorePad();
+    const currentScore = cell.textContent.trim();
+    
+    // Update score pad title
+    const player = cell.dataset.player;
+    const hole = cell.dataset.hole;
+    const titleElement = scorePad.querySelector('.score-pad-title');
+    titleElement.textContent = `${player} - Hole ${hole}`;
+    
+    // Highlight current score if it exists
+    const buttons = scorePad.querySelectorAll('.score-btn');
+    buttons.forEach(btn => btn.classList.remove('current'));
+    if (currentScore !== '-' && currentScore !== '') {
+        const currentBtn = scorePad.querySelector(`[data-score="${currentScore}"]`);
+        if (currentBtn) currentBtn.classList.add('current');
+    }
+    
+    // Show the score pad
+    scorePad.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+// Create or get existing score pad
+function getOrCreateScorePad() {
+    let scorePad = document.getElementById('mobile-score-pad');
+    if (!scorePad) {
+        scorePad = createScorePad();
+        document.body.appendChild(scorePad);
+    }
+    return scorePad;
+}
+
+// Create the mobile score pad
+function createScorePad() {
+    const scorePad = document.createElement('div');
+    scorePad.id = 'mobile-score-pad';
+    scorePad.className = 'mobile-score-pad';
+    
+    scorePad.innerHTML = `
+        <div class="score-pad-overlay" onclick="closeScorePad()"></div>
+        <div class="score-pad-content">
+            <div class="score-pad-header">
+                <h3 class="score-pad-title">Enter Score</h3>
+                <button class="score-pad-close" onclick="closeScorePad()">&times;</button>
+            </div>
+            <div class="score-pad-body">
+                <div class="score-grid">
+                    ${generateScoreButtons()}
+                </div>
+                <div class="score-pad-actions">
+                    <button class="score-btn score-btn-clear" onclick="clearScore()">Clear</button>
+                    <button class="score-btn score-btn-cancel" onclick="closeScorePad()">Cancel</button>
+                </div>
             </div>
         </div>
     `;
+    
+    return scorePad;
+}
+
+// Generate score buttons (1-12 plus some extras)
+function generateScoreButtons() {
+    let buttons = '';
+    
+    // Main scores 1-12
+    for (let i = 1; i <= 12; i++) {
+        buttons += `<button class="score-btn" data-score="${i}" onclick="selectScore(${i})">${i}</button>`;
+    }
+    
+    return buttons;
+}
+
+// Select a score
+function selectScore(score) {
+    if (!currentScoreCell) return;
+    
+    // Update the cell
+    currentScoreCell.textContent = score;
+    currentScoreCell.style.backgroundColor = '#e8f5e8';
+    
+    // Store the score
+    const player = currentScoreCell.dataset.player;
+    const hole = currentScoreCell.dataset.hole;
+    if (!currentPlayerScores[player]) currentPlayerScores[player] = {};
+    currentPlayerScores[player][hole] = score;
+    
+    // Auto-advance to next hole
+    setTimeout(() => {
+        closeScorePad();
+        advanceToNextHole();
+    }, 200);
+}
+
+// Clear the current score
+function clearScore() {
+    if (!currentScoreCell) return;
+    
+    currentScoreCell.textContent = '-';
+    currentScoreCell.style.backgroundColor = '';
+    
+    const player = currentScoreCell.dataset.player;
+    const hole = currentScoreCell.dataset.hole;
+    if (currentPlayerScores[player]) {
+        delete currentPlayerScores[player][hole];
+    }
+    
+    closeScorePad();
+}
+
+// Close score pad
+function closeScorePad() {
+    const scorePad = document.getElementById('mobile-score-pad');
+    if (scorePad) {
+        scorePad.style.display = 'none';
+    }
+    document.body.style.overflow = ''; // Restore scrolling
+    currentScoreCell = null;
+}
+
+// Advance to next hole automatically
+function advanceToNextHole() {
+    if (!currentScoreCell) return;
+    
+    const currentHole = parseInt(currentScoreCell.dataset.hole);
+    const player = currentScoreCell.dataset.player;
+    const match = currentScoreCell.dataset.match;
+    const group = currentScoreCell.dataset.group;
+    const week = currentScoreCell.dataset.week;
+    
+    if (currentHole < 9) {
+        // Find next hole for same player
+        const nextHole = currentHole + 1;
+        const nextCell = document.querySelector(`[data-player="${player}"][data-hole="${nextHole}"][data-match="${match}"][data-group="${group}"][data-week="${week}"]`);
+        if (nextCell && nextCell.textContent.trim() === '-') {
+            setTimeout(() => openScorePad(nextCell), 300);
+        }
+    } else {
+        // Find next player, hole 1
+        const currentRow = currentScoreCell.closest('tr');
+        const nextRow = currentRow.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('player-row')) {
+            const nextPlayerFirstHole = nextRow.querySelector('[data-hole="1"]');
+            if (nextPlayerFirstHole && nextPlayerFirstHole.textContent.trim() === '-') {
+                setTimeout(() => openScorePad(nextPlayerFirstHole), 300);
+            }
+        }
+    }
+}
+
+// Desktop editing functionality
+function makeDesktopEditable(cell) {
+    const currentValue = cell.textContent.trim();
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = '1';
+    input.max = '12';
+    input.value = currentValue === '-' ? '' : currentValue;
+    input.style.width = '100%';
+    input.style.textAlign = 'center';
+    input.style.border = 'none';
+    input.style.background = '#e8f5e8';
+    input.style.fontSize = 'inherit';
+    
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus();
+    input.select();
+    
+    function saveValue() {
+        const value = input.value.trim();
+        const score = value === '' ? '-' : value;
+        cell.textContent = score;
+        cell.style.backgroundColor = score !== '-' ? '#e8f5e8' : '';
+        
+        // Store the score
+        const player = cell.dataset.player;
+        const hole = cell.dataset.hole;
+        if (!currentPlayerScores[player]) currentPlayerScores[player] = {};
+        if (score !== '-') {
+            currentPlayerScores[player][hole] = parseInt(score);
+        } else if (currentPlayerScores[player]) {
+            delete currentPlayerScores[player][hole];
+        }
+    }
+    
+    input.addEventListener('blur', saveValue);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            saveValue();
+            // Try to advance to next cell
+            const currentHole = parseInt(cell.dataset.hole);
+            if (currentHole < 9) {
+                const nextCell = cell.parentElement.children[currentHole + 1];
+                if (nextCell && nextCell.classList.contains('editable-score')) {
+                    setTimeout(() => makeDesktopEditable(nextCell), 100);
+                }
+            }
+        } else if (e.key === 'Escape') {
+            cell.textContent = currentValue;
+            cell.style.backgroundColor = currentValue !== '-' ? '#e8f5e8' : '';
+        }
+    });
 } 
