@@ -1851,6 +1851,9 @@ function makeDesktopEditable(cell) {
     input.focus();
     input.select();
     
+    // Auto-advance timeout variable
+    let autoAdvanceTimeout;
+    
     function saveValue() {
         const value = input.value.trim();
         const score = value === '' ? '-' : value;
@@ -1868,8 +1871,38 @@ function makeDesktopEditable(cell) {
         }
     }
     
-    input.addEventListener('blur', saveValue);
+    input.addEventListener('blur', () => {
+        // Clear auto-advance timeout on blur
+        if (autoAdvanceTimeout) {
+            clearTimeout(autoAdvanceTimeout);
+        }
+        saveValue();
+    });
+    
+    // Auto-advance when a valid number is entered
+    input.addEventListener('input', (e) => {
+        const value = e.target.value.trim();
+        
+        // Clear any existing timeout
+        if (autoAdvanceTimeout) {
+            clearTimeout(autoAdvanceTimeout);
+        }
+        
+        // If it's a valid single or double digit score, set timeout to advance
+        if (value && !isNaN(value) && value >= 1 && value <= 12) {
+            autoAdvanceTimeout = setTimeout(() => {
+                saveValue();
+                advanceToNextHoleDesktop(cell);
+            }, 800); // Longer delay for double digits
+        }
+    });
+    
     input.addEventListener('keydown', (e) => {
+        // Clear auto-advance timeout on manual key actions
+        if (autoAdvanceTimeout) {
+            clearTimeout(autoAdvanceTimeout);
+        }
+        
         if (e.key === 'Enter') {
             saveValue();
             // Auto-advance to next hole
