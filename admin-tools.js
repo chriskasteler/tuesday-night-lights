@@ -1959,6 +1959,15 @@ function showNewScorecardForm() {
                     <span style="font-weight: 600; font-size: 1.1rem;">Scorecard Configuration</span>
                 </div>
                 
+                <div class="scorecard-name-section" style="padding: 15px; background: #f8f9fa; border-bottom: 1px solid #ddd;">
+                    <label for="scorecard-name" style="display: block; font-weight: 600; color: #495057; margin-bottom: 8px;">
+                        Scorecard Name:
+                    </label>
+                    <input type="text" id="scorecard-name" placeholder="e.g., Front Nine, Back Nine, Championship Nine..." 
+                           style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem; box-sizing: border-box;"
+                           value="Front Nine">
+                </div>
+                
                 <div class="golf-scorecard-mini">
                     <table class="scorecard-table" style="width: 100%; border-collapse: collapse;">
                         <thead>
@@ -1979,26 +1988,152 @@ function showNewScorecardForm() {
                         <tbody>
                                                          <tr class="par-row">
                                  <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">Par</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
-                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
-                                 <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">35</td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="1" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3">3</option>
+                                         <option value="4" selected>4</option>
+                                         <option value="5">5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="2" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3" selected>3</option>
+                                         <option value="4">4</option>
+                                         <option value="5">5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="3" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3">3</option>
+                                         <option value="4">4</option>
+                                         <option value="5" selected>5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="4" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3">3</option>
+                                         <option value="4" selected>4</option>
+                                         <option value="5">5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="5" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3">3</option>
+                                         <option value="4" selected>4</option>
+                                         <option value="5">5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="6" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3" selected>3</option>
+                                         <option value="4">4</option>
+                                         <option value="5">5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="7" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3">3</option>
+                                         <option value="4" selected>4</option>
+                                         <option value="5">5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="8" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3">3</option>
+                                         <option value="4">4</option>
+                                         <option value="5" selected>5</option>
+                                     </select>
+                                 </td>
+                                 <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
+                                     <select class="par-select" data-hole="9" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                                         <option value="3" selected>3</option>
+                                         <option value="4">4</option>
+                                         <option value="5">5</option>
+                                     </select>
+                                 </td>
+                                 <td id="par-total" style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">35</td>
                              </tr>
                         </tbody>
                     </table>
-                                 </div>
+                 </div>
+                 
+                 <div class="save-section" style="padding: 20px; background: #f8f9fa; border-top: 1px solid #ddd; text-align: center;">
+                     <button onclick="saveScorecardConfig()" style="background: #4a5d4a; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-right: 10px;">
+                         💾 Save Scorecard
+                     </button>
+                     <button onclick="cancelScorecardConfig()" style="background: #6c757d; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 1rem; cursor: pointer;">
+                         Cancel
+                     </button>
+                 </div>
              </div>
-        </div>
-    `;
+         </div>
+     `;
     
     // Add the configuration interface
     scorecardsContainer.insertAdjacentHTML('beforeend', scorecardConfigHTML);
+}
+
+// Update par total when individual par values change
+function updateParTotal() {
+    const parSelects = document.querySelectorAll('.par-select');
+    let total = 0;
+    
+    parSelects.forEach(select => {
+        total += parseInt(select.value);
+    });
+    
+    const totalCell = document.getElementById('par-total');
+    if (totalCell) {
+        totalCell.textContent = total;
+    }
+}
+
+// Save scorecard configuration to Firebase
+async function saveScorecardConfig() {
+    try {
+        const nameInput = document.getElementById('scorecard-name');
+        const parSelects = document.querySelectorAll('.par-select');
+        
+        const scorecardName = nameInput.value.trim();
+        if (!scorecardName) {
+            alert('Please enter a name for the scorecard.');
+            nameInput.focus();
+            return;
+        }
+        
+        // Collect par values
+        const parValues = {};
+        let total = 0;
+        parSelects.forEach(select => {
+            const hole = select.dataset.hole;
+            const par = parseInt(select.value);
+            parValues[hole] = par;
+            total += par;
+        });
+        
+        // Create scorecard configuration object
+        const scorecardConfig = {
+            name: scorecardName,
+            parValues: parValues,
+            total: total,
+            createdAt: new Date(),
+            createdBy: auth.currentUser ? auth.currentUser.email : 'unknown'
+        };
+        
+        // Save to Firebase
+        const docRef = await db.collection('scorecards').add(scorecardConfig);
+        console.log('✅ Scorecard saved with ID:', docRef.id);
+        
+        // Show success message
+        alert(`Scorecard "${scorecardName}" saved successfully!`);
+        
+        // Return to empty state
+        cancelScorecardConfig();
+        
+    } catch (error) {
+        console.error('❌ Error saving scorecard:', error);
+        alert('Error saving scorecard. Please try again.');
+    }
 }
 
 // Cancel scorecard configuration
