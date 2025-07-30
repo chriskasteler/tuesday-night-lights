@@ -2419,7 +2419,7 @@ async function showScorecardSelector(weekNumber) {
                         ${scorecardsSnapshot.docs.map(doc => {
                             const data = doc.data();
                             return `
-                                <div class="scorecard-option" style="border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 10px; cursor: pointer; background: #f8f9fa;" onclick="selectScorecardForWeek('${doc.id}', '${data.name}', ${weekNumber})">
+                                <div class="scorecard-option" style="border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 10px; background: #f8f9fa;">
                                     <h4 style="margin: 0 0 8px 0; color: #4a5d4a;">${data.name}</h4>
                                     <div style="font-size: 0.9rem; color: #666;">
                                         <span><strong>Par Total:</strong> ${data.total}</span>
@@ -2439,6 +2439,11 @@ async function showScorecardSelector(weekNumber) {
                                                 ).join('')}
                                             </tr>
                                         </table>
+                                    </div>
+                                    <div style="text-align: center; margin-top: 12px;">
+                                        <button onclick="selectScorecardForWeek('${doc.id}', '${data.name}', ${weekNumber})" style="background: #4a5d4a; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                                            Select Scorecard
+                                        </button>
                                     </div>
                                 </div>
                             `;
