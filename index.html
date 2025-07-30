@@ -39,34 +39,34 @@
             </button>
             <div class="mobile-page-title" id="mobile-page-title">Home</div>
         </div>
-        
+
         <nav class="nav-menu">
             <ul class="nav-list" id="nav-list">
-            <li class="nav-item">
+                <li class="nav-item">
                 <a class="nav-link active" onclick="showSection('info')">Home</a>
-            </li>
-            <li class="nav-item">
+                </li>
+                <li class="nav-item">
                 <a class="nav-link" onclick="showSection('participants')">Players</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showSection('teams')">Teams</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showSection('schedule')">Schedule</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showSection('standings')">Standings</a>
-            </li>
-            
-            <!-- Admin Only Navigation Items -->
-            <li class="nav-item admin-only" style="display: none;">
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('teams')">Teams</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('schedule')">Schedule</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('standings')">Standings</a>
+                </li>
+                
+                <!-- Admin Only Navigation Items -->
+                <li class="nav-item admin-only" style="display: none;">
                 <a class="nav-link" onclick="showSection('manage-teams')">Admin Tools</a>
-            </li>
-            
+                </li>
+                
             <!-- Captain Only Navigation Items -->
             <li class="nav-item captain-only" style="display: none;">
                 <a class="nav-link" onclick="showSection('my-team')">Captain's Tools</a>
-            </li>
+                </li>
             </ul>
         </nav>
     </div>
@@ -76,29 +76,29 @@
         <button class="admin-btn" onclick="showAdminLogin()" id="admin-login-btn">Admin Login</button>
     </div>
 
-    <div class="countdown-container">
-        <h2 style="text-align: center; margin-bottom: 15px; color: #333; font-size: 2rem; font-weight: 700;">
+        <div class="countdown-container">
+            <h2 style="text-align: center; margin-bottom: 15px; color: #333; font-size: 2rem; font-weight: 700;">
             COUNTDOWN TO DRAFT
-        </h2>
-        <div class="countdown-display" id="countdown">
-            <div class="countdown-item">
-                <span class="countdown-number" id="days">00</span>
-                <span class="countdown-label">DAYS</span>
+            </h2>
+            <div class="countdown-display" id="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="days">00</span>
+                    <span class="countdown-label">DAYS</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="hours">00</span>
+                    <span class="countdown-label">HOURS</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="minutes">00</span>
+                    <span class="countdown-label">MINUTES</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="seconds">00</span>
+                    <span class="countdown-label">SECONDS</span>
+                </div>
             </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="hours">00</span>
-                <span class="countdown-label">HOURS</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="minutes">00</span>
-                <span class="countdown-label">MINUTES</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="seconds">00</span>
-                <span class="countdown-label">SECONDS</span>
-            </div>
-        </div>
-        <p style="text-align: center; margin-top: 15px; color: #333; font-size: 1.2rem; font-weight: 600;">
+            <p style="text-align: center; margin-top: 15px; color: #333; font-size: 1.2rem; font-weight: 600;">
             Tuesday, August 12th at 6:00 PM • Braemar Country Club
         </p>
     </div>
@@ -755,25 +755,23 @@
                             Enter match results and update team standings
                         </p>
                         
-                        <!-- Week Selection -->
-                        <div class="score-entry-section">
-                            <div class="week-selection-section">
-                                <h4>Select Week</h4>
-                                <select id="admin-week-selector" class="week-dropdown" onchange="handleWeekSelection(this.value)">
-                                    <option value="">Select Week</option>
-                                    <option value="1">Week 1</option>
-                                    <option value="2">Week 2</option>
-                                    <option value="3">Week 3</option>
-                                    <option value="4">Week 4</option>
-                                    <option value="5">Week 5</option>
-                                </select>
+                        <div class="admin-scoring-section">
+                            <div class="scoring-controls">
+                                <div class="week-selector">
+                                    <label for="admin-week-select">Select Week:</label>
+                                    <select id="admin-week-select" onchange="loadAdminWeekScores()">
+                                        <option value="">Choose a week...</option>
+                                        <option value="1">Week 1</option>
+                                        <option value="2">Week 2</option>
+                                        <option value="3">Week 3</option>
+                                        <option value="4">Week 4</option>
+                                        <option value="5">Week 5</option>
+                                    </select>
+                                </div>
                             </div>
                             
-                            <!-- Scorecards Container -->
-                            <div id="admin-scorecards-container" class="admin-scorecards-container">
-                                <p style="text-align: center; color: #666; margin: 40px 0; font-style: italic;">
-                                    Select a week to view and enter match scores
-                                </p>
+                            <div id="admin-scorecards-container" style="margin-top: 20px;">
+                                <p style="color: #666; text-align: center; padding: 20px;">Select a week to view and enter match scores</p>
                             </div>
                         </div>
                     </div>
@@ -1266,68 +1264,5 @@
     <script src="script.js"></script>
     <script src="manage-teams.js"></script>
     <script src="my-team.js"></script>
-    <script src="admin-scores.js"></script>
-    
-    <!-- Inline admin score functions for debugging -->
-    <script>
-        console.log('Inline script loading...');
-        
-        // Simple inline version for testing
-        window.loadWeekScorecards = function(weekNumber) {
-            console.log('Inline loadWeekScorecards called with:', weekNumber);
-            
-            if (!weekNumber) {
-                document.getElementById('admin-scorecards-container').innerHTML = `
-                    <p style="text-align: center; color: #666; margin: 40px 0; font-style: italic;">
-                        Select a week to view and enter match scores
-                    </p>
-                `;
-                return;
-            }
-            
-            // Simple test content
-            document.getElementById('admin-scorecards-container').innerHTML = `
-                <div style="background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                    <h4 style="color: #2d4a2d; text-align: center;">Week ${weekNumber} Scorecards</h4>
-                    <p style="text-align: center; color: #666;">
-                        ✅ Function is working! This is a temporary test display.<br/>
-                        The full scorecard layout will load once we fix the script loading issue.
-                    </p>
-                    <div style="background: white; border: 1px solid #ccc; border-radius: 4px; padding: 15px; margin-top: 15px;">
-                        <h5>Test Scorecard - Team 1 vs Team 2</h5>
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Player</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Hole 1</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Hole 2</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Total</th>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid #ddd; padding: 8px;">Player A</td>
-                                <td style="border: 1px solid #ddd; padding: 4px;">
-                                    <input type="number" style="width: 100%; border: none; text-align: center;" placeholder="4">
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 4px;">
-                                    <input type="number" style="width: 100%; border: none; text-align: center;" placeholder="5">
-                                </td>
-                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">-</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            `;
-        };
-        
-        function handleWeekSelection(weekNumber) {
-            console.log('handleWeekSelection called with:', weekNumber);
-            window.loadWeekScorecards(weekNumber);
-        }
-        
-        // Check if external script loaded
-        setTimeout(() => {
-            console.log('Checking script status after page load...');
-            console.log('admin-scores.js script tag exists:', !!document.querySelector('script[src="admin-scores.js"]'));
-        }, 1000);
-    </script>
 </body>
 </html>
