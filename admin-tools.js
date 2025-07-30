@@ -2467,57 +2467,94 @@ function getScoreType(score, par) {
 
 // Apply visual styling to score cell based on score type
 function applyScoreTypeStyle(cell, score) {
-    // Remove any existing styling
-    cell.style.border = '';
+    // Reset cell to default styling
+    cell.style.color = 'black';
+    cell.style.border = '1px solid #ddd';
     cell.style.borderRadius = '';
     cell.style.backgroundColor = '';
     
-    if (score === '-') return;
+    if (score === '-') {
+        cell.textContent = '-';
+        return;
+    }
     
     const hole = cell.dataset.hole;
     const weekNumber = cell.dataset.week;
     
     // Get par value for this hole
     if (!window.currentWeekScorecard || window.currentWeekScorecard.weekNumber != weekNumber) {
+        cell.innerHTML = score;
         return; // No scorecard loaded, can't determine score type
     }
     
     const par = window.currentWeekScorecard.parValues[hole];
     const scoreType = getScoreType(parseInt(score), parseInt(par));
     
-    // Apply styling based on score type
+    // Apply styling based on score type by wrapping score in a span
     switch (scoreType) {
         case 'eagle':
-            // Double circle (thick circular border)
-            cell.style.border = '3px solid #2d4a2d';
-            cell.style.borderRadius = '50%';
-            cell.style.backgroundColor = '#e8f5e8';
+            // Red text with double circle around number
+            cell.innerHTML = `<span style="
+                color: red; 
+                border: 3px solid red; 
+                border-radius: 50%; 
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
+                line-height: 1;
+            ">${score}</span>`;
             break;
             
         case 'birdie':
-            // Single circle
-            cell.style.border = '2px solid #2d4a2d';
-            cell.style.borderRadius = '50%';
-            cell.style.backgroundColor = '#e8f5e8';
+            // Red text with single circle around number
+            cell.innerHTML = `<span style="
+                color: red; 
+                border: 2px solid red; 
+                border-radius: 50%; 
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
+                line-height: 1;
+            ">${score}</span>`;
             break;
             
         case 'par':
-            // Just background color, no border
-            cell.style.backgroundColor = '#e8f5e8';
+            // Just black text
+            cell.innerHTML = `<span style="color: black;">${score}</span>`;
             break;
             
         case 'bogey':
-            // Single square
-            cell.style.border = '2px solid #dc3545';
-            cell.style.borderRadius = '0';
-            cell.style.backgroundColor = '#ffe8e8';
+            // Black text with square around number
+            cell.innerHTML = `<span style="
+                color: black; 
+                border: 2px solid black; 
+                border-radius: 0; 
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
+                line-height: 1;
+            ">${score}</span>`;
             break;
             
         case 'double':
-            // Double square (thick square border)
-            cell.style.border = '3px solid #dc3545';
-            cell.style.borderRadius = '0';
-            cell.style.backgroundColor = '#ffe8e8';
+            // Black text with thick square around number
+            cell.innerHTML = `<span style="
+                color: black; 
+                border: 3px solid black; 
+                border-radius: 0; 
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
+                line-height: 1;
+            ">${score}</span>`;
             break;
     }
 }
