@@ -54,8 +54,11 @@ function getActualTeamNameForScoring(scheduleTeamName) {
 
 // ===== SCORE ENTRY FUNCTIONS =====
 
+// Test function to verify script loading
+console.log('Admin-scores.js loaded successfully');
+
 // Load week scorecards when week is selected (global function for HTML onclick)
-window.loadWeekScorecards = async function(weekNumber) {
+async function loadWeekScorecards(weekNumber) {
     if (!weekNumber) {
         document.getElementById('admin-scorecards-container').innerHTML = `
             <p style="text-align: center; color: #666; margin: 40px 0; font-style: italic;">
@@ -85,7 +88,10 @@ window.loadWeekScorecards = async function(weekNumber) {
             </p>
         `;
     }
-};
+}
+
+// Make function globally available
+window.loadWeekScorecards = loadWeekScorecards;
 
 // Render scorecards for the selected week
 function renderWeekScorecards(weekNumber) {
