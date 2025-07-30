@@ -1872,17 +1872,41 @@ function makeDesktopEditable(cell) {
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             saveValue();
-            // Try to advance to next cell
-            const currentHole = parseInt(cell.dataset.hole);
-            if (currentHole < 9) {
-                const nextCell = cell.parentElement.children[currentHole + 1];
-                if (nextCell && nextCell.classList.contains('editable-score')) {
-                    setTimeout(() => makeDesktopEditable(nextCell), 100);
-                }
-            }
+            // Auto-advance to next hole
+            setTimeout(() => advanceToNextHoleDesktop(cell), 100);
         } else if (e.key === 'Escape') {
             cell.textContent = currentValue;
             cell.style.backgroundColor = currentValue !== '-' ? '#e8f5e8' : '';
         }
     });
+}
+
+// Advance to next hole for desktop editing
+function advanceToNextHoleDesktop(currentCell) {
+    if (!currentCell) return;
+    
+    const currentHole = parseInt(currentCell.dataset.hole);
+    const player = currentCell.dataset.player;
+    const match = currentCell.dataset.match;
+    const group = currentCell.dataset.group;
+    const week = currentCell.dataset.week;
+    
+    if (currentHole < 9) {
+        // Find next hole for same player
+        const nextHole = currentHole + 1;
+        const nextCell = document.querySelector(`[data-player="${player}"][data-hole="${nextHole}"][data-match="${match}"][data-group="${group}"][data-week="${week}"]`);
+        if (nextCell && nextCell.textContent.trim() === '-') {
+            makeDesktopEditable(nextCell);
+        }
+    } else {
+        // Find next player, hole 1
+        const currentRow = currentCell.closest('tr');
+        const nextRow = currentRow.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('player-row')) {
+            const nextPlayerFirstHole = nextRow.querySelector('[data-hole="1"]');
+            if (nextPlayerFirstHole && nextPlayerFirstHole.textContent.trim() === '-') {
+                makeDesktopEditable(nextPlayerFirstHole);
+            }
+        }
+    }
 } 

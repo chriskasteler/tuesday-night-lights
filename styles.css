@@ -2451,3 +2451,17 @@ body.captain-logged-in .captain-only {
 .editable-score:active {
     background: #e9ecef !important;
 }
+
+/* Hide number input spinners/arrows */
+.editable-score input[type="number"]::-webkit-outer-spin-button,
+.editable-score input[type="number"]::-webkit-inner-spin-button,
+.scorecard-table input[type="number"]::-webkit-outer-spin-button,
+.scorecard-table input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.editable-score input[type="number"],
+.scorecard-table input[type="number"] {
+    -moz-appearance: textfield;
+}
