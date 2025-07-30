@@ -1595,7 +1595,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                <table class="scorecard-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
                    <thead>
                        <tr class="holes-row">
-                           <th class="player-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd;">Player</th>
+                           <th class="player-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd;">Hole</th>
                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">1</th>
                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">2</th>
                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">3</th>
@@ -1610,7 +1610,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                    </thead>
                    <tbody>
                        <tr class="par-row" style="background: #fff3cd;">
-                           <td class="par-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">Par</td>
+                           <td class="par-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600; text-align: left;">Par</td>
                            <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
                            <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">3</td>
                            <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">5</td>
