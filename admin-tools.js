@@ -1961,6 +1961,8 @@ function makeDesktopEditable(cell) {
     input.style.border = 'none';
     input.style.background = '#e8f5e8';
     input.style.fontSize = 'inherit';
+    input.style.outline = 'none';
+    input.style.boxShadow = 'none';
     
     cell.innerHTML = '';
     cell.appendChild(input);
