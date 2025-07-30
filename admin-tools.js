@@ -1959,7 +1959,7 @@ function makeDesktopEditable(cell) {
     input.style.width = '100%';
     input.style.textAlign = 'center';
     input.style.border = 'none';
-    input.style.background = '#e8f5e8';
+    input.style.background = 'transparent';
     input.style.fontSize = 'inherit';
     input.style.outline = 'none';
     input.style.boxShadow = 'none';
