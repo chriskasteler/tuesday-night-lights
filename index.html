@@ -1268,26 +1268,66 @@
     <script src="my-team.js"></script>
     <script src="admin-scores.js"></script>
     
-    <!-- Fallback for admin score functions -->
+    <!-- Inline admin score functions for debugging -->
     <script>
+        console.log('Inline script loading...');
+        
+        // Simple inline version for testing
+        window.loadWeekScorecards = function(weekNumber) {
+            console.log('Inline loadWeekScorecards called with:', weekNumber);
+            
+            if (!weekNumber) {
+                document.getElementById('admin-scorecards-container').innerHTML = `
+                    <p style="text-align: center; color: #666; margin: 40px 0; font-style: italic;">
+                        Select a week to view and enter match scores
+                    </p>
+                `;
+                return;
+            }
+            
+            // Simple test content
+            document.getElementById('admin-scorecards-container').innerHTML = `
+                <div style="background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                    <h4 style="color: #2d4a2d; text-align: center;">Week ${weekNumber} Scorecards</h4>
+                    <p style="text-align: center; color: #666;">
+                        ✅ Function is working! This is a temporary test display.<br/>
+                        The full scorecard layout will load once we fix the script loading issue.
+                    </p>
+                    <div style="background: white; border: 1px solid #ccc; border-radius: 4px; padding: 15px; margin-top: 15px;">
+                        <h5>Test Scorecard - Team 1 vs Team 2</h5>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Player</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Hole 1</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Hole 2</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; background: #f8f9fa;">Total</th>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Player A</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">
+                                    <input type="number" style="width: 100%; border: none; text-align: center;" placeholder="4">
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">
+                                    <input type="number" style="width: 100%; border: none; text-align: center;" placeholder="5">
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+        };
+        
         function handleWeekSelection(weekNumber) {
             console.log('handleWeekSelection called with:', weekNumber);
-            if (typeof window.loadWeekScorecards === 'function') {
-                window.loadWeekScorecards(weekNumber);
-            } else if (typeof loadWeekScorecards === 'function') {
-                loadWeekScorecards(weekNumber);
-            } else {
-                console.error('loadWeekScorecards function not found. Script may not be loaded yet.');
-                // Try again after a short delay
-                setTimeout(() => {
-                    if (typeof window.loadWeekScorecards === 'function') {
-                        window.loadWeekScorecards(weekNumber);
-                    } else {
-                        console.error('loadWeekScorecards still not available after delay');
-                    }
-                }, 100);
-            }
+            window.loadWeekScorecards(weekNumber);
         }
+        
+        // Check if external script loaded
+        setTimeout(() => {
+            console.log('Checking script status after page load...');
+            console.log('admin-scores.js script tag exists:', !!document.querySelector('script[src="admin-scores.js"]'));
+        }, 1000);
     </script>
 </body>
 </html>
