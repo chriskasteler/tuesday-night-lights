@@ -1587,7 +1587,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
         <div class="admin-scorecard" style="width: 100%; max-width: 100%; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 10px;">
                 <div class="match-info" style="text-align: center;">
-                    <span class="match-title" style="font-weight: 600;">Match ${matchNum}</span>
+                    <span class="match-title" style="font-weight: 600; color: white;">Match ${matchNum}</span>
                 </div>
             </div>
            
@@ -1609,6 +1609,19 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                        </tr>
                    </thead>
                    <tbody>
+                       <tr class="par-row" style="background: #fff3cd;">
+                           <td class="par-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">Par</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">3</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">5</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">3</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">4</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">5</td>
+                           <td class="par-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">3</td>
+                           <td class="par-total" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">35</td>
+                       </tr>
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
                            ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
