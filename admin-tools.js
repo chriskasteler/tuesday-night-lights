@@ -2390,7 +2390,7 @@ function generateParRow(weekNumber) {
             <tr class="par-row" style="background: #fff3cd;" id="par-row-week-${weekNumber}">
                 <td class="par-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600; text-align: left;">Par</td>
                 <td colspan="10" class="scorecard-selection" style="padding: 12px; border: 1px solid #ddd; text-align: center;">
-                    <button onclick="showScorecardSelector(${weekNumber})" style="background: #4a5d4a; color: white; border: none; padding: 8px 20px; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
+                    <button onclick="showScorecardSelector(${weekNumber})" style="background: #dc3545; color: white; border: none; padding: 8px 20px; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
                         Please Select Scorecard for Week ${weekNumber}
                     </button>
                 </td>
