@@ -1977,45 +1977,23 @@ function showNewScorecardForm() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="par-row">
-                                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">Par</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
-                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">35</td>
-                            </tr>
-                            <tr class="example-row">
-                                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 500; background: #f8f9fa;">Example Player</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #ffe8e8;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f0ff;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #fff8e8;">5</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f0ff;">2</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">4</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">5</td>
-                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">3</td>
-                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600;">35</td>
-                            </tr>
+                                                         <tr class="par-row">
+                                 <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">Par</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
+                                 <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
+                                 <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">35</td>
+                             </tr>
                         </tbody>
                     </table>
-                </div>
-                
-                <div style="padding: 15px; background: #f8f9fa; border-top: 1px solid #ddd;">
-                    <p style="margin: 0; color: #666; font-size: 0.9rem; text-align: center;">
-                        Colors: <span style="background: #e8f5e8; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Par</span>
-                        <span style="background: #e8f0ff; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Birdie</span>
-                        <span style="background: #fff8e8; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Bogey</span>
-                        <span style="background: #ffe8e8; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Double+</span>
-                    </p>
-                </div>
-            </div>
+                                 </div>
+             </div>
         </div>
     `;
     
