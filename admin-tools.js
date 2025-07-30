@@ -1932,4 +1932,109 @@ function advanceToNextHoleDesktop(currentCell) {
             }
         }
     }
+}
+
+// Show new scorecard configuration form
+function showNewScorecardForm() {
+    const noScorecardsState = document.querySelector('.no-scorecards-state');
+    const scorecardsContainer = document.querySelector('.scorecard-list-section');
+    
+    // Hide the "no scorecards" message
+    if (noScorecardsState) {
+        noScorecardsState.style.display = 'none';
+    }
+    
+    // Create new scorecard configuration interface
+    const scorecardConfigHTML = `
+        <div class="scorecard-config-container" style="margin-top: 20px;">
+                         <div class="config-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h4 style="color: #4a5d4a; margin: 0;">New Scorecard Configuration</h4>
+                <button onclick="cancelScorecardConfig()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                    Cancel
+                </button>
+            </div>
+            
+            <div class="scorecard-preview" style="border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 12px; text-align: center;">
+                    <span style="font-weight: 600; font-size: 1.1rem;">Scorecard Configuration</span>
+                </div>
+                
+                <div class="golf-scorecard-mini">
+                    <table class="scorecard-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr class="holes-row">
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd;">Hole</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">1</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">2</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">3</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">4</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">5</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">6</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">7</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">8</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">9</th>
+                                <th style="padding: 12px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="par-row">
+                                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">Par</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">5</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">3</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">35</td>
+                            </tr>
+                            <tr class="example-row">
+                                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 500; background: #f8f9fa;">Example Player</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #ffe8e8;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f0ff;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #fff8e8;">5</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f0ff;">2</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">4</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">5</td>
+                                <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;">3</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600;">35</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="padding: 15px; background: #f8f9fa; border-top: 1px solid #ddd;">
+                    <p style="margin: 0; color: #666; font-size: 0.9rem; text-align: center;">
+                        Colors: <span style="background: #e8f5e8; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Par</span>
+                        <span style="background: #e8f0ff; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Birdie</span>
+                        <span style="background: #fff8e8; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Bogey</span>
+                        <span style="background: #ffe8e8; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Double+</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add the configuration interface
+    scorecardsContainer.insertAdjacentHTML('beforeend', scorecardConfigHTML);
+}
+
+// Cancel scorecard configuration
+function cancelScorecardConfig() {
+    const configContainer = document.querySelector('.scorecard-config-container');
+    const noScorecardsState = document.querySelector('.no-scorecards-state');
+    
+    // Remove the config interface
+    if (configContainer) {
+        configContainer.remove();
+    }
+    
+    // Show the "no scorecards" message again
+    if (noScorecardsState) {
+        noScorecardsState.style.display = 'block';
+    }
 } 
