@@ -2117,7 +2117,7 @@ function showScorecardForm(existingData = null, scorecardId = null) {
     // Get existing values or defaults
     const scorecardName = existingData ? existingData.name : 'Front Nine';
     const parValues = existingData ? existingData.parValues : {
-        '1': 4, '2': 3, '3': 5, '4': 4, '5': 4, '6': 3, '7': 4, '8': 5, '9': 3
+        '1': 4, '2': 4, '3': 4, '4': 4, '5': 4, '6': 4, '7': 4, '8': 4, '9': 4
     };
     
     // Create scorecard configuration interface
@@ -2228,7 +2228,7 @@ function showScorecardForm(existingData = null, scorecardId = null) {
                                          <option value="5" ${parValues['9'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
-                                 <td id="par-total" style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">${existingData ? existingData.total : 35}</td>
+                                 <td id="par-total" style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">${existingData ? existingData.total : 36}</td>
                              </tr>
                         </tbody>
                     </table>
