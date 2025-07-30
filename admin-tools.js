@@ -1987,7 +1987,7 @@ function showNoScorecardsState() {
                 This will enable automatic birdie, par, and bogey calculations during score entry.
             </p>
             
-            <button class="add-scorecard-btn" onclick="showNewScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer;">
+            <button class="add-scorecard-btn" onclick="showScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer;">
                 Add New Scorecard
             </button>
         </div>
@@ -2002,7 +2002,7 @@ function showScorecardsList(scorecards) {
     let scorecardsHTML = `
         <div class="scorecards-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h4 style="color: #4a5d4a; margin: 0;">Saved Scorecards</h4>
-            <button onclick="showNewScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer;">
+            <button onclick="showScorecardForm()" style="background: #4a5d4a; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer;">
                 Add New Scorecard
             </button>
         </div>
@@ -2058,37 +2058,49 @@ function showScorecardsList(scorecards) {
     scorecardsContainer.innerHTML = scorecardsHTML;
 }
 
-// Show new scorecard configuration form
-function showNewScorecardForm() {
+// Show scorecard configuration form (for new or edit)
+function showScorecardForm(existingData = null, scorecardId = null) {
     const scorecardsContainer = document.querySelector('.scorecard-list-section');
     if (!scorecardsContainer) return;
     
     // Hide existing content
     scorecardsContainer.innerHTML = '';
     
-    // Create new scorecard configuration interface
+    // Determine if we're editing or creating new
+    const isEditing = existingData && scorecardId;
+    const headerText = isEditing ? 'Edit Scorecard Configuration' : 'New Scorecard Configuration';
+    const saveButtonText = isEditing ? 'Update Scorecard' : 'Save Scorecard';
+    
+    // Get existing values or defaults
+    const scorecardName = existingData ? existingData.name : 'Front Nine';
+    const parValues = existingData ? existingData.parValues : {
+        '1': 4, '2': 3, '3': 5, '4': 4, '5': 4, '6': 3, '7': 4, '8': 5, '9': 3
+    };
+    
+    // Create scorecard configuration interface
     const scorecardConfigHTML = `
         <div class="scorecard-config-container" style="margin-top: 20px;">
-                         <div class="config-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h4 style="color: #4a5d4a; margin: 0;">New Scorecard Configuration</h4>
-                <button onclick="cancelScorecardConfig()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
-                    Cancel
-                </button>
-            </div>
-            
-            <div class="scorecard-preview" style="border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 12px; text-align: center;">
-                    <span style="font-weight: 600; font-size: 1.1rem;">Scorecard Configuration</span>
-                </div>
-                
-                <div class="scorecard-name-section" style="padding: 15px; background: #f8f9fa; border-bottom: 1px solid #ddd;">
-                    <label for="scorecard-name" style="display: block; font-weight: 600; color: #495057; margin-bottom: 8px;">
-                        Scorecard Name:
-                    </label>
-                    <input type="text" id="scorecard-name" placeholder="e.g., Front Nine, Back Nine, Championship Nine..." 
-                           style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem; box-sizing: border-box;"
-                           value="Front Nine">
-                </div>
+                                      <div class="config-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                 <h4 style="color: #4a5d4a; margin: 0;">${headerText}</h4>
+                 <button onclick="cancelScorecardConfig()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                     Cancel
+                 </button>
+             </div>
+             
+             <div class="scorecard-preview" style="border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                 <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 12px; text-align: center;">
+                     <span style="font-weight: 600; font-size: 1.1rem;">Scorecard Configuration</span>
+                 </div>
+                 
+                 <div class="scorecard-name-section" style="padding: 15px; background: #f8f9fa; border-bottom: 1px solid #ddd;">
+                     <label for="scorecard-name" style="display: block; font-weight: 600; color: #495057; margin-bottom: 8px;">
+                         Scorecard Name:
+                     </label>
+                     <input type="text" id="scorecard-name" placeholder="e.g., Front Nine, Back Nine, Championship Nine..." 
+                            style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem; box-sizing: border-box;"
+                            value="${scorecardName}">
+                     ${isEditing ? `<input type="hidden" id="editing-scorecard-id" value="${scorecardId}">` : ''}
+                 </div>
                 
                 <div class="golf-scorecard-mini">
                     <table class="scorecard-table" style="width: 100%; border-collapse: collapse;">
@@ -2112,68 +2124,68 @@ function showNewScorecardForm() {
                                  <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">Par</td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="1" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3">3</option>
-                                         <option value="4" selected>4</option>
-                                         <option value="5">5</option>
+                                         <option value="3" ${parValues['1'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['1'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['1'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="2" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3" selected>3</option>
-                                         <option value="4">4</option>
-                                         <option value="5">5</option>
+                                         <option value="3" ${parValues['2'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['2'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['2'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="3" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3">3</option>
-                                         <option value="4">4</option>
-                                         <option value="5" selected>5</option>
+                                         <option value="3" ${parValues['3'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['3'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['3'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="4" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3">3</option>
-                                         <option value="4" selected>4</option>
-                                         <option value="5">5</option>
+                                         <option value="3" ${parValues['4'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['4'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['4'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="5" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3">3</option>
-                                         <option value="4" selected>4</option>
-                                         <option value="5">5</option>
+                                         <option value="3" ${parValues['5'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['5'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['5'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="6" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3" selected>3</option>
-                                         <option value="4">4</option>
-                                         <option value="5">5</option>
+                                         <option value="3" ${parValues['6'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['6'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['6'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="7" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3">3</option>
-                                         <option value="4" selected>4</option>
-                                         <option value="5">5</option>
+                                         <option value="3" ${parValues['7'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['7'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['7'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="8" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3">3</option>
-                                         <option value="4">4</option>
-                                         <option value="5" selected>5</option>
+                                         <option value="3" ${parValues['8'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['8'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['8'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
                                  <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">
                                      <select class="par-select" data-hole="9" onchange="updateParTotal()" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-                                         <option value="3" selected>3</option>
-                                         <option value="4">4</option>
-                                         <option value="5">5</option>
+                                         <option value="3" ${parValues['9'] == 3 ? 'selected' : ''}>3</option>
+                                         <option value="4" ${parValues['9'] == 4 ? 'selected' : ''}>4</option>
+                                         <option value="5" ${parValues['9'] == 5 ? 'selected' : ''}>5</option>
                                      </select>
                                  </td>
-                                 <td id="par-total" style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">35</td>
+                                 <td id="par-total" style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">${existingData ? existingData.total : 35}</td>
                              </tr>
                         </tbody>
                     </table>
@@ -2181,7 +2193,7 @@ function showNewScorecardForm() {
                  
                  <div class="save-section" style="padding: 20px; background: #f8f9fa; border-top: 1px solid #ddd; text-align: center;">
                      <button onclick="saveScorecardConfig()" style="background: #4a5d4a; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-right: 10px;">
-                         Save Scorecard
+                         ${saveButtonText}
                      </button>
                      <button onclick="cancelScorecardConfig()" style="background: #6c757d; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 1rem; cursor: pointer;">
                          Cancel
@@ -2214,6 +2226,7 @@ function updateParTotal() {
 async function saveScorecardConfig() {
     try {
         const nameInput = document.getElementById('scorecard-name');
+        const editingIdInput = document.getElementById('editing-scorecard-id');
         const parSelects = document.querySelectorAll('.par-select');
         
         const scorecardName = nameInput.value.trim();
@@ -2233,23 +2246,42 @@ async function saveScorecardConfig() {
             total += par;
         });
         
-        // Create scorecard configuration object
-        const scorecardConfig = {
-            name: scorecardName,
-            parValues: parValues,
-            total: total,
-            createdAt: new Date(),
-            createdBy: auth.currentUser ? auth.currentUser.email : 'unknown'
-        };
+        // Determine if we're editing or creating new
+        const isEditing = editingIdInput && editingIdInput.value;
         
-        // Save to Firebase
-        const docRef = await db.collection('scorecards').add(scorecardConfig);
-        console.log('✅ Scorecard saved with ID:', docRef.id);
+        if (isEditing) {
+            // Update existing scorecard
+            const scorecardConfig = {
+                name: scorecardName,
+                parValues: parValues,
+                total: total,
+                updatedAt: new Date(),
+                updatedBy: auth.currentUser ? auth.currentUser.email : 'unknown'
+            };
+            
+            await db.collection('scorecards').doc(editingIdInput.value).update(scorecardConfig);
+            console.log('✅ Scorecard updated with ID:', editingIdInput.value);
+            
+            // Show success message
+            alert(`Scorecard "${scorecardName}" updated successfully!`);
+        } else {
+            // Create new scorecard
+            const scorecardConfig = {
+                name: scorecardName,
+                parValues: parValues,
+                total: total,
+                createdAt: new Date(),
+                createdBy: auth.currentUser ? auth.currentUser.email : 'unknown'
+            };
+            
+            const docRef = await db.collection('scorecards').add(scorecardConfig);
+            console.log('✅ Scorecard created with ID:', docRef.id);
+            
+            // Show success message
+            alert(`Scorecard "${scorecardName}" saved successfully!`);
+        }
         
-        // Show success message
-        alert(`Scorecard "${scorecardName}" saved successfully!`);
-        
-        // Return to empty state and reload scorecards
+        // Return to list and reload scorecards
         cancelScorecardConfig();
         loadScorecards();
         
@@ -2272,9 +2304,26 @@ function cancelScorecardConfig() {
     loadScorecards();
 }
 
-// Placeholder functions for edit and delete (to be implemented)
-function editScorecard(scorecardId) {
-    alert('Edit functionality coming soon!');
+// Edit existing scorecard
+async function editScorecard(scorecardId) {
+    try {
+        // Fetch the scorecard data from Firebase
+        const scorecardDoc = await db.collection('scorecards').doc(scorecardId).get();
+        
+        if (!scorecardDoc.exists) {
+            alert('Scorecard not found.');
+            return;
+        }
+        
+        const scorecardData = scorecardDoc.data();
+        
+        // Show the configuration form with existing data
+        showScorecardForm(scorecardData, scorecardId);
+        
+    } catch (error) {
+        console.error('❌ Error loading scorecard for editing:', error);
+        alert('Error loading scorecard. Please try again.');
+    }
 }
 
 function deleteScorecard(scorecardId, scorecardName) {
