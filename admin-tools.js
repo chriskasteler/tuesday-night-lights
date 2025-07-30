@@ -1567,6 +1567,13 @@ async function loadAdminWeekScores() {
             renderAdminMatchGroup(matchPair, selectedWeek, index)
         ).join('')}
     `;
+    
+    // Reapply styling to existing scores if scorecard is loaded
+    if (window.currentWeekScorecard && window.currentWeekScorecard.weekNumber == selectedWeek) {
+        setTimeout(() => {
+            reapplyScoringStylesForWeek(selectedWeek);
+        }, 100);
+    }
 }
 
 // Render a group of matches (2 matches between same teams) for admin scoring
@@ -1598,7 +1605,7 @@ function generateScoreCells(player, matchNum, groupIndex, weekNumber) {
                      data-match="${matchNum}" 
                      data-group="${groupIndex}" 
                      data-week="${weekNumber}"
-                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; position: relative;"
+                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box;"
                      onclick="openScorePad(this)">-</td>`;
     }
     return cells;
@@ -1797,7 +1804,9 @@ function selectScore(score) {
     
     // Update the cell
     currentScoreCell.textContent = score;
-    currentScoreCell.style.backgroundColor = '#e8f5e8';
+    
+    // Apply visual styling based on score vs par
+    applyScoreTypeStyle(currentScoreCell, score);
     
     // Store the score
     const player = currentScoreCell.dataset.player;
@@ -1817,7 +1826,9 @@ function clearScore() {
     if (!currentScoreCell) return;
     
     currentScoreCell.textContent = '-';
-    currentScoreCell.style.backgroundColor = '';
+    
+    // Apply styling for cleared score (removes all styling)
+    applyScoreTypeStyle(currentScoreCell, '-');
     
     const player = currentScoreCell.dataset.player;
     const hole = currentScoreCell.dataset.hole;
@@ -1898,7 +1909,9 @@ function makeDesktopEditable(cell) {
         const value = input.value.trim();
         const score = value === '' ? '-' : value;
         cell.textContent = score;
-        cell.style.backgroundColor = score !== '-' ? '#e8f5e8' : '';
+        
+        // Apply visual styling based on score vs par
+        applyScoreTypeStyle(cell, score);
         
         // Store the score
         const player = cell.dataset.player;
@@ -2441,6 +2454,87 @@ function generateParRow(weekNumber) {
     }
 }
 
+// Get score type relative to par
+function getScoreType(score, par) {
+    const difference = score - par;
+    
+    if (difference <= -2) return 'eagle';      // 2+ under par
+    if (difference === -1) return 'birdie';    // 1 under par
+    if (difference === 0) return 'par';        // Even par
+    if (difference === 1) return 'bogey';      // 1 over par
+    return 'double';                           // 2+ over par
+}
+
+// Apply visual styling to score cell based on score type
+function applyScoreTypeStyle(cell, score) {
+    // Remove any existing styling
+    cell.style.border = '';
+    cell.style.borderRadius = '';
+    cell.style.backgroundColor = '';
+    
+    if (score === '-') return;
+    
+    const hole = cell.dataset.hole;
+    const weekNumber = cell.dataset.week;
+    
+    // Get par value for this hole
+    if (!window.currentWeekScorecard || window.currentWeekScorecard.weekNumber != weekNumber) {
+        return; // No scorecard loaded, can't determine score type
+    }
+    
+    const par = window.currentWeekScorecard.parValues[hole];
+    const scoreType = getScoreType(parseInt(score), parseInt(par));
+    
+    // Apply styling based on score type
+    switch (scoreType) {
+        case 'eagle':
+            // Double circle (thick circular border)
+            cell.style.border = '3px solid #2d4a2d';
+            cell.style.borderRadius = '50%';
+            cell.style.backgroundColor = '#e8f5e8';
+            break;
+            
+        case 'birdie':
+            // Single circle
+            cell.style.border = '2px solid #2d4a2d';
+            cell.style.borderRadius = '50%';
+            cell.style.backgroundColor = '#e8f5e8';
+            break;
+            
+        case 'par':
+            // Just background color, no border
+            cell.style.backgroundColor = '#e8f5e8';
+            break;
+            
+        case 'bogey':
+            // Single square
+            cell.style.border = '2px solid #dc3545';
+            cell.style.borderRadius = '0';
+            cell.style.backgroundColor = '#ffe8e8';
+            break;
+            
+        case 'double':
+            // Double square (thick square border)
+            cell.style.border = '3px solid #dc3545';
+            cell.style.borderRadius = '0';
+            cell.style.backgroundColor = '#ffe8e8';
+            break;
+    }
+}
+
+// Reapply styling to all existing scores when scorecard changes
+function reapplyScoringStylesForWeek(weekNumber) {
+    // Find all score cells for this week
+    const scoreCells = document.querySelectorAll(`[data-week="${weekNumber}"].editable-score`);
+    
+    scoreCells.forEach(cell => {
+        const score = cell.textContent.trim();
+        if (score && score !== '-') {
+            applyScoreTypeStyle(cell, score);
+        }
+    });
+}
+
 // Show scorecard selector for a specific week
 async function showScorecardSelector(weekNumber) {
     try {
@@ -2546,6 +2640,11 @@ async function selectScorecardForWeek(scorecardId, scorecardName, weekNumber) {
         
         // Reload the week scores to show updated par values
         loadAdminWeekScores();
+        
+        // Reapply styling to any existing scores
+        setTimeout(() => {
+            reapplyScoringStylesForWeek(weekNumber);
+        }, 100);
         
         console.log(`✅ Scorecard "${scorecardName}" assigned to Week ${weekNumber}`);
         
