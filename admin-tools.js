@@ -1607,7 +1607,7 @@ function generateScoreCells(player, matchNum, groupIndex, weekNumber) {
                      data-match="${matchNum}" 
                      data-group="${groupIndex}" 
                      data-week="${weekNumber}"
-                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box;"
+                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box; background: white;"
                      onclick="openScorePad(this)">-</td>`;
     }
     return cells;
@@ -1623,7 +1623,7 @@ function generateTeamScoreCells(teamId, matchNum, groupIndex, weekNumber) {
                      data-match="${matchNum}" 
                      data-group="${groupIndex}" 
                      data-week="${weekNumber}"
-                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box;"
+                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box; background: white;"
                      onclick="openScorePad(this)">-</td>`;
     }
     return cells;
@@ -1694,10 +1694,10 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
                    </thead>
                    <tbody>
                        ${generateParRow(weekNumber)}
-                       <tr class="team-row" style="background: #e8f5e8;">
+                       <tr class="team-row">
                            <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Name} Player 1 & Player 2</td>
                            ${generateTeamScoreCells(team1Id, matchNum, groupIndex, weekNumber)}
-                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -1710,10 +1710,10 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
                            <td class="match-status-final" style="padding: 6px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
                        </tr>
                        <tr style="height: 10px;"><td colspan="11" style="border: none;"></td></tr>
-                       <tr class="team-row" style="background: #e8f5e8;">
+                       <tr class="team-row">
                            <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Name} Player 1 & Player 2</td>
                            ${generateTeamScoreCells(team2Id, matchNum, groupIndex, weekNumber)}
-                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
