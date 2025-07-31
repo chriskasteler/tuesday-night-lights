@@ -1697,7 +1697,7 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
                        <tr class="team-row">
                            <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Name} Player 1 & Player 2</td>
                            ${generateTeamScoreCells(team1Id, matchNum, groupIndex, weekNumber)}
-                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #f8f9fa;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -1713,7 +1713,7 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
                        <tr class="team-row">
                            <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Name} Player 1 & Player 2</td>
                            ${generateTeamScoreCells(team2Id, matchNum, groupIndex, weekNumber)}
-                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #f8f9fa;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -1805,7 +1805,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="match-status-row" style="background: #fff3cd;">
                            <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${getAdminTeamName(matchup.team1)} Status</td>
@@ -1844,7 +1844,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="match-status-row" style="background: #fff3cd;">
                            <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${getAdminTeamName(matchup.team2)} Status</td>
