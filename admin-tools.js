@@ -1885,6 +1885,9 @@ function selectScore(score) {
     // Update player total
     updatePlayerTotal(player);
     
+    // Update team scores for best ball
+    updateTeamScores();
+    
     // Auto-advance to next hole
     setTimeout(() => {
         closeScorePad();
@@ -1981,6 +1984,9 @@ function setStroke(player, hole, strokeType) {
     
     // Recalculate player total
     updatePlayerTotal(player);
+    
+    // Update team scores for best ball
+    updateTeamScores();
     
     // Close modal
     closeStrokeSelector();
@@ -2257,6 +2263,9 @@ function clearScore() {
     // Update player total
     updatePlayerTotal(player);
     
+    // Update team scores for best ball
+    updateTeamScores();
+    
     closeScorePad();
 }
 
@@ -2321,6 +2330,130 @@ function recalculateAllTotals() {
     Object.keys(currentMatchStatus).forEach(matchKey => {
         for (let hole = 1; hole <= 9; hole++) {
             updateMatchStatusCell(matchKey, hole);
+        }
+    });
+    
+    // Update team scores for best ball
+    updateTeamScores();
+}
+
+// Calculate best ball team score for a specific hole
+function calculateBestBallTeamScore(team, hole, matchNum, groupIndex) {
+    const playerA = `${team}-${matchNum === 1 ? 'A' : 'C'}`;
+    const playerB = `${team}-${matchNum === 1 ? 'B' : 'D'}`;
+    
+    // Get gross scores for both players
+    const scoreA = currentPlayerScores[playerA] && currentPlayerScores[playerA][hole];
+    const scoreB = currentPlayerScores[playerB] && currentPlayerScores[playerB][hole];
+    
+    if (!scoreA && !scoreB) return null; // No scores entered yet
+    
+    let netScores = [];
+    
+    // Calculate net score for Player A
+    if (scoreA) {
+        const strokeTypeA = currentPlayerStrokes[playerA] && currentPlayerStrokes[playerA][hole];
+        let strokeValueA = 0;
+        if (strokeTypeA === 'full') strokeValueA = 1;
+        else if (strokeTypeA === 'half') strokeValueA = 0.5;
+        
+        const netScoreA = parseInt(scoreA) - strokeValueA;
+        netScores.push(netScoreA);
+    }
+    
+    // Calculate net score for Player B
+    if (scoreB) {
+        const strokeTypeB = currentPlayerStrokes[playerB] && currentPlayerStrokes[playerB][hole];
+        let strokeValueB = 0;
+        if (strokeTypeB === 'full') strokeValueB = 1;
+        else if (strokeTypeB === 'half') strokeValueB = 0.5;
+        
+        const netScoreB = parseInt(scoreB) - strokeValueB;
+        netScores.push(netScoreB);
+    }
+    
+    // Return the best (lowest) net score
+    return Math.min(...netScores);
+}
+
+// Update team score cells for best ball format
+function updateTeamScores() {
+    // Find all team score cells and calculate best ball scores
+    const teamScoreCells = document.querySelectorAll('td.team-score-cell');
+    
+    teamScoreCells.forEach(cell => {
+        const hole = cell.dataset?.hole;
+        if (!hole) {
+            // Find the hole number by looking at the column position
+            const row = cell.closest('tr');
+            const cellIndex = Array.from(row.cells).indexOf(cell);
+            const holeNumber = cellIndex; // Holes are in columns 2-10 (1-9)
+            
+            if (holeNumber >= 1 && holeNumber <= 9) {
+                // Find the team from the row
+                const teamRow = cell.closest('tr');
+                const teamLabel = teamRow.querySelector('.team-score-label');
+                if (teamLabel) {
+                    const labelText = teamLabel.textContent;
+                    const teamMatch = labelText.match(/(Team \d+)/);
+                    if (teamMatch) {
+                        const team = teamMatch[1];
+                        
+                        // Determine match number from context
+                        const scorecard = cell.closest('.admin-scorecard');
+                        const matchTitle = scorecard.querySelector('.match-title');
+                        const matchNum = matchTitle ? parseInt(matchTitle.textContent.replace('Match ', '')) : 1;
+                        
+                        // Calculate best ball score
+                        const bestScore = calculateBestBallTeamScore(team, holeNumber, matchNum, 0);
+                        
+                        if (bestScore !== null) {
+                            cell.textContent = Math.round(bestScore * 2) / 2; // Handle half strokes properly
+                            cell.style.fontWeight = '600';
+                            cell.style.color = '#2d4a2d';
+                        } else {
+                            cell.textContent = '-';
+                            cell.style.fontWeight = '600';
+                            cell.style.color = '#666';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Update team totals
+    updateTeamTotals();
+}
+
+// Update team total cells
+function updateTeamTotals() {
+    const teamTotalCells = document.querySelectorAll('td.team-total-cell');
+    
+    teamTotalCells.forEach(cell => {
+        // Find the corresponding team score row
+        const teamRow = cell.closest('tr');
+        const teamScoreCells = teamRow.querySelectorAll('td.team-score-cell');
+        
+        let total = 0;
+        let hasScores = false;
+        
+        teamScoreCells.forEach(scoreCell => {
+            const scoreText = scoreCell.textContent.trim();
+            if (scoreText !== '-' && !isNaN(parseFloat(scoreText))) {
+                total += parseFloat(scoreText);
+                hasScores = true;
+            }
+        });
+        
+        if (hasScores) {
+            cell.textContent = Math.round(total * 2) / 2; // Handle half scores properly
+            cell.style.fontWeight = '600';
+            cell.style.color = '#2d4a2d';
+        } else {
+            cell.textContent = '-';
+            cell.style.fontWeight = '600';
+            cell.style.color = '#666';
         }
     });
 }
@@ -2423,6 +2556,9 @@ function makeDesktopEditable(cell) {
         
         // Update player total
         updatePlayerTotal(player);
+        
+        // Update team scores for best ball
+        updateTeamScores();
     }
     
     input.addEventListener('blur', saveValue);
