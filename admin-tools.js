@@ -1627,6 +1627,23 @@ function generateStrokeCells(player, matchNum, groupIndex, weekNumber) {
     return cells;
 }
 
+// Generate match status cells for a team status row
+function generateMatchStatusCells(team, matchNum, groupIndex, weekNumber) {
+    let cells = '';
+    for (let hole = 1; hole <= 9; hole++) {
+        cells += `<td class="match-status-cell" 
+                     data-team="${team}" 
+                     data-hole="${hole}"
+                     data-match="${matchNum}"
+                     data-group="${groupIndex}"
+                     data-week="${weekNumber}"
+                     onclick="openMatchStatusSelector('${team}', ${hole}, ${matchNum}, ${groupIndex})"
+                     style="padding: 6px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 24px; min-width: 36px; font-size: 11px; color: #856404; background: #fff3cd;"
+                     title="Click to set match status">AS</td>`;
+    }
+    return cells;
+}
+
 // Render individual scorecard for admin scoring
 function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
     const team1Player1 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'A' : 'C'}`;
@@ -1694,6 +1711,11 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
+                       <tr class="match-status-row" style="background: #fff3cd;">
+                           <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${getAdminTeamName(matchup.team1)} Status</td>
+                           ${generateMatchStatusCells(matchup.team1, matchNum, groupIndex, weekNumber)}
+                           <td class="match-status-final" style="padding: 6px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                       </tr>
                        <tr style="height: 10px;"><td colspan="11" style="border: none;"></td></tr>
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
@@ -1728,6 +1750,11 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
+                       <tr class="match-status-row" style="background: #fff3cd;">
+                           <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${getAdminTeamName(matchup.team2)} Status</td>
+                           ${generateMatchStatusCells(matchup.team2, matchNum, groupIndex, weekNumber)}
+                           <td class="match-status-final" style="padding: 6px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                       </tr>
                    </tbody>
                </table>
            </div>
@@ -1741,6 +1768,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
 let currentScoreCell = null;
 let currentPlayerScores = {};
 let currentPlayerStrokes = {};
+let currentMatchStatus = {};
 
 // Check if device is mobile
 function isMobileDevice() {
@@ -2040,6 +2068,174 @@ function updateScoreStrokeIndicator(player, hole) {
     });
 }
 
+// Open match status selector for a team on a specific hole
+function openMatchStatusSelector(team, hole, matchNum, groupIndex) {
+    // Create match status selector modal
+    const modal = document.createElement('div');
+    modal.id = 'match-status-selector-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+    
+    const matchKey = `${team}-${matchNum}-${groupIndex}`;
+    const currentStatus = currentMatchStatus[matchKey] && currentMatchStatus[matchKey][hole];
+    
+    modal.innerHTML = `
+        <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 400px;">
+            <h4 style="margin: 0 0 15px 0; color: #2d4a2d;">Set Match Status</h4>
+            <p style="margin: 0 0 20px 0; color: #666;">${team} - Hole ${hole}</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;">
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, 'AS')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === 'AS' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === 'AS' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === 'AS' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    AS
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '1 up')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '1 up' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '1 up' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '1 up' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    1 up
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '1 dn')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '1 dn' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '1 dn' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '1 dn' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    1 dn
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '2 up')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '2 up' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '2 up' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '2 up' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    2 up
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '2 dn')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '2 dn' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '2 dn' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '2 dn' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    2 dn
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '3 up')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '3 up' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '3 up' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '3 up' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    3 up
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '3 dn')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '3 dn' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '3 dn' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '3 dn' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    3 dn
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '4 up')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '4 up' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '4 up' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '4 up' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    4 up
+                </button>
+                
+                <button onclick="setMatchStatus('${matchKey}', ${hole}, '4 dn')" 
+                        style="padding: 8px 12px; border: 2px solid ${currentStatus === '4 dn' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStatus === '4 dn' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStatus === '4 dn' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    4 dn
+                </button>
+            </div>
+            
+            <button onclick="closeMatchStatusSelector()" 
+                    style="padding: 8px 16px; border: 1px solid #6c757d; 
+                           background: #6c757d; color: white; border-radius: 4px; cursor: pointer;">
+                Cancel
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+}
+
+// Set match status for a team on a specific hole
+function setMatchStatus(matchKey, hole, status) {
+    // Initialize match status if needed
+    if (!currentMatchStatus[matchKey]) currentMatchStatus[matchKey] = {};
+    
+    // Set status
+    currentMatchStatus[matchKey][hole] = status;
+    
+    // Update visual indicator
+    updateMatchStatusCell(matchKey, hole);
+    
+    // Close modal
+    closeMatchStatusSelector();
+    
+    console.log(`Match status set for ${matchKey} on hole ${hole}: ${status}`);
+}
+
+// Close match status selector modal
+function closeMatchStatusSelector() {
+    const modal = document.getElementById('match-status-selector-modal');
+    if (modal) {
+        modal.remove();
+    }
+    document.body.style.overflow = '';
+}
+
+// Update match status cell visual state
+function updateMatchStatusCell(matchKey, hole) {
+    const statusCells = document.querySelectorAll(`td.match-status-cell[data-team="${matchKey.split('-')[0]}"][data-match="${matchKey.split('-')[1]}"][data-group="${matchKey.split('-')[2]}"][data-hole="${hole}"]`);
+    const status = currentMatchStatus[matchKey] && currentMatchStatus[matchKey][hole];
+    
+    statusCells.forEach(cell => {
+        if (status) {
+            cell.textContent = status;
+            if (status.includes('up')) {
+                cell.style.background = '#d4edda';
+                cell.style.color = '#155724';
+                cell.style.fontWeight = 'bold';
+            } else if (status.includes('dn')) {
+                cell.style.background = '#f8d7da';
+                cell.style.color = '#721c24';
+                cell.style.fontWeight = 'bold';
+            } else {
+                cell.style.background = '#fff3cd';
+                cell.style.color = '#856404';
+                cell.style.fontWeight = 'bold';
+            }
+        } else {
+            cell.textContent = 'AS';
+            cell.style.background = '#fff3cd';
+            cell.style.color = '#856404';
+            cell.style.fontWeight = 'normal';
+        }
+    });
+}
+
 // Clear the current score
 function clearScore() {
     if (!currentScoreCell) return;
@@ -2118,6 +2314,13 @@ function recalculateAllTotals() {
         for (let hole = 1; hole <= 9; hole++) {
             updateStrokeCell(player, hole);
             updateScoreStrokeIndicator(player, hole);
+        }
+    });
+    
+    // Update match status cells
+    Object.keys(currentMatchStatus).forEach(matchKey => {
+        for (let hole = 1; hole <= 9; hole++) {
+            updateMatchStatusCell(matchKey, hole);
         }
     });
 }
