@@ -1984,6 +1984,9 @@ function selectScore(score) {
     // Update team scores for best ball
     updateTeamScores();
     
+    // Update team totals (for all formats)
+    updateTeamTotals();
+    
     // Auto-advance to next hole
     setTimeout(() => {
         closeScorePad();
@@ -2092,6 +2095,9 @@ function setStroke(player, hole, strokeType) {
         
         // Update team scores for best ball
         updateTeamScores();
+        
+        // Update team totals (for all formats)
+        updateTeamTotals();
         
         console.log(`✅ Stroke successfully set for ${player} on hole ${hole}: ${strokeType}`);
     } catch (error) {
@@ -2373,6 +2379,9 @@ function clearScore() {
     // Update team scores for best ball
     updateTeamScores();
     
+    // Update team totals (for all formats)
+    updateTeamTotals();
+    
     closeScorePad();
 }
 
@@ -2432,6 +2441,9 @@ function recalculateAllTotals() {
             updateScoreStrokeIndicator(player, hole);
         }
     });
+    
+    // Update team totals (for all formats)
+    updateTeamTotals();
     
     // Update match status cells
     Object.keys(currentMatchStatus).forEach(matchKey => {
@@ -2872,6 +2884,9 @@ function makeDesktopEditable(cell) {
         
         // Update team scores for best ball
         updateTeamScores();
+        
+        // Update team totals (for all formats)
+        updateTeamTotals();
     }
     
     input.addEventListener('blur', saveValue);
