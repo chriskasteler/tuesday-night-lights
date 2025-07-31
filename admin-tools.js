@@ -1963,38 +1963,46 @@ function openStrokeSelector(player, hole) {
 
 // Set stroke for a player on a specific hole
 function setStroke(player, hole, strokeType) {
-    // Initialize player strokes if needed
-    if (!currentPlayerStrokes[player]) currentPlayerStrokes[player] = {};
-    
-    // Set stroke type
-    if (strokeType === 'none') {
-        delete currentPlayerStrokes[player][hole];
-    } else {
-        currentPlayerStrokes[player][hole] = strokeType;
+    try {
+        console.log(`Setting stroke for ${player} on hole ${hole}: ${strokeType}`);
+        
+        // Close modal first to ensure it closes even if there's an error
+        closeStrokeSelector();
+        
+        // Initialize player strokes if needed
+        if (!currentPlayerStrokes[player]) currentPlayerStrokes[player] = {};
+        
+        // Set stroke type
+        if (strokeType === 'none') {
+            delete currentPlayerStrokes[player][hole];
+        } else {
+            currentPlayerStrokes[player][hole] = strokeType;
+        }
+        
+        // Update visual indicators
+        updateStrokeCell(player, hole);
+        updateScoreStrokeIndicator(player, hole);
+        
+        // Update score styling for this cell (if there's a score)
+        if (currentPlayerScores[player] && currentPlayerScores[player][hole]) {
+            const scoreCells = document.querySelectorAll(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
+            scoreCells.forEach(cell => {
+                applyScoreTypeStyle(cell, currentPlayerScores[player][hole]);
+            });
+        }
+        
+        // Recalculate player total
+        updatePlayerTotal(player);
+        
+        // Update team scores for best ball
+        updateTeamScores();
+        
+        console.log(`✅ Stroke successfully set for ${player} on hole ${hole}: ${strokeType}`);
+    } catch (error) {
+        console.error(`❌ Error setting stroke for ${player} on hole ${hole}:`, error);
+        // Make sure modal closes even if there's an error
+        closeStrokeSelector();
     }
-    
-    // Update visual indicators
-    updateStrokeCell(player, hole);
-    updateScoreStrokeIndicator(player, hole);
-    
-    // Update score styling for this cell (if there's a score)
-    if (currentPlayerScores[player] && currentPlayerScores[player][hole]) {
-        const scoreCells = document.querySelectorAll(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
-        scoreCells.forEach(cell => {
-            applyScoreTypeStyle(cell, currentPlayerScores[player][hole]);
-        });
-    }
-    
-    // Recalculate player total
-    updatePlayerTotal(player);
-    
-    // Update team scores for best ball
-    updateTeamScores();
-    
-    // Close modal
-    closeStrokeSelector();
-    
-    console.log(`Stroke set for ${player} on hole ${hole}: ${strokeType}`);
 }
 
 // Close stroke selector modal
