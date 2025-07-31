@@ -1601,22 +1601,28 @@ function renderAdminMatchGroup(matchPair, weekNumber, groupIndex) {
 function generateScoreCells(player, matchNum, groupIndex, weekNumber) {
     let cells = '';
     for (let hole = 1; hole <= 9; hole++) {
-        cells += `<td class="score-cell-container" style="padding: 4px; border: 1px solid #ddd; text-align: center; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box;">
-                    <div class="score-cell editable-score" 
-                         data-player="${player}" 
-                         data-hole="${hole}" 
-                         data-match="${matchNum}" 
-                         data-group="${groupIndex}" 
-                         data-week="${weekNumber}"
-                         style="cursor: pointer; user-select: none; padding: 4px; margin-bottom: 2px;"
-                         onclick="openScorePad(this)">-</div>
-                    <div class="stroke-indicator" 
-                         data-player="${player}" 
-                         data-hole="${hole}"
-                         onclick="toggleStroke('${player}', ${hole})"
-                         style="cursor: pointer; font-size: 12px; color: #ccc; user-select: none;"
-                         title="Click to toggle stroke/pop">⭐</div>
-                  </td>`;
+        cells += `<td class="score-cell" 
+                     data-player="${player}" 
+                     data-hole="${hole}" 
+                     data-match="${matchNum}" 
+                     data-group="${groupIndex}" 
+                     data-week="${weekNumber}"
+                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box;"
+                     onclick="openScorePad(this)">-</td>`;
+    }
+    return cells;
+}
+
+// Generate stroke cells for a player stroke row
+function generateStrokeCells(player, matchNum, groupIndex, weekNumber) {
+    let cells = '';
+    for (let hole = 1; hole <= 9; hole++) {
+        cells += `<td class="stroke-cell" 
+                     data-player="${player}" 
+                     data-hole="${hole}"
+                     onclick="openStrokeSelector('${player}', ${hole})"
+                     style="padding: 4px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 24px; min-width: 36px; font-size: 11px; color: #666; background: #f8f9fa;"
+                     title="Click to set stroke">stroke</td>`;
     }
     return cells;
 }
@@ -1660,10 +1666,20 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
+                       <tr class="stroke-row">
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           ${generateStrokeCells(team1Player1, matchNum, groupIndex, weekNumber)}
+                           <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
+                       </tr>
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
                            ${generateScoreCells(team1Player2, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="stroke-row">
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           ${generateStrokeCells(team1Player2, matchNum, groupIndex, weekNumber)}
+                           <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
                        <tr class="team-score-row" style="background: #f8f9fa;">
                            <td class="team-score-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">${getAdminTeamName(matchup.team1)} Team Score</td>
@@ -1684,10 +1700,20 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            ${generateScoreCells(team2Player1, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
+                       <tr class="stroke-row">
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           ${generateStrokeCells(team2Player1, matchNum, groupIndex, weekNumber)}
+                           <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
+                       </tr>
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
                            ${generateScoreCells(team2Player2, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="stroke-row">
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           ${generateStrokeCells(team2Player2, matchNum, groupIndex, weekNumber)}
+                           <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
                        <tr class="team-score-row" style="background: #f8f9fa;">
                            <td class="team-score-label" style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">${getAdminTeamName(matchup.team2)} Team Score</td>
@@ -1825,6 +1851,9 @@ function selectScore(score) {
     if (!currentPlayerScores[player]) currentPlayerScores[player] = {};
     currentPlayerScores[player][hole] = score;
     
+    // Update stroke indicator on score cell
+    updateScoreStrokeIndicator(player, hole);
+    
     // Update player total
     updatePlayerTotal(player);
     
@@ -1835,21 +1864,88 @@ function selectScore(score) {
     }, 200);
 }
 
-// Toggle stroke for a player on a specific hole
-function toggleStroke(player, hole) {
+// Open stroke selector for a player on a specific hole
+function openStrokeSelector(player, hole) {
+    // Create stroke selector modal
+    const modal = document.createElement('div');
+    modal.id = 'stroke-selector-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+    
+    const currentStroke = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
+    
+    modal.innerHTML = `
+        <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h4 style="margin: 0 0 15px 0; color: #2d4a2d;">Set Stroke for ${player}</h4>
+            <p style="margin: 0 0 20px 0; color: #666;">Hole ${hole}</p>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="setStroke('${player}', ${hole}, 'none')" 
+                        style="padding: 10px 20px; border: 2px solid ${currentStroke === 'none' || !currentStroke ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStroke === 'none' || !currentStroke ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStroke === 'none' || !currentStroke ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    None
+                </button>
+                
+                <button onclick="setStroke('${player}', ${hole}, 'full')" 
+                        style="padding: 10px 20px; border: 2px solid ${currentStroke === 'full' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStroke === 'full' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStroke === 'full' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    Full Stroke
+                </button>
+                
+                <button onclick="setStroke('${player}', ${hole}, 'half')" 
+                        style="padding: 10px 20px; border: 2px solid ${currentStroke === 'half' ? '#4a5d4a' : '#ddd'}; 
+                               background: ${currentStroke === 'half' ? '#4a5d4a' : 'white'}; 
+                               color: ${currentStroke === 'half' ? 'white' : '#666'}; 
+                               border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    Half Stroke
+                </button>
+            </div>
+            
+            <button onclick="closeStrokeSelector()" 
+                    style="margin-top: 15px; padding: 8px 16px; border: 1px solid #6c757d; 
+                           background: #6c757d; color: white; border-radius: 4px; cursor: pointer;">
+                Cancel
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+}
+
+// Set stroke for a player on a specific hole
+function setStroke(player, hole, strokeType) {
     // Initialize player strokes if needed
     if (!currentPlayerStrokes[player]) currentPlayerStrokes[player] = {};
     
-    // Toggle stroke status
-    const hasStroke = currentPlayerStrokes[player][hole] || false;
-    currentPlayerStrokes[player][hole] = !hasStroke;
+    // Set stroke type
+    if (strokeType === 'none') {
+        delete currentPlayerStrokes[player][hole];
+    } else {
+        currentPlayerStrokes[player][hole] = strokeType;
+    }
     
-    // Update visual indicator
-    updateStrokeIndicator(player, hole);
+    // Update visual indicators
+    updateStrokeCell(player, hole);
+    updateScoreStrokeIndicator(player, hole);
     
     // Update score styling for this cell (if there's a score)
     if (currentPlayerScores[player] && currentPlayerScores[player][hole]) {
-        const scoreCells = document.querySelectorAll(`div.score-cell[data-player="${player}"][data-hole="${hole}"]`);
+        const scoreCells = document.querySelectorAll(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
         scoreCells.forEach(cell => {
             applyScoreTypeStyle(cell, currentPlayerScores[player][hole]);
         });
@@ -1858,23 +1954,88 @@ function toggleStroke(player, hole) {
     // Recalculate player total
     updatePlayerTotal(player);
     
-    console.log(`Stroke toggled for ${player} on hole ${hole}: ${currentPlayerStrokes[player][hole] ? 'ON' : 'OFF'}`);
+    // Close modal
+    closeStrokeSelector();
+    
+    console.log(`Stroke set for ${player} on hole ${hole}: ${strokeType}`);
 }
 
-// Update stroke indicator visual state
-function updateStrokeIndicator(player, hole) {
-    const strokeIndicators = document.querySelectorAll(`div.stroke-indicator[data-player="${player}"][data-hole="${hole}"]`);
-    const hasStroke = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
+// Close stroke selector modal
+function closeStrokeSelector() {
+    const modal = document.getElementById('stroke-selector-modal');
+    if (modal) {
+        modal.remove();
+    }
+    document.body.style.overflow = '';
+}
+
+// Update stroke cell visual state
+function updateStrokeCell(player, hole) {
+    const strokeCells = document.querySelectorAll(`td.stroke-cell[data-player="${player}"][data-hole="${hole}"]`);
+    const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
     
-    strokeIndicators.forEach(indicator => {
-        if (hasStroke) {
-            indicator.style.color = '#ffc107'; // Yellow/gold for active stroke
-            indicator.style.fontWeight = 'bold';
-            indicator.title = 'Stroke applied - click to remove';
+    strokeCells.forEach(cell => {
+        if (strokeType === 'full') {
+            cell.textContent = 'FULL';
+            cell.style.background = '#e8f5e8';
+            cell.style.color = '#2d4a2d';
+            cell.style.fontWeight = 'bold';
+        } else if (strokeType === 'half') {
+            cell.textContent = 'HALF';
+            cell.style.background = '#fff3cd';
+            cell.style.color = '#856404';
+            cell.style.fontWeight = 'bold';
         } else {
-            indicator.style.color = '#ccc'; // Gray for inactive
-            indicator.style.fontWeight = 'normal';
-            indicator.title = 'Click to toggle stroke/pop';
+            cell.textContent = 'stroke';
+            cell.style.background = '#f8f9fa';
+            cell.style.color = '#666';
+            cell.style.fontWeight = 'normal';
+        }
+    });
+}
+
+// Update score cell stroke indicator (dot or 1/2)
+function updateScoreStrokeIndicator(player, hole) {
+    const scoreCells = document.querySelectorAll(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
+    const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
+    
+    scoreCells.forEach(cell => {
+        // Remove any existing stroke indicators
+        const existingIndicator = cell.querySelector('.stroke-indicator-overlay');
+        if (existingIndicator) {
+            existingIndicator.remove();
+        }
+        
+        // Add new stroke indicator if needed
+        if (strokeType === 'full') {
+            const indicator = document.createElement('div');
+            indicator.className = 'stroke-indicator-overlay';
+            indicator.style.cssText = `
+                position: absolute;
+                top: 2px;
+                right: 2px;
+                width: 8px;
+                height: 8px;
+                background: #dc3545;
+                border-radius: 50%;
+                pointer-events: none;
+            `;
+            cell.appendChild(indicator);
+        } else if (strokeType === 'half') {
+            const indicator = document.createElement('div');
+            indicator.className = 'stroke-indicator-overlay';
+            indicator.textContent = '½';
+            indicator.style.cssText = `
+                position: absolute;
+                top: 1px;
+                right: 2px;
+                font-size: 10px;
+                color: #dc3545;
+                font-weight: bold;
+                pointer-events: none;
+                line-height: 1;
+            `;
+            cell.appendChild(indicator);
         }
     });
 }
@@ -1894,13 +2055,8 @@ function clearScore() {
         delete currentPlayerScores[player][hole];
     }
     
-    // Also clear any stroke for this hole
-    if (currentPlayerStrokes[player]) {
-        delete currentPlayerStrokes[player][hole];
-    }
-    
-    // Update stroke indicator
-    updateStrokeIndicator(player, hole);
+    // Update score stroke indicator (remove any dots/half indicators)
+    updateScoreStrokeIndicator(player, hole);
     
     // Update player total
     updatePlayerTotal(player);
@@ -1950,11 +2106,19 @@ function advanceToNextHole() {
 
 // Recalculate totals for all players
 function recalculateAllTotals() {
-    // Get all unique players from currentPlayerScores
-    const players = Object.keys(currentPlayerScores);
+    // Get all unique players from currentPlayerScores and currentPlayerStrokes
+    const scorePlayersSet = new Set(Object.keys(currentPlayerScores));
+    const strokePlayersSet = new Set(Object.keys(currentPlayerStrokes));
+    const allPlayers = [...new Set([...scorePlayersSet, ...strokePlayersSet])];
     
-    players.forEach(player => {
+    allPlayers.forEach(player => {
         updatePlayerTotal(player);
+        
+        // Update stroke cell indicators
+        for (let hole = 1; hole <= 9; hole++) {
+            updateStrokeCell(player, hole);
+            updateScoreStrokeIndicator(player, hole);
+        }
     });
 }
 
@@ -1970,9 +2134,15 @@ function updatePlayerTotal(player) {
                 let grossScore = parseInt(currentPlayerScores[player][hole]);
                 
                 // Check if player has stroke on this hole
-                let hasStroke = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
-                let netScore = hasStroke ? grossScore - 1 : grossScore;
+                let strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
+                let strokeValue = 0;
+                if (strokeType === 'full') {
+                    strokeValue = 1;
+                } else if (strokeType === 'half') {
+                    strokeValue = 0.5;
+                }
                 
+                let netScore = grossScore - strokeValue;
                 total += netScore;
                 hasScores = true;
             }
@@ -2053,6 +2223,9 @@ function makeDesktopEditable(cell) {
         } else if (currentPlayerScores[player]) {
             delete currentPlayerScores[player][hole];
         }
+        
+        // Update stroke indicator on score cell
+        updateScoreStrokeIndicator(player, hole);
         
         // Update player total
         updatePlayerTotal(player);
@@ -2625,14 +2798,17 @@ function applyScoreTypeStyle(cell, score) {
     const par = window.currentWeekScorecard.parValues[hole];
     
     // Check if player has stroke on this hole for net scoring
-    const hasStroke = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
-    const effectiveScore = hasStroke ? parseInt(score) - 1 : parseInt(score);
+    const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
+    let strokeValue = 0;
+    if (strokeType === 'full') {
+        strokeValue = 1;
+    } else if (strokeType === 'half') {
+        strokeValue = 0.5;
+    }
+    const effectiveScore = parseInt(score) - strokeValue;
     const scoreType = getScoreType(effectiveScore, parseInt(par));
     
     // Apply styling based on score type by wrapping score in a span
-    // Add stroke indicator to the display if applicable
-    const strokeText = hasStroke ? `<sup style="font-size: 10px; color: #ffc107;">s</sup>` : '';
-    
     switch (scoreType) {
         case 'eagle':
             // Red text with double circle around number
@@ -2647,7 +2823,7 @@ function applyScoreTypeStyle(cell, score) {
                 align-items: center; 
                 justify-content: center;
                 line-height: 1;
-            ">${score}</span>${strokeText}`;
+            ">${score}</span>`;
             break;
             
         case 'birdie':
@@ -2662,12 +2838,12 @@ function applyScoreTypeStyle(cell, score) {
                 align-items: center; 
                 justify-content: center;
                 line-height: 1;
-            ">${score}</span>${strokeText}`;
+            ">${score}</span>`;
             break;
             
         case 'par':
             // Just black text
-            cell.innerHTML = `<span style="color: black;">${score}</span>${strokeText}`;
+            cell.innerHTML = `<span style="color: black;">${score}</span>`;
             break;
             
         case 'bogey':
@@ -2682,7 +2858,7 @@ function applyScoreTypeStyle(cell, score) {
                 align-items: center; 
                 justify-content: center;
                 line-height: 1;
-            ">${score}</span>${strokeText}`;
+            ">${score}</span>`;
             break;
             
         case 'double':
@@ -2698,7 +2874,7 @@ function applyScoreTypeStyle(cell, score) {
                 align-items: center; 
                 justify-content: center;
                 line-height: 1;
-            ">${score}</span>${strokeText}`;
+            ">${score}</span>`;
             break;
     }
 }
