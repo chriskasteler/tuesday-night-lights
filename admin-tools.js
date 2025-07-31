@@ -2483,6 +2483,22 @@ function calculateBestBallTeamScore(team, hole, matchNum, groupIndex) {
     return Math.min(...netScores);
 }
 
+// Get numeric stroke value for a player/team on a hole
+function getStrokeValue(player, hole) {
+    if (!currentPlayerStrokes[player] || !currentPlayerStrokes[player][hole]) {
+        return 0; // No stroke
+    }
+    
+    const strokeType = currentPlayerStrokes[player][hole];
+    if (strokeType === 'full') {
+        return 1;
+    } else if (strokeType === 'half') {
+        return 0.5;
+    }
+    
+    return 0; // Default to no stroke
+}
+
 // Calculate automatic match status based on team scores
 function calculateMatchStatus() {
     try {
@@ -2531,12 +2547,24 @@ function calculateMatchStatus() {
             
             // Calculate hole by hole
             for (let hole = 0; hole < totalHoles; hole++) {
-                const team1Score = parseFloat(team1ScoreCells[hole].textContent.trim());
-                const team2Score = parseFloat(team2ScoreCells[hole].textContent.trim());
+                const team1GrossScore = parseFloat(team1ScoreCells[hole].textContent.trim());
+                const team2GrossScore = parseFloat(team2ScoreCells[hole].textContent.trim());
+                
+                // Get team identifiers for stroke lookup
+                const team1Player = team1ScoreCells[hole].dataset.player;
+                const team2Player = team2ScoreCells[hole].dataset.player;
+                
+                // Calculate net scores (gross - strokes)
+                const team1Strokes = getStrokeValue(team1Player, hole + 1);
+                const team2Strokes = getStrokeValue(team2Player, hole + 1);
+                
+                const team1Score = team1GrossScore - team1Strokes;
+                const team2Score = team2GrossScore - team2Strokes;
+                
                 const holesRemaining = totalHoles - (hole + 1);
                 
-                // Only calculate if both teams have scores and match isn't over
-                if (!matchOver && !isNaN(team1Score) && !isNaN(team2Score) && team1Score > 0 && team2Score > 0) {
+                // Only calculate if both teams have gross scores and match isn't over
+                if (!matchOver && !isNaN(team1GrossScore) && !isNaN(team2GrossScore) && team1GrossScore > 0 && team2GrossScore > 0) {
                     if (team1Score < team2Score) {
                         matchStatus += 1; // Team 1 wins hole
                     } else if (team2Score < team1Score) {
