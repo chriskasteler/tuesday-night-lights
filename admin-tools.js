@@ -1921,7 +1921,7 @@ function openStrokeSelector(player, hole) {
             <p style="margin: 0 0 20px 0; color: #666;">Hole ${hole}</p>
             
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="setStroke('${player}', ${hole}, 'none')" 
+                <button data-stroke-type="none" class="stroke-option-btn"
                         style="padding: 10px 20px; border: 2px solid ${currentStroke === 'none' || !currentStroke ? '#4a5d4a' : '#ddd'}; 
                                background: ${currentStroke === 'none' || !currentStroke ? '#4a5d4a' : 'white'}; 
                                color: ${currentStroke === 'none' || !currentStroke ? 'white' : '#666'}; 
@@ -1929,7 +1929,7 @@ function openStrokeSelector(player, hole) {
                     None
                 </button>
                 
-                <button onclick="setStroke('${player}', ${hole}, 'full')" 
+                <button data-stroke-type="full" class="stroke-option-btn"
                         style="padding: 10px 20px; border: 2px solid ${currentStroke === 'full' ? '#4a5d4a' : '#ddd'}; 
                                background: ${currentStroke === 'full' ? '#4a5d4a' : 'white'}; 
                                color: ${currentStroke === 'full' ? 'white' : '#666'}; 
@@ -1937,7 +1937,7 @@ function openStrokeSelector(player, hole) {
                     Full Stroke
                 </button>
                 
-                <button onclick="setStroke('${player}', ${hole}, 'half')" 
+                <button data-stroke-type="half" class="stroke-option-btn"
                         style="padding: 10px 20px; border: 2px solid ${currentStroke === 'half' ? '#4a5d4a' : '#ddd'}; 
                                background: ${currentStroke === 'half' ? '#4a5d4a' : 'white'}; 
                                color: ${currentStroke === 'half' ? 'white' : '#666'}; 
@@ -1946,13 +1946,28 @@ function openStrokeSelector(player, hole) {
                 </button>
             </div>
             
-            <button onclick="closeStrokeSelector()" 
+            <button id="close-stroke-modal" 
                     style="margin-top: 15px; padding: 8px 16px; border: 1px solid #6c757d; 
                            background: #6c757d; color: white; border-radius: 4px; cursor: pointer;">
                 Cancel
             </button>
         </div>
     `;
+    
+    // Add event listeners to the buttons
+    const strokeButtons = modal.querySelectorAll('.stroke-option-btn');
+    strokeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const strokeType = button.dataset.strokeType;
+            setStroke(player, hole, strokeType);
+        });
+    });
+    
+    // Add event listener to close button
+    const closeButton = modal.querySelector('#close-stroke-modal');
+    closeButton.addEventListener('click', () => {
+        closeStrokeSelector();
+    });
     
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
