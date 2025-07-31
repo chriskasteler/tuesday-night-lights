@@ -2133,17 +2133,8 @@ function updatePlayerTotal(player) {
             if (currentPlayerScores[player][hole]) {
                 let grossScore = parseInt(currentPlayerScores[player][hole]);
                 
-                // Check if player has stroke on this hole
-                let strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
-                let strokeValue = 0;
-                if (strokeType === 'full') {
-                    strokeValue = 1;
-                } else if (strokeType === 'half') {
-                    strokeValue = 0.5;
-                }
-                
-                let netScore = grossScore - strokeValue;
-                total += netScore;
+                // Total should be gross scores only
+                total += grossScore;
                 hasScores = true;
             }
         }
