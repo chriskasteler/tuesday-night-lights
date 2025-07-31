@@ -2014,9 +2014,9 @@ function updateScoreStrokeIndicator(player, hole) {
                 position: absolute;
                 top: 2px;
                 right: 2px;
-                width: 8px;
-                height: 8px;
-                background: #dc3545;
+                width: 4px;
+                height: 4px;
+                background: black;
                 border-radius: 50%;
                 pointer-events: none;
             `;
@@ -2030,7 +2030,7 @@ function updateScoreStrokeIndicator(player, hole) {
                 top: 1px;
                 right: 2px;
                 font-size: 10px;
-                color: #dc3545;
+                color: black;
                 font-weight: bold;
                 pointer-events: none;
                 line-height: 1;
