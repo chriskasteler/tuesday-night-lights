@@ -1777,7 +1777,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
                            ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
-                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -1787,7 +1787,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
                            ${generateScoreCells(team1Player2, matchNum, groupIndex, weekNumber)}
-                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -1816,7 +1816,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
                            ${generateScoreCells(team2Player1, matchNum, groupIndex, weekNumber)}
-                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -1826,7 +1826,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                        <tr class="player-row">
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
                            ${generateScoreCells(team2Player2, matchNum, groupIndex, weekNumber)}
-                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                           <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
