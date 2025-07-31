@@ -1622,7 +1622,7 @@ function generateStrokeCells(player, matchNum, groupIndex, weekNumber) {
                      data-hole="${hole}"
                      onclick="openStrokeSelector('${player}', ${hole})"
                      style="padding: 4px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 24px; min-width: 36px; font-size: 11px; color: #666; background: #f8f9fa;"
-                     title="Click to set stroke">stroke</td>`;
+                     title="Click to set stroke">add</td>`;
     }
     return cells;
 }
@@ -1684,7 +1684,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
                        <tr class="stroke-row">
-                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
                            ${generateStrokeCells(team1Player1, matchNum, groupIndex, weekNumber)}
                            <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
@@ -1694,7 +1694,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
                        <tr class="stroke-row">
-                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
                            ${generateStrokeCells(team1Player2, matchNum, groupIndex, weekNumber)}
                            <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
@@ -1723,7 +1723,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
                        <tr class="stroke-row">
-                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
                            ${generateStrokeCells(team2Player1, matchNum, groupIndex, weekNumber)}
                            <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
@@ -1733,7 +1733,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                        </tr>
                        <tr class="stroke-row">
-                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa;"></td>
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
                            ${generateStrokeCells(team2Player2, matchNum, groupIndex, weekNumber)}
                            <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
@@ -2020,7 +2020,7 @@ function updateStrokeCell(player, hole) {
             cell.style.color = '#856404';
             cell.style.fontWeight = 'bold';
         } else {
-            cell.textContent = 'stroke';
+            cell.textContent = 'add';
             cell.style.background = '#f8f9fa';
             cell.style.color = '#666';
             cell.style.fontWeight = 'normal';
