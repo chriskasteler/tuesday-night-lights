@@ -1613,6 +1613,22 @@ function generateScoreCells(player, matchNum, groupIndex, weekNumber) {
     return cells;
 }
 
+// Generate team score cells for alternate shot (direct team scoring)
+function generateTeamScoreCells(teamId, matchNum, groupIndex, weekNumber) {
+    let cells = '';
+    for (let hole = 1; hole <= 9; hole++) {
+        cells += `<td class="team-score-cell score-cell" 
+                     data-player="${teamId}" 
+                     data-hole="${hole}" 
+                     data-match="${matchNum}" 
+                     data-group="${groupIndex}" 
+                     data-week="${weekNumber}"
+                     style="padding: 8px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 36px; min-width: 36px; position: relative; box-sizing: border-box;"
+                     onclick="openScorePad(this)">-</td>`;
+    }
+    return cells;
+}
+
 // Generate stroke cells for a player stroke row
 function generateStrokeCells(player, matchNum, groupIndex, weekNumber) {
     let cells = '';
@@ -1644,8 +1660,88 @@ function generateMatchStatusCells(team, matchNum, groupIndex, weekNumber) {
     return cells;
 }
 
+// Render Alternate Shot scorecard (Week 2)
+function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum) {
+    const team1Name = getAdminTeamName(matchup.team1);
+    const team2Name = getAdminTeamName(matchup.team2);
+    const team1Id = `${team1Name}-Team-${matchNum}`;
+    const team2Id = `${team2Name}-Team-${matchNum}`;
+
+    return `
+        <div class="admin-scorecard" style="width: 100%; max-width: 100%; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div class="scorecard-header" style="background: #2d4a2d; color: white; padding: 10px;">
+                <div class="match-info" style="text-align: center;">
+                    <span class="match-title" style="font-weight: 600; color: white;">Match ${matchNum}</span>
+                </div>
+            </div>
+           
+           <div class="golf-scorecard-mini">
+               <table class="scorecard-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                   <thead>
+                       <tr class="holes-row">
+                           <th class="player-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd;">Hole</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">1</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">2</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">3</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">4</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">5</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">6</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">7</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">8</th>
+                           <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">9</th>
+                           <th class="total-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">Total</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       ${generateParRow(weekNumber)}
+                       <tr class="team-row">
+                           <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Name} Player 1 & Player 2</td>
+                           ${generateTeamScoreCells(team1Id, matchNum, groupIndex, weekNumber)}
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="stroke-row">
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
+                           ${generateStrokeCells(team1Id, matchNum, groupIndex, weekNumber)}
+                           <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
+                       </tr>
+                       <tr class="match-status-row" style="background: #fff3cd;">
+                           <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${team1Name} Status</td>
+                           ${generateMatchStatusCells(team1Name, matchNum, groupIndex, weekNumber)}
+                           <td class="match-status-final" style="padding: 6px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                       </tr>
+                       <tr style="height: 10px;"><td colspan="11" style="border: none;"></td></tr>
+                       <tr class="team-row">
+                           <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Name} Player 1 & Player 2</td>
+                           ${generateTeamScoreCells(team2Id, matchNum, groupIndex, weekNumber)}
+                           <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                       </tr>
+                       <tr class="stroke-row">
+                           <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
+                           ${generateStrokeCells(team2Id, matchNum, groupIndex, weekNumber)}
+                           <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
+                       </tr>
+                       <tr class="match-status-row" style="background: #fff3cd;">
+                           <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${team2Name} Status</td>
+                           ${generateMatchStatusCells(team2Name, matchNum, groupIndex, weekNumber)}
+                           <td class="match-status-final" style="padding: 6px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                       </tr>
+                   </tbody>
+               </table>
+           </div>
+       </div>
+   `;
+}
+
 // Render individual scorecard for admin scoring
 function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
+    // Check if this is Alternate Shot format (Week 2)
+    const isAlternateShot = weekNumber == 2;
+    
+    if (isAlternateShot) {
+        return renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum);
+    }
+    
+    // Default Best Ball format
     const team1Player1 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'A' : 'C'}`;
     const team1Player2 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'B' : 'D'}`;
     const team2Player1 = `${getAdminTeamName(matchup.team2)}-${matchNum === 1 ? 'A' : 'C'}`;
@@ -2538,55 +2634,55 @@ function calculateMatchStatus() {
 // Update team score cells for best ball format
 function updateTeamScores() {
     try {
-        // Find all team score cells and calculate best ball scores
-        const teamScoreCells = document.querySelectorAll('td.team-score-cell');
+        // Find all team score cells that need calculation (Best Ball format)
+        const teamScoreCells = document.querySelectorAll('td.team-score-cell:not(.score-cell)');
         
         teamScoreCells.forEach(cell => {
-        const hole = cell.dataset?.hole;
-        if (!hole) {
-            // Find the hole number by looking at the column position
-            const row = cell.closest('tr');
-            const cellIndex = Array.from(row.cells).indexOf(cell);
-            const holeNumber = cellIndex; // Holes are in columns 2-10 (1-9)
-            
-            if (holeNumber >= 1 && holeNumber <= 9) {
-                // Find the team from the row
-                const teamRow = cell.closest('tr');
-                const teamLabel = teamRow.querySelector('.team-score-label');
-                if (teamLabel) {
-                    const labelText = teamLabel.textContent;
-                    const teamMatch = labelText.match(/(Team \d+)/);
-                    if (teamMatch) {
-                        const team = teamMatch[1];
-                        
-                        // Determine match number from context
-                        const scorecard = cell.closest('.admin-scorecard');
-                        let matchNum = 1; // Default to match 1
-                        
-                        if (scorecard) {
-                            const matchTitle = scorecard.querySelector('.match-title');
-                            if (matchTitle) {
-                                matchNum = parseInt(matchTitle.textContent.replace('Match ', '')) || 1;
+            const hole = cell.dataset?.hole;
+            if (!hole) {
+                // Find the hole number by looking at the column position
+                const row = cell.closest('tr');
+                const cellIndex = Array.from(row.cells).indexOf(cell);
+                const holeNumber = cellIndex; // Holes are in columns 2-10 (1-9)
+                
+                if (holeNumber >= 1 && holeNumber <= 9) {
+                    // Find the team from the row
+                    const teamRow = cell.closest('tr');
+                    const teamLabel = teamRow.querySelector('.team-score-label');
+                    if (teamLabel) {
+                        const labelText = teamLabel.textContent;
+                        const teamMatch = labelText.match(/(Team \d+)/);
+                        if (teamMatch) {
+                            const team = teamMatch[1];
+                            
+                            // Determine match number from context
+                            const scorecard = cell.closest('.admin-scorecard');
+                            let matchNum = 1; // Default to match 1
+                            
+                            if (scorecard) {
+                                const matchTitle = scorecard.querySelector('.match-title');
+                                if (matchTitle) {
+                                    matchNum = parseInt(matchTitle.textContent.replace('Match ', '')) || 1;
+                                }
                             }
-                        }
-                        
-                        // Calculate best ball score
-                        const bestScore = calculateBestBallTeamScore(team, holeNumber, matchNum, 0);
-                        
-                        if (bestScore !== null) {
-                            cell.textContent = Math.round(bestScore * 2) / 2; // Handle half strokes properly
-                            cell.style.fontWeight = '600';
-                            cell.style.color = '#2d4a2d';
-                        } else {
-                            cell.textContent = '-';
-                            cell.style.fontWeight = '600';
-                            cell.style.color = '#666';
+                            
+                            // Calculate best ball score (only for Best Ball format)
+                            const bestScore = calculateBestBallTeamScore(team, holeNumber, matchNum, 0);
+                            
+                            if (bestScore !== null) {
+                                cell.textContent = Math.round(bestScore * 2) / 2; // Handle half strokes properly
+                                cell.style.fontWeight = '600';
+                                cell.style.color = '#2d4a2d';
+                            } else {
+                                cell.textContent = '-';
+                                cell.style.fontWeight = '600';
+                                cell.style.color = '#666';
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
     
         // Update team totals
         updateTeamTotals();
@@ -2648,20 +2744,20 @@ function updatePlayerTotal(player) {
         }
     }
     
-    // Find all total cells for this player (there may be multiple scorecards on the page)
-    const totalCells = document.querySelectorAll(`td.total-cell`);
+    // Find all total cells for this player/team (there may be multiple scorecards on the page)
+    const totalCells = document.querySelectorAll(`td.total-cell, td.team-total-cell`);
     
     totalCells.forEach(cell => {
-        // Find the row this total cell belongs to
-        const row = cell.closest('tr.player-row');
+        // Find the row this total cell belongs to (could be player-row or team-row)
+        const row = cell.closest('tr.player-row, tr.team-row');
         if (!row) return;
         
-        // Check if this row has score cells for the same player
+        // Check if this row has score cells for the same player/team
         const scoreCells = row.querySelectorAll('td.score-cell');
         if (scoreCells.length > 0) {
             const firstScoreCell = scoreCells[0];
             if (firstScoreCell && firstScoreCell.dataset.player === player) {
-                // This is the total cell for our player
+                // This is the total cell for our player/team
                 cell.textContent = hasScores ? total : '-';
                 
                 // Add visual styling to the total
