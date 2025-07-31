@@ -2412,69 +2412,116 @@ function calculateMatchStatus() {
             const team2StatusCells = team2StatusRow.querySelectorAll('td.match-status-cell');
             
             let matchStatus = 0; // 0 = AS, positive = team1 up, negative = team2 up
+            let matchOver = false;
+            let matchOverHole = -1;
+            const totalHoles = Math.min(team1ScoreCells.length, team2ScoreCells.length);
             
             // Calculate hole by hole
-            for (let hole = 0; hole < Math.min(team1ScoreCells.length, team2ScoreCells.length); hole++) {
+            for (let hole = 0; hole < totalHoles; hole++) {
                 const team1Score = parseFloat(team1ScoreCells[hole].textContent.trim());
                 const team2Score = parseFloat(team2ScoreCells[hole].textContent.trim());
+                const holesRemaining = totalHoles - (hole + 1);
                 
-                // Only calculate if both teams have scores
-                if (!isNaN(team1Score) && !isNaN(team2Score) && team1Score > 0 && team2Score > 0) {
+                // Only calculate if both teams have scores and match isn't over
+                if (!matchOver && !isNaN(team1Score) && !isNaN(team2Score) && team1Score > 0 && team2Score > 0) {
                     if (team1Score < team2Score) {
                         matchStatus += 1; // Team 1 wins hole
                     } else if (team2Score < team1Score) {
                         matchStatus -= 1; // Team 2 wins hole
                     }
                     // Tied hole doesn't change status
+                    
+                    // Check if match is over (can't be caught up)
+                    if (Math.abs(matchStatus) > holesRemaining) {
+                        matchOver = true;
+                        matchOverHole = hole;
+                    }
                 }
                 
                 // Update status display for this hole
                 if (team1StatusCells[hole] && team2StatusCells[hole]) {
-                    let statusText = 'AS';
-                    
-                    if (matchStatus > 0) {
-                        statusText = `${matchStatus} up`;
-                        team1StatusCells[hole].textContent = statusText;
-                        team1StatusCells[hole].style.background = '#d4edda';
-                        team1StatusCells[hole].style.color = '#155724';
-                        team1StatusCells[hole].style.fontWeight = 'bold';
-                        
-                        team2StatusCells[hole].textContent = `${matchStatus} dn`;
-                        team2StatusCells[hole].style.background = '#f8d7da';
-                        team2StatusCells[hole].style.color = '#721c24';
-                        team2StatusCells[hole].style.fontWeight = 'bold';
-                    } else if (matchStatus < 0) {
-                        statusText = `${Math.abs(matchStatus)} up`;
-                        team2StatusCells[hole].textContent = statusText;
-                        team2StatusCells[hole].style.background = '#d4edda';
-                        team2StatusCells[hole].style.color = '#155724';
-                        team2StatusCells[hole].style.fontWeight = 'bold';
-                        
-                        team1StatusCells[hole].textContent = `${Math.abs(matchStatus)} dn`;
-                        team1StatusCells[hole].style.background = '#f8d7da';
-                        team1StatusCells[hole].style.color = '#721c24';
-                        team1StatusCells[hole].style.fontWeight = 'bold';
+                    if (matchOver && hole >= matchOverHole) {
+                        // Match is over, show final status on the deciding hole
+                        if (hole === matchOverHole) {
+                            const holesUp = Math.abs(matchStatus);
+                            const finalStatus = `${holesUp}&${holesRemaining}`;
+                            
+                            if (matchStatus > 0) {
+                                // Team 1 wins
+                                team1StatusCells[hole].textContent = finalStatus;
+                                team1StatusCells[hole].style.background = '#d4edda';
+                                team1StatusCells[hole].style.color = '#155724';
+                                team1StatusCells[hole].style.fontWeight = 'bold';
+                                
+                                team2StatusCells[hole].textContent = '';
+                                team2StatusCells[hole].style.background = '';
+                                team2StatusCells[hole].style.color = '';
+                                team2StatusCells[hole].style.fontWeight = '';
+                            } else {
+                                // Team 2 wins
+                                team2StatusCells[hole].textContent = finalStatus;
+                                team2StatusCells[hole].style.background = '#d4edda';
+                                team2StatusCells[hole].style.color = '#155724';
+                                team2StatusCells[hole].style.fontWeight = 'bold';
+                                
+                                team1StatusCells[hole].textContent = '';
+                                team1StatusCells[hole].style.background = '';
+                                team1StatusCells[hole].style.color = '';
+                                team1StatusCells[hole].style.fontWeight = '';
+                            }
+                        } else {
+                            // Holes after match is over - leave blank
+                            team1StatusCells[hole].textContent = '';
+                            team1StatusCells[hole].style.background = '';
+                            team1StatusCells[hole].style.color = '';
+                            team1StatusCells[hole].style.fontWeight = '';
+                            
+                            team2StatusCells[hole].textContent = '';
+                            team2StatusCells[hole].style.background = '';
+                            team2StatusCells[hole].style.color = '';
+                            team2StatusCells[hole].style.fontWeight = '';
+                        }
+                    } else if (!isNaN(team1Score) && !isNaN(team2Score) && team1Score > 0 && team2Score > 0) {
+                        // Match still active, show current status
+                        if (matchStatus > 0) {
+                            team1StatusCells[hole].textContent = `${matchStatus} up`;
+                            team1StatusCells[hole].style.background = '#d4edda';
+                            team1StatusCells[hole].style.color = '#155724';
+                            team1StatusCells[hole].style.fontWeight = 'bold';
+                            
+                            team2StatusCells[hole].textContent = `${matchStatus} dn`;
+                            team2StatusCells[hole].style.background = '#f8d7da';
+                            team2StatusCells[hole].style.color = '#721c24';
+                            team2StatusCells[hole].style.fontWeight = 'bold';
+                        } else if (matchStatus < 0) {
+                            team2StatusCells[hole].textContent = `${Math.abs(matchStatus)} up`;
+                            team2StatusCells[hole].style.background = '#d4edda';
+                            team2StatusCells[hole].style.color = '#155724';
+                            team2StatusCells[hole].style.fontWeight = 'bold';
+                            
+                            team1StatusCells[hole].textContent = `${Math.abs(matchStatus)} dn`;
+                            team1StatusCells[hole].style.background = '#f8d7da';
+                            team1StatusCells[hole].style.color = '#721c24';
+                            team1StatusCells[hole].style.fontWeight = 'bold';
+                        } else {
+                            // All square
+                            team1StatusCells[hole].textContent = 'AS';
+                            team1StatusCells[hole].style.background = '#fff3cd';
+                            team1StatusCells[hole].style.color = '#856404';
+                            team1StatusCells[hole].style.fontWeight = 'bold';
+                            
+                            team2StatusCells[hole].textContent = 'AS';
+                            team2StatusCells[hole].style.background = '#fff3cd';
+                            team2StatusCells[hole].style.color = '#856404';
+                            team2StatusCells[hole].style.fontWeight = 'bold';
+                        }
                     } else {
-                        // All square
-                        team1StatusCells[hole].textContent = 'AS';
-                        team1StatusCells[hole].style.background = '#fff3cd';
-                        team1StatusCells[hole].style.color = '#856404';
-                        team1StatusCells[hole].style.fontWeight = 'bold';
-                        
-                        team2StatusCells[hole].textContent = 'AS';
-                        team2StatusCells[hole].style.background = '#fff3cd';
-                        team2StatusCells[hole].style.color = '#856404';
-                        team2StatusCells[hole].style.fontWeight = 'bold';
-                    }
-                } else {
-                    // No scores yet, reset to AS
-                    if (team1StatusCells[hole]) {
+                        // No scores yet, reset to AS
                         team1StatusCells[hole].textContent = 'AS';
                         team1StatusCells[hole].style.background = '#fff3cd';
                         team1StatusCells[hole].style.color = '#856404';
                         team1StatusCells[hole].style.fontWeight = 'normal';
-                    }
-                    if (team2StatusCells[hole]) {
+                        
                         team2StatusCells[hole].textContent = 'AS';
                         team2StatusCells[hole].style.background = '#fff3cd';
                         team2StatusCells[hole].style.color = '#856404';
