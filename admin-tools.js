@@ -1734,10 +1734,10 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
 
 // Render individual scorecard for admin scoring
 function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
-    // Check if this is Alternate Shot format (Week 2)
-    const isAlternateShot = weekNumber == 2;
+    // Check if this is Alternate Shot format (Week 2) or Scramble format (Week 3)
+    const isTeamFormat = weekNumber == 2 || weekNumber == 3;
     
-    if (isAlternateShot) {
+    if (isTeamFormat) {
         return renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum);
     }
     
