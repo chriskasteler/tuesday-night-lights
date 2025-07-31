@@ -2788,16 +2788,8 @@ function applyScoreTypeStyle(cell, score) {
     
     const par = window.currentWeekScorecard.parValues[hole];
     
-    // Check if player has stroke on this hole for net scoring
-    const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
-    let strokeValue = 0;
-    if (strokeType === 'full') {
-        strokeValue = 1;
-    } else if (strokeType === 'half') {
-        strokeValue = 0.5;
-    }
-    const effectiveScore = parseInt(score) - strokeValue;
-    const scoreType = getScoreType(effectiveScore, parseInt(par));
+    // Use gross score for styling (no stroke adjustments)
+    const scoreType = getScoreType(parseInt(score), parseInt(par));
     
     // Apply styling based on score type by wrapping score in a span
     switch (scoreType) {
