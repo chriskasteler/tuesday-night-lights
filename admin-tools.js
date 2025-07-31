@@ -2389,10 +2389,11 @@ function calculateBestBallTeamScore(team, hole, matchNum, groupIndex) {
 
 // Update team score cells for best ball format
 function updateTeamScores() {
-    // Find all team score cells and calculate best ball scores
-    const teamScoreCells = document.querySelectorAll('td.team-score-cell');
-    
-    teamScoreCells.forEach(cell => {
+    try {
+        // Find all team score cells and calculate best ball scores
+        const teamScoreCells = document.querySelectorAll('td.team-score-cell');
+        
+        teamScoreCells.forEach(cell => {
         const hole = cell.dataset?.hole;
         if (!hole) {
             // Find the hole number by looking at the column position
@@ -2412,8 +2413,14 @@ function updateTeamScores() {
                         
                         // Determine match number from context
                         const scorecard = cell.closest('.admin-scorecard');
-                        const matchTitle = scorecard.querySelector('.match-title');
-                        const matchNum = matchTitle ? parseInt(matchTitle.textContent.replace('Match ', '')) : 1;
+                        let matchNum = 1; // Default to match 1
+                        
+                        if (scorecard) {
+                            const matchTitle = scorecard.querySelector('.match-title');
+                            if (matchTitle) {
+                                matchNum = parseInt(matchTitle.textContent.replace('Match ', '')) || 1;
+                            }
+                        }
                         
                         // Calculate best ball score
                         const bestScore = calculateBestBallTeamScore(team, holeNumber, matchNum, 0);
@@ -2433,8 +2440,11 @@ function updateTeamScores() {
         }
     });
     
-    // Update team totals
-    updateTeamTotals();
+        // Update team totals
+        updateTeamTotals();
+    } catch (error) {
+        console.error('❌ Error updating team scores:', error);
+    }
 }
 
 // Update team total cells
