@@ -2486,8 +2486,8 @@ function calculateBestBallTeamScore(team, hole, matchNum, groupIndex) {
 // Calculate automatic match status based on team scores
 function calculateMatchStatus() {
     try {
-        // Find all team score rows
-        const teamScoreRows = document.querySelectorAll('tr.team-score-row');
+        // Find all team score rows (Best Ball and Alternate Shot)
+        const teamScoreRows = document.querySelectorAll('tr.team-score-row, tr.team-row');
         
         // Process each match (pair of team rows)
         for (let i = 0; i < teamScoreRows.length; i += 2) {
@@ -2496,11 +2496,28 @@ function calculateMatchStatus() {
             
             if (!team1Row || !team2Row) continue;
             
-            const team1ScoreCells = team1Row.querySelectorAll('td.team-score-cell');
-            const team2ScoreCells = team2Row.querySelectorAll('td.team-score-cell');
+            // Handle different row types (Best Ball vs Alternate Shot)
+            const isAlternateShot = team1Row.classList.contains('team-row');
             
-            const team1StatusRow = team1Row.nextElementSibling;
-            const team2StatusRow = team2Row.nextElementSibling;
+            let team1ScoreCells, team2ScoreCells;
+            let team1StatusRow, team2StatusRow;
+            
+            if (isAlternateShot) {
+                // Alternate Shot: score cells are directly editable team scores
+                team1ScoreCells = team1Row.querySelectorAll('td.team-score-cell.score-cell');
+                team2ScoreCells = team2Row.querySelectorAll('td.team-score-cell.score-cell');
+                
+                // Skip stroke row to find status row
+                team1StatusRow = team1Row.nextElementSibling?.nextElementSibling;
+                team2StatusRow = team2Row.nextElementSibling?.nextElementSibling;
+            } else {
+                // Best Ball: team score cells are calculated
+                team1ScoreCells = team1Row.querySelectorAll('td.team-score-cell');
+                team2ScoreCells = team2Row.querySelectorAll('td.team-score-cell');
+                
+                team1StatusRow = team1Row.nextElementSibling;
+                team2StatusRow = team2Row.nextElementSibling;
+            }
             
             if (!team1StatusRow || !team2StatusRow) continue;
             
