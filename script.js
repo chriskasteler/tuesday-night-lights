@@ -811,8 +811,8 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCountdown();
     setInterval(updateCountdown, 1000);
     
-    // Load participants from Firebase
-    loadParticipants();
+    // Participants will be loaded after authentication
+    // Moved to prevent "access control checks" errors
     
     // Add hover effect to info cards
     const infoCards = document.querySelectorAll('.info-card');
@@ -994,6 +994,9 @@ auth.onAuthStateChanged(async user => {
         // Update button
         document.getElementById('admin-login-btn').textContent = buttonText;
         document.getElementById('admin-login-btn').onclick = adminLogout;
+        
+        // Load participants for all authenticated users (for signup page)
+        loadParticipants();
         
         // Initialize admin tools AFTER authentication is confirmed
         if (isAdmin && document.getElementById('teams-grid')) {
