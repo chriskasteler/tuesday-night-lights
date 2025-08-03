@@ -1398,11 +1398,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load signup visibility setting on every page load
     loadSignupVisibility();
     
-    // Only initialize admin tools if we're on that section
-    if (document.getElementById('teams-grid')) {
-        initializeManageTeams();
-        loadPendingRequests(); // Also load pending requests
-    }
+    // Admin tools will be initialized after authentication in script.js
+    // No longer initializing here to prevent auth errors
 });
 
 // ===== ADMIN SCORING FUNCTIONS =====

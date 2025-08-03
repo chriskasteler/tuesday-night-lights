@@ -995,6 +995,12 @@ auth.onAuthStateChanged(async user => {
         document.getElementById('admin-login-btn').textContent = buttonText;
         document.getElementById('admin-login-btn').onclick = adminLogout;
         
+        // Initialize admin tools AFTER authentication is confirmed
+        if (isAdmin && document.getElementById('teams-grid')) {
+            initializeManageTeams();
+            loadPendingRequests();
+        }
+        
     } else {
         // No user logged in - show login option
         document.body.classList.remove('admin-logged-in', 'captain-logged-in');
