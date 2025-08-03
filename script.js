@@ -296,7 +296,7 @@ function showSection(sectionName) {
     document.getElementById(sectionName + '-section').classList.add('active');
     
     // Add active class to clicked nav link (if event exists)
-    if (event && event.target) {
+    if (event && event.target && event.target.classList) {
         event.target.classList.add('active');
     } else {
         // Find and activate the correct nav link
