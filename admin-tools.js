@@ -726,6 +726,9 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
             const captainPlayer = allPlayers.find(p => p.id === captainId);
             if (captainPlayer) {
                 await removeCaptainRole(captainPlayer.email);
+                
+                // Remove "2025 Captain" tag from Mailchimp
+                await removeMailchimpTag(captainPlayer.email, '2025 Captain');
             }
         }
         
@@ -749,6 +752,9 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
                 const captainPlayer = allPlayers.find(p => p.id === playerId);
                 if (captainPlayer) {
                     await removeCaptainRole(captainPlayer.email);
+                    
+                    // Remove "2025 Captain" tag from Mailchimp
+                    await removeMailchimpTag(captainPlayer.email, '2025 Captain');
                 }
                 currentTeams[teamIndex].captain = null;
             }
@@ -1394,6 +1400,31 @@ async function addMailchimpTag(email, tag) {
         }
     } catch (error) {
         console.error('Error adding Mailchimp tag:', error);
+    }
+}
+
+// Remove tag from user in Mailchimp
+async function removeMailchimpTag(email, tag) {
+    try {
+        const response = await fetch('/.netlify/functions/remove-tag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                tag: tag
+            })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`Tag '${tag}' removed from ${email}:`, result.message);
+        } else {
+            console.log(`Failed to remove tag '${tag}' from ${email}`);
+        }
+    } catch (error) {
+        console.error('Error removing Mailchimp tag:', error);
     }
 }
 
