@@ -523,12 +523,16 @@ async function updateTeamRoster(selectElement) {
     const card = selectElement.closest('.team-management-card');
     const teamId = parseInt(card.getAttribute('data-team-id'));
     
-    // Get all player selections for this team
-    const playerSelects = card.querySelectorAll('.player-select:not(.captain-select)');
-    const captainSelect = card.querySelector('.captain-select');
+    // Show loading indicator
+    showTeamLoadingState(card, true);
     
-    const players = Array.from(playerSelects).map(select => select.value).filter(value => value);
-    const captain = captainSelect.value || null;
+    try {
+        // Get all player selections for this team
+        const playerSelects = card.querySelectorAll('.player-select:not(.captain-select)');
+        const captainSelect = card.querySelector('.captain-select');
+        
+        const players = Array.from(playerSelects).map(select => select.value).filter(value => value);
+        const captain = captainSelect.value || null;
     
     // Check if captain changed
     const teamIndex = currentTeams.findIndex(t => t.teamId === teamId);
@@ -599,13 +603,93 @@ async function updateTeamRoster(selectElement) {
         }
     }
     
-    // If captain changed, handle role assignment
-    if (captainChanged) {
-        await handleCaptainRoleAssignment(captain, teamId, previousCaptain);
+        // If captain changed, handle role assignment
+        if (captainChanged) {
+            await handleCaptainRoleAssignment(captain, teamId, previousCaptain);
+        }
+        
+        // Re-render to update available players in other teams
+        renderTeamsManagement();
+        
+    } catch (error) {
+        console.error('Error updating team roster:', error);
+        showStatusMessage('Error updating team. Please try again.', 'error');
+    } finally {
+        // Hide loading indicator
+        showTeamLoadingState(card, false);
     }
+}
+
+// Show/hide loading state for team management card
+function showTeamLoadingState(card, isLoading) {
+    const loadingOverlay = card.querySelector('.team-loading-overlay');
     
-    // Re-render to update available players in other teams
-    renderTeamsManagement();
+    if (isLoading) {
+        // Create loading overlay if it doesn't exist
+        if (!loadingOverlay) {
+            const overlay = document.createElement('div');
+            overlay.className = 'team-loading-overlay';
+            overlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+                border-radius: 4px;
+            `;
+            
+            const spinner = document.createElement('div');
+            spinner.style.cssText = `
+                width: 20px;
+                height: 20px;
+                border: 2px solid #f3f3f3;
+                border-top: 2px solid #2d4a2d;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            `;
+            
+            const text = document.createElement('span');
+            text.textContent = 'Updating...';
+            text.style.cssText = `
+                margin-left: 10px;
+                color: #2d4a2d;
+                font-size: 0.9rem;
+                font-weight: 500;
+            `;
+            
+            overlay.appendChild(spinner);
+            overlay.appendChild(text);
+            card.appendChild(overlay);
+            
+            // Make sure the card has relative positioning
+            card.style.position = 'relative';
+            
+            // Add CSS animation if not already present
+            if (!document.querySelector('#team-loading-animation')) {
+                const style = document.createElement('style');
+                style.id = 'team-loading-animation';
+                style.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        } else {
+            loadingOverlay.style.display = 'flex';
+        }
+    } else {
+        // Hide loading overlay
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+    }
 }
 
 // Handle captain role assignment and removal
