@@ -427,10 +427,10 @@ function createRosterSlots(team) {
     
     // Captain slot
     html += `
-        <div class="roster-slot captain-slot" style="display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 8px; background: #e8f5e8; border: 1px solid #4a5d4a; border-radius: 4px;">
+        <div class="roster-slot captain-slot" style="display: flex; align-items: center; gap: 8px; padding: 10px; margin-bottom: 8px; background: #e8f5e8; border: 1px solid #4a5d4a; border-radius: 4px;">
             <span class="slot-number" style="font-weight: 600; min-width: 20px; color: #666;">C:</span>
             <select class="player-select captain-select" onchange="updateTeamRoster(this)" 
-                    style="flex: 1; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    style="flex: 1; max-width: 200px; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px;">
                 <option value="">Select Captain</option>
                 ${availablePlayers.map(player => 
                     `<option value="${player.id}">${player.name}</option>`
@@ -438,11 +438,15 @@ function createRosterSlots(team) {
                 ${team.captain ? `<option value="${team.captain}" selected>${allPlayers.find(p => p.id === team.captain)?.name || 'Unknown'}</option>` : ''}
             </select>
             ${team.captain ? 
-                `<button onclick="removePlayerFromTeam(${team.teamId}, 'captain')" 
+                `<button onclick="sendCaptainInvite('${team.captain}')" 
+                         style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; white-space: nowrap;">
+                    Send Invite
+                </button>
+                <button onclick="removePlayerFromTeam(${team.teamId}, 'captain')" 
                          style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
                     Remove
                 </button>` : 
-                '<span style="width: 60px;"></span>' // Spacer to maintain layout
+                '<span style="width: 140px;"></span>' // Spacer to maintain layout for both buttons
             }
             <span class="captain-label" style="font-size: 0.85rem; color: #4a5d4a; font-weight: 600;">Captain</span>
         </div>
@@ -1390,6 +1394,27 @@ async function addMailchimpTag(email, tag) {
         }
     } catch (error) {
         console.error('Error adding Mailchimp tag:', error);
+    }
+}
+
+// Send captain invite email via Mailchimp
+async function sendCaptainInvite(captainId) {
+    try {
+        // Find the captain's email from allPlayers
+        const captain = allPlayers.find(player => player.id === captainId);
+        if (!captain) {
+            showStatusMessage('Captain not found. Please try again.', 'error');
+            return;
+        }
+        
+        // Add "2025 Captain" tag to trigger Mailchimp email automation
+        await addMailchimpTag(captain.email, '2025 Captain');
+        
+        showStatusMessage(`Captain invite sent to ${captain.name} (${captain.email})!`, 'success');
+        
+    } catch (error) {
+        console.error('Error sending captain invite:', error);
+        showStatusMessage('Error sending captain invite. Please try again.', 'error');
     }
 }
 
