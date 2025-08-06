@@ -107,8 +107,10 @@
             if (email) {
                 document.getElementById('email').value = decodeURIComponent(email);
             } else {
-                showStatusMessage('Invalid signup link. Please contact an administrator.', 'error');
-                document.getElementById('captain-signup-form').style.display = 'none';
+                // For testing purposes, show a placeholder message instead of hiding the form
+                document.getElementById('email').value = 'your-email@example.com';
+                document.getElementById('email').style.background = '#fff3cd';
+                showStatusMessage('This is a preview. Captain emails will be pre-filled automatically.', 'info');
             }
         });
 
@@ -192,6 +194,10 @@
                 statusDiv.style.background = '#d4edda';
                 statusDiv.style.color = '#155724';
                 statusDiv.style.border = '1px solid #c3e6cb';
+            } else if (type === 'info') {
+                statusDiv.style.background = '#d1ecf1';
+                statusDiv.style.color = '#0c5460';
+                statusDiv.style.border = '1px solid #bee5eb';
             } else {
                 statusDiv.style.background = '#f8d7da';
                 statusDiv.style.color = '#721c24';
