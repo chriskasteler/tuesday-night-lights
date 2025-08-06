@@ -1399,22 +1399,53 @@ async function addMailchimpTag(email, tag) {
 
 // Send captain invite email via Mailchimp
 async function sendCaptainInvite(captainId) {
+    // Find the button that was clicked to update its state
+    const buttonSelector = `button[onclick="sendCaptainInvite('${captainId}')"]`;
+    const inviteButton = document.querySelector(buttonSelector);
+    
     try {
+        // Update button to loading state
+        if (inviteButton) {
+            inviteButton.textContent = 'Sending...';
+            inviteButton.disabled = true;
+            inviteButton.style.background = '#6c757d';
+        }
+        
         // Find the captain's email from allPlayers
         const captain = allPlayers.find(player => player.id === captainId);
         if (!captain) {
             showStatusMessage('Captain not found. Please try again.', 'error');
+            // Restore button on error
+            if (inviteButton) {
+                inviteButton.textContent = 'Send Invite';
+                inviteButton.disabled = false;
+                inviteButton.style.background = '#007bff';
+            }
             return;
         }
         
         // Add "2025 Captain" tag to trigger Mailchimp email automation
         await addMailchimpTag(captain.email, '2025 Captain');
         
+        // Update button to success state
+        if (inviteButton) {
+            inviteButton.textContent = 'Invite Sent';
+            inviteButton.disabled = true;
+            inviteButton.style.background = '#28a745';
+        }
+        
         showStatusMessage(`Captain invite sent to ${captain.name} (${captain.email})!`, 'success');
         
     } catch (error) {
         console.error('Error sending captain invite:', error);
         showStatusMessage('Error sending captain invite. Please try again.', 'error');
+        
+        // Restore button on error
+        if (inviteButton) {
+            inviteButton.textContent = 'Send Invite';
+            inviteButton.disabled = false;
+            inviteButton.style.background = '#007bff';
+        }
     }
 }
 
