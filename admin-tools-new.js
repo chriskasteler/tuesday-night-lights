@@ -2,6 +2,7 @@
 
 let allPlayers = [];
 let currentTeams = [];
+let playerDirectoryData = [];
 
 // Function to format names properly (Title Case)
 function formatName(name) {
@@ -53,6 +54,9 @@ async function loadPlayersAndTeams() {
         
         // Update counters for players tab
         updateMembershipCounters();
+        
+        // Load player directory data
+        await loadPlayerDirectory();
         
     } catch (error) {
         console.error('Error loading players and teams:', error);
@@ -3845,3 +3849,150 @@ function closeScorecardSelector() {
         modal.remove();
     }
 } 
+
+// ===== PLAYER DIRECTORY FUNCTIONS =====
+
+// Load player directory data (paid participants with contact info)
+async function loadPlayerDirectory() {
+    try {
+        console.log("Loading player directory...");
+        
+        // Load participants from nested structure
+        const participantsSnapshot = await db.collection("clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants")
+            .orderBy("name", "asc")
+            .get();
+        
+        playerDirectoryData = [];
+        participantsSnapshot.forEach((doc) => {
+            const data = doc.data();
+            // Only include participants with "paid" status
+            if (data.status === "paid" || data.status === "active") {
+                playerDirectoryData.push({ 
+                    id: doc.id, 
+                    ...data,
+                    joinedDate: data.joinedAt ? new Date(data.joinedAt.toDate ? data.joinedAt.toDate() : data.joinedAt) : null
+                });
+            }
+        });
+        
+        console.log(`Loaded ${playerDirectoryData.length} paid participants for directory`);
+        renderPlayerDirectory();
+        
+    } catch (error) {
+        console.error("Error loading player directory:", error);
+    }
+}
+
+// Render the player directory
+function renderPlayerDirectory() {
+    const container = document.getElementById("player-directory-content");
+    if (!container) return;
+    
+    if (playerDirectoryData.length === 0) {
+        container.innerHTML = `
+            <p style="text-align: center; color: #666; margin: 40px 0;">
+                No paid participants found.
+            </p>
+        `;
+        return;
+    }
+    
+    // Add filter controls
+    const currentYear = new Date().getFullYear();
+    const years = [currentYear, currentYear - 1, currentYear - 2]; // Show current and previous 2 years
+    
+    container.innerHTML = `
+        <div style="margin-bottom: 20px; padding: 15px; background: #f8f9f8; border-radius: 5px;">
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <label style="font-weight: 600; color: #1e3a1e;">Filter by Season:</label>
+                <select id="year-filter" onchange="filterPlayerDirectory()" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                    <option value="all">All Years</option>
+                    ${years.map(year => `<option value="${year}" ${year === currentYear ? "selected" : ""}>${year}</option>`).join("")}
+                </select>
+                <div style="margin-left: auto; color: #666; font-size: 0.9rem;">
+                    Total: <span id="player-count">${playerDirectoryData.length}</span> players
+                </div>
+            </div>
+        </div>
+        
+        <div id="filtered-players">
+            ${renderPlayerCards(playerDirectoryData)}
+        </div>
+    `;
+}
+
+// Render player cards
+function renderPlayerCards(players) {
+    if (players.length === 0) {
+        return `
+            <p style="text-align: center; color: #666; margin: 40px 0;">
+                No players found for the selected criteria.
+            </p>
+        `;
+    }
+    
+    return `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+            ${players.map(player => `
+                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                        <h4 style="margin: 0; color: #1e3a1e; font-size: 1.1rem; font-weight: 600;">
+                            ${player.name}
+                            ${player.teamCaptain ? "<span style=\"background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; margin-left: 8px; border-radius: 3px;\">CAPTAIN</span>" : ""}
+                        </h4>
+                        ${player.teamId ? `<span style="background: #4a5d4a; color: white; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px;">Team ${player.teamId}</span>` : ""}
+                    </div>
+                    
+                    <div style="space-y: 8px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <span style="width: 20px; color: #666;">📧</span>
+                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">${player.email}</a>
+                        </div>
+                        
+                        ${player.phone ? `
+                            <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                <span style="width: 20px; color: #666;">📞</span>
+                                <a href="tel:${player.phone}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">${player.phone}</a>
+                            </div>
+                        ` : ""}
+                        
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <span style="width: 20px; color: #666;">📅</span>
+                            <span style="font-size: 0.9rem; color: #666;">
+                                Joined: ${player.joinedDate ? player.joinedDate.toLocaleDateString() : "Unknown"}
+                            </span>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center;">
+                            <span style="width: 20px; color: #666;">✅</span>
+                            <span style="font-size: 0.9rem; color: #059669; font-weight: 500;">
+                                ${player.status === "paid" ? "Fee Paid" : "Active Member"}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join("")}
+        </div>
+    `;
+}
+
+// Filter player directory by year
+function filterPlayerDirectory() {
+    const yearFilter = document.getElementById("year-filter");
+    const selectedYear = yearFilter.value;
+    
+    let filteredPlayers = [...playerDirectoryData];
+    
+    if (selectedYear !== "all") {
+        filteredPlayers = playerDirectoryData.filter(player => {
+            if (!player.joinedDate) return false;
+            return player.joinedDate.getFullYear().toString() === selectedYear;
+        });
+    }
+    
+    // Update player count
+    document.getElementById("player-count").textContent = filteredPlayers.length;
+    
+    // Re-render filtered players
+    document.getElementById("filtered-players").innerHTML = renderPlayerCards(filteredPlayers);
+}
