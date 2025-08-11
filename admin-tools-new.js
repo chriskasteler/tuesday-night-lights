@@ -3932,46 +3932,47 @@ function renderPlayerCards(players) {
     }
     
     return `
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
-            ${players.map(player => `
-                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s ease;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                        <h4 style="margin: 0; color: #1e3a1e; font-size: 1.1rem; font-weight: 600;">
-                            ${player.name}
-                            ${player.teamCaptain ? "<span style=\"background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; margin-left: 8px; border-radius: 3px;\">CAPTAIN</span>" : ""}
-                        </h4>
-                        ${player.teamId ? `<span style="background: #4a5d4a; color: white; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px;">Team ${player.teamId}</span>` : ""}
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${players.map(player => {
+                // Generate years participated tags (for now just show current year)
+                const currentYear = new Date().getFullYear();
+                const yearsParticipated = [currentYear]; // TODO: Add logic for multiple years when we have historical data
+                
+                return `
+                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                        <div style="min-width: 180px;">
+                            <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                ${player.name}
+                                ${player.teamCaptain ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 500;">CAPTAIN</span>' : ""}
+                            </h4>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                                📧 ${player.email}
+                            </a>
+                            
+                            ${player.phone ? `
+                                <a href="tel:${player.phone}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                                    📞 ${player.phone}
+                                </a>
+                            ` : '<span style="color: #ccc; font-size: 0.9rem;">📞 --</span>'}
+                        </div>
                     </div>
                     
-                    <div style="space-y: 8px;">
-                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                            <span style="width: 20px; color: #666;">📧</span>
-                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">${player.email}</a>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            ${yearsParticipated.map(year => 
+                                `<span style="background: #4a5d4a; color: white; padding: 3px 8px; font-size: 0.75rem; border-radius: 12px; font-weight: 500;">${year}</span>`
+                            ).join("")}
                         </div>
                         
-                        ${player.phone ? `
-                            <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                                <span style="width: 20px; color: #666;">📞</span>
-                                <a href="tel:${player.phone}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">${player.phone}</a>
-                            </div>
-                        ` : ""}
-                        
-                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                            <span style="width: 20px; color: #666;">📅</span>
-                            <span style="font-size: 0.9rem; color: #666;">
-                                Joined: ${player.joinedDate ? player.joinedDate.toLocaleDateString() : "Unknown"}
-                            </span>
-                        </div>
-                        
-                        <div style="display: flex; align-items: center;">
-                            <span style="width: 20px; color: #666;">✅</span>
-                            <span style="font-size: 0.9rem; color: #059669; font-weight: 500;">
-                                ${player.status === "paid" ? "Fee Paid" : "Active Member"}
-                            </span>
-                        </div>
+                        ${player.teamId ? `<span style="background: #e8f5e8; color: #2d4a2d; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">Team ${player.teamId}</span>` : ""}
                     </div>
                 </div>
-            `).join("")}
+            `;
+            }).join("")}
         </div>
     `;
 }
