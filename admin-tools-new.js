@@ -3939,101 +3939,62 @@ function renderPlayerCards(players) {
                 const yearsParticipated = [currentYear]; // TODO: Add logic for multiple years when we have historical data
                 
                 return `
-                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <!-- Mobile: Stack vertically, Desktop: Single line -->
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <!-- Name and Captain badge -->
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between;">
+                    <!-- Clickable name section -->
+                    <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                        <button onclick="showPlayerDetails('${player.id}')" style="background: none; border: none; text-align: left; cursor: pointer; padding: 0; color: inherit;">
+                            <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color 0.2s;">
                                 ${player.name}
                                 ${(player.teamCaptain && player.teamId) ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 500;">CAPTAIN</span>' : ""}
                             </h4>
-                            <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
-                                ${yearsParticipated.map(year => 
-                                    `<span style="background: #4a5d4a; color: white; padding: 3px 8px; font-size: 0.75rem; border-radius: 12px; font-weight: 500;">${year}</span>`
-                                ).join("")}
-                                ${player.teamId ? `<span style="background: #e8f5e8; color: #2d4a2d; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">Team ${player.teamId}</span>` : ""}
-                            </div>
-                        </div>
-                        
-                        <!-- Contact info -->
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; word-break: break-all;">
-                                📧 ${player.email}
-                            </a>
-                            
-                            ${player.phone ? `
-                                <a href="tel:${player.phone}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
-                                    📞 ${player.phone}
-                                </a>
-                            ` : '<span style="color: #ccc; font-size: 0.9rem;">📞 --</span>'}
-                        </div>
+                        </button>
                     </div>
                     
-                    <!-- Desktop layout (hidden on mobile, shown on larger screens) -->
-                    <style>
-                        @media (min-width: 768px) {
-                            .mobile-player-card {
-                                display: none !important;
-                            }
-                            .desktop-player-card {
-                                display: flex !important;
-                                align-items: center;
-                                justify-content: space-between;
-                                gap: 15px;
-                            }
-                            .desktop-name-section {
-                                min-width: 180px;
-                            }
-                            .desktop-contact-section {
-                                display: flex;
-                                align-items: center;
-                                gap: 15px;
-                                flex: 1;
-                            }
-                            .desktop-tags-section {
-                                display: flex;
-                                align-items: center;
-                                gap: 10px;
-                                flex-shrink: 0;
-                            }
-                        }
-                        @media (max-width: 767px) {
-                            .desktop-player-card {
-                                display: none !important;
-                            }
-                        }
-                    </style>
-                    
-                    <div class="desktop-player-card" style="display: none;">
-                        <div class="desktop-name-section">
-                            <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                                ${player.name}
-                                ${(player.teamCaptain && player.teamId) ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 500;">CAPTAIN</span>' : ""}
-                            </h4>
-                        </div>
-                        
-                        <div class="desktop-contact-section">
-                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
-                                📧 ${player.email}
+                    <!-- Contact icons -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <!-- Phone call icon -->
+                        ${player.phone ? `
+                            <a href="tel:${player.phone}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #4CAF50; border-radius: 50%; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;" 
+                               onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'"
+                               onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                               title="Call ${player.name}">
+                                <span style="color: white; font-size: 1.2rem;">📞</span>
                             </a>
-                            
-                            ${player.phone ? `
-                                <a href="tel:${player.phone}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
-                                    📞 ${player.phone}
-                                </a>
-                            ` : '<span style="color: #ccc; font-size: 0.9rem;">📞 --</span>'}
-                        </div>
-                        
-                        <div class="desktop-tags-section">
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                ${yearsParticipated.map(year => 
-                                    `<span style="background: #4a5d4a; color: white; padding: 3px 8px; font-size: 0.75rem; border-radius: 12px; font-weight: 500;">${year}</span>`
-                                ).join("")}
+                        ` : `
+                            <div style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #ddd; border-radius: 50%; opacity: 0.5;" title="No phone number">
+                                <span style="color: #999; font-size: 1.2rem;">📞</span>
                             </div>
-                            
-                            ${player.teamId ? `<span style="background: #e8f5e8; color: #2d4a2d; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">Team ${player.teamId}</span>` : ""}
-                        </div>
+                        `}
+                        
+                        <!-- Text message icon -->
+                        ${player.phone ? `
+                            <a href="sms:${player.phone}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #2196F3; border-radius: 50%; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;" 
+                               onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'"
+                               onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                               title="Text ${player.name}">
+                                <span style="color: white; font-size: 1.2rem;">💬</span>
+                            </a>
+                        ` : `
+                            <div style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #ddd; border-radius: 50%; opacity: 0.5;" title="No phone number">
+                                <span style="color: #999; font-size: 1.2rem;">💬</span>
+                            </div>
+                        `}
+                        
+                        <!-- Email icon -->
+                        <a href="mailto:${player.email}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #FF9800; border-radius: 50%; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;" 
+                           onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'"
+                           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                           title="Email ${player.name}">
+                            <span style="color: white; font-size: 1.2rem;">📧</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Year and team tags -->
+                    <div style="display: flex; align-items: center; gap: 8px; margin-left: 15px;">
+                        ${yearsParticipated.map(year => 
+                            `<span style="background: #4a5d4a; color: white; padding: 3px 8px; font-size: 0.75rem; border-radius: 12px; font-weight: 500;">${year}</span>`
+                        ).join("")}
+                        ${player.teamId ? `<span style="background: #e8f5e8; color: #2d4a2d; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">Team ${player.teamId}</span>` : ""}
                     </div>
                 </div>
             `;
@@ -4061,4 +4022,122 @@ function filterPlayerDirectory() {
     
     // Re-render filtered players
     document.getElementById("filtered-players").innerHTML = renderPlayerCards(filteredPlayers);
+}
+
+// Show player details modal
+function showPlayerDetails(playerId) {
+    const player = playerDirectoryData.find(p => p.id === playerId);
+    if (!player) return;
+    
+    // Create modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    `;
+    
+    // Create modal content
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        position: relative;
+    `;
+    
+    modalContent.innerHTML = `
+        <button onclick="this.closest('.modal-overlay').remove()" style="
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">&times;</button>
+        
+        <div style="margin-bottom: 20px;">
+            <h3 style="margin: 0 0 10px 0; color: #1e3a1e; display: flex; align-items: center; gap: 10px;">
+                ${player.name}
+                ${(player.teamCaptain && player.teamId) ? '<span style="background: #2d4a2d; color: white; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">CAPTAIN</span>' : ""}
+            </h3>
+            ${player.teamId ? `<p style="margin: 0; color: #666; font-size: 0.9rem;">Team ${player.teamId}</p>` : ""}
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 12px;">
+                <strong style="color: #1e3a1e;">Email:</strong><br>
+                <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none;">${player.email}</a>
+            </div>
+            
+            ${player.phone ? `
+                <div style="margin-bottom: 12px;">
+                    <strong style="color: #1e3a1e;">Phone:</strong><br>
+                    <a href="tel:${player.phone}" style="color: #2563eb; text-decoration: none;">${player.phone}</a>
+                </div>
+            ` : `
+                <div style="margin-bottom: 12px;">
+                    <strong style="color: #1e3a1e;">Phone:</strong><br>
+                    <span style="color: #999;">Not provided</span>
+                </div>
+            `}
+            
+            <div style="margin-bottom: 12px;">
+                <strong style="color: #1e3a1e;">Status:</strong><br>
+                <span style="color: ${player.status === 'paid' ? '#059669' : '#666'};">
+                    ${player.status === 'paid' ? 'Fee Paid' : 'Active Member'}
+                </span>
+            </div>
+            
+            ${player.joinedDate ? `
+                <div>
+                    <strong style="color: #1e3a1e;">Joined:</strong><br>
+                    <span style="color: #666;">${player.joinedDate.toLocaleDateString()}</span>
+                </div>
+            ` : ''}
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            ${player.phone ? `
+                <a href="tel:${player.phone}" style="display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #4CAF50; color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem; gap: 8px;">
+                    📞 Call
+                </a>
+                <a href="sms:${player.phone}" style="display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #2196F3; color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem; gap: 8px;">
+                    💬 Text
+                </a>
+            ` : ''}
+            <a href="mailto:${player.email}" style="display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #FF9800; color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem; gap: 8px;">
+                📧 Email
+            </a>
+        </div>
+    `;
+    
+    modalOverlay.className = 'modal-overlay';
+    modalOverlay.appendChild(modalContent);
+    document.body.appendChild(modalOverlay);
+    
+    // Close modal when clicking overlay
+    modalOverlay.addEventListener('click', function(e) {
+        if (e.target === modalOverlay) {
+            modalOverlay.remove();
+        }
+    });
 }
