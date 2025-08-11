@@ -199,18 +199,19 @@ async function assignCaptainRole(userEmail, teamId) {
         
         // ALSO update the participant record to include teamId
         console.log(`Looking for participant record with email: ${userEmail}`);
-        const participantsSnapshot = await db.collection('participants')
+        const participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants')
             .where('email', '==', userEmail)
             .get();
         
         if (!participantsSnapshot.empty) {
-            // Update participant record with teamId
+            // Update participant record with teamId and set teamCaptain to true
             const participantDoc = participantsSnapshot.docs[0];
             await participantDoc.ref.update({
                 teamId: teamId,
+                teamCaptain: true,
                 lastUpdated: new Date().toISOString()
             });
-            console.log(`Updated participant record: ${userEmail} -> Team ${teamId}`);
+            console.log(`Updated participant record: ${userEmail} -> Team ${teamId} (set as captain)`);
         } else {
             console.log(`No participant record found for ${userEmail} - they may not be in participants collection yet`);
         }
@@ -559,7 +560,7 @@ let signedUpPlayers = [];
 
 // Load participants from Firebase
 function loadParticipants() {
-    db.collection('participants').orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
+    dbHelper.collection('participants').orderBy('joinedAt', 'asc').onSnapshot((snapshot) => {
         signedUpPlayers = [];
         snapshot.forEach((doc) => {
             signedUpPlayers.push({ id: doc.id, ...doc.data() });
@@ -599,8 +600,8 @@ document.getElementById('signupForm').addEventListener('submit', async function(
 
     try {
         // Check if email already exists in participants or requests
-        const existingParticipant = await db.collection('participants').where('email', '==', formData.email).get();
-        const existingRequest = await db.collection('requests').where('email', '==', formData.email).get();
+        const existingParticipant = await dbHelper.collection('participants').where('email', '==', formData.email).get();
+        const existingRequest = await dbHelper.collection('requests').where('email', '==', formData.email).get();
         
         if (!existingParticipant.empty) {
             alert('This email address is already registered in the league!');
@@ -617,7 +618,7 @@ document.getElementById('signupForm').addEventListener('submit', async function(
         }
 
         // Add request to Firestore
-        await db.collection('requests').add(formData);
+        await dbHelper.collection('requests').add(formData);
     
         // Send email notification to admin
         await sendRequestNotification(formData);
