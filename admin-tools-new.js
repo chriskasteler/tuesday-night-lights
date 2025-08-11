@@ -441,15 +441,27 @@ function createRosterSlots(team) {
                 ).join('')}
                 ${team.captain ? `<option value="${team.captain}" selected>${allPlayers.find(p => p.id === team.captain)?.name || 'Unknown'}</option>` : ''}
             </select>
-            ${team.captain ? 
-                `<button onclick="sendCaptainInvite('${team.captain}')" 
-                         style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; white-space: nowrap;">
-                    Send Invite
-                </button>
-                <button onclick="removePlayerFromTeam(${team.teamId}, 'captain')" 
-                         style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
-                    Remove
-                </button>` : 
+            ${team.captain ? (() => {
+                const captain = allPlayers.find(p => p.id === team.captain);
+                const inviteSent = captain && captain.inviteSent;
+                
+                return inviteSent ? 
+                    `<button disabled style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: not-allowed; white-space: nowrap;">
+                        Invite Sent
+                    </button>
+                    <button onclick="removePlayerFromTeam(${team.teamId}, 'captain')" 
+                             style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                        Remove
+                    </button>` :
+                    `<button onclick="sendCaptainInvite('${team.captain}')" 
+                             style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; white-space: nowrap;">
+                        Send Invite
+                    </button>
+                    <button onclick="removePlayerFromTeam(${team.teamId}, 'captain')" 
+                             style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                        Remove
+                    </button>`;
+            })() : 
                 '<span style="width: 140px;"></span>' // Spacer to maintain layout for both buttons
             }
             <span class="captain-label" style="font-size: 0.85rem; color: #4a5d4a; font-weight: 600;">Captain</span>
@@ -781,6 +793,8 @@ async function removeCaptainRole(userEmail) {
             await participantDoc.ref.update({
                 teamId: firebase.firestore.FieldValue.delete(),
                 teamCaptain: false,
+                inviteSent: false,
+                inviteSentAt: null,
                 lastUpdated: new Date().toISOString()
             });
             console.log(`Removed teamId and captain status from participant record: ${userEmail}`);
@@ -873,10 +887,20 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
         // Clear teamId from removed players
         for (const playerId of removedPlayerIds) {
             try {
-                await db.collection('participants').doc(playerId).update({
-                    teamId: null
-                });
-                console.log(`✅ Cleared teamId for removed participant: ${playerId}`);
+                // Prepare update data
+                const updateData = {
+                    teamId: null,
+                    teamCaptain: false
+                };
+                
+                // If this was a captain removal, also clear invite status
+                if (slotIdentifier === 'captain' || currentTeams[teamIndex].captain === playerId) {
+                    updateData.inviteSent = false;
+                    updateData.inviteSentAt = null;
+                }
+                
+                await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').doc(playerId).update(updateData);
+                console.log(`✅ Cleared teamId and invite status for removed participant: ${playerId}`);
             } catch (error) {
                 console.error(`❌ Error clearing teamId for participant ${playerId}:`, error);
             }
@@ -1552,6 +1576,18 @@ async function sendCaptainInvite(captainId) {
         
         // Add "2025 Captain" tag to trigger Mailchimp email automation
         await addMailchimpTag(captain.email, '2025 Captain');
+        
+        // Update participant record to mark invite as sent
+        try {
+            await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').doc(captainId).update({
+                inviteSent: true,
+                inviteSentAt: new Date().toISOString()
+            });
+            console.log(`Marked invite as sent for captain ${captainId}`);
+        } catch (error) {
+            console.error('Error updating invite status in database:', error);
+            // Continue anyway since Mailchimp invite was sent
+        }
         
         // Update button to success state
         if (inviteButton) {
