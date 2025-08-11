@@ -516,7 +516,7 @@ async function saveTeamName(button) {
         }
         
         // Update in Firebase
-        await db.collection('teams').doc(currentTeams[teamIndex].id).update({
+        await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(currentTeams[teamIndex].id).update({
             teamName: newName
         });
         
@@ -922,7 +922,7 @@ async function saveAllTeams() {
         showStatusMessage('Saving all teams...', 'success');
         
         for (const team of currentTeams) {
-            await db.collection('teams').doc(team.id).update({
+            await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(team.id).update({
                 teamName: team.teamName,
                 players: team.players,
                 captain: team.captain

@@ -58,7 +58,7 @@ async function initializeMyTeam(userId, teamId) {
 async function loadAllTeams() {
     try {
         console.log('Loading all teams for name mapping...');
-        const teamsSnapshot = await db.collection('teams').get();
+        const teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').get();
         
         allTeamsData = {};
         teamsSnapshot.forEach(doc => {
@@ -107,18 +107,18 @@ async function loadTeamData(teamId) {
         console.log(`Loading team data for teamId: "${teamIdStr}" (also checking ${teamIdNum})`);
         
         // Try to get team by document ID first
-        let teamDoc = await db.collection('teams').doc(teamIdStr).get();
+        let teamDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(teamIdStr).get();
         
         // If not found by document ID, try searching by teamId field
         if (!teamDoc.exists) {
             console.log('Team not found by document ID, searching by teamId field...');
             
             // Try with string teamId
-            let teamsSnapshot = await db.collection('teams').where('teamId', '==', teamIdStr).get();
+            let teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').where('teamId', '==', teamIdStr).get();
             
             // Try with number teamId if string didn't work
             if (teamsSnapshot.empty) {
-                teamsSnapshot = await db.collection('teams').where('teamId', '==', teamIdNum).get();
+                teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').where('teamId', '==', teamIdNum).get();
             }
             
             if (!teamsSnapshot.empty) {
@@ -151,13 +151,13 @@ async function loadTeamRoster(teamId) {
         
         // Method 1: Try to find participants with teamId field (try both string and number)
         // Remove orderBy to avoid index requirement
-        let participantsSnapshot = await db.collection('participants')
+        let participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants')
             .where('teamId', '==', teamIdStr)
             .get();
         
         // If no results with string, try with number
         if (participantsSnapshot.empty) {
-            participantsSnapshot = await db.collection('participants')
+            participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants')
                 .where('teamId', '==', teamIdNum)
                 .get();
         }
@@ -179,7 +179,7 @@ async function loadTeamRoster(teamId) {
             for (const playerId of playerIds) {
                 if (playerId) {
                     try {
-                        const playerDoc = await db.collection('participants').doc(playerId).get();
+                        const playerDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').doc(playerId).get();
                         if (playerDoc.exists) {
                             currentTeamRoster.push({ id: playerDoc.id, ...playerDoc.data() });
                         }
