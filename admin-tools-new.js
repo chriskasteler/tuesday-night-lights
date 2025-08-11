@@ -3939,17 +3939,26 @@ function renderPlayerCards(players) {
                 const yearsParticipated = [currentYear]; // TODO: Add logic for multiple years when we have historical data
                 
                 return `
-                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
-                        <div style="min-width: 180px;">
-                            <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <!-- Mobile: Stack vertically, Desktop: Single line -->
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Name and Captain badge -->
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                                 ${player.name}
                                 ${(player.teamCaptain && player.teamId) ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 500;">CAPTAIN</span>' : ""}
                             </h4>
+                            <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                                ${yearsParticipated.map(year => 
+                                    `<span style="background: #4a5d4a; color: white; padding: 3px 8px; font-size: 0.75rem; border-radius: 12px; font-weight: 500;">${year}</span>`
+                                ).join("")}
+                                ${player.teamId ? `<span style="background: #e8f5e8; color: #2d4a2d; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">Team ${player.teamId}</span>` : ""}
+                            </div>
                         </div>
                         
-                        <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
-                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                        <!-- Contact info -->
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; word-break: break-all;">
                                 📧 ${player.email}
                             </a>
                             
@@ -3961,14 +3970,70 @@ function renderPlayerCards(players) {
                         </div>
                     </div>
                     
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            ${yearsParticipated.map(year => 
-                                `<span style="background: #4a5d4a; color: white; padding: 3px 8px; font-size: 0.75rem; border-radius: 12px; font-weight: 500;">${year}</span>`
-                            ).join("")}
+                    <!-- Desktop layout (hidden on mobile, shown on larger screens) -->
+                    <style>
+                        @media (min-width: 768px) {
+                            .mobile-player-card {
+                                display: none !important;
+                            }
+                            .desktop-player-card {
+                                display: flex !important;
+                                align-items: center;
+                                justify-content: space-between;
+                                gap: 15px;
+                            }
+                            .desktop-name-section {
+                                min-width: 180px;
+                            }
+                            .desktop-contact-section {
+                                display: flex;
+                                align-items: center;
+                                gap: 15px;
+                                flex: 1;
+                            }
+                            .desktop-tags-section {
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                flex-shrink: 0;
+                            }
+                        }
+                        @media (max-width: 767px) {
+                            .desktop-player-card {
+                                display: none !important;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="desktop-player-card" style="display: none;">
+                        <div class="desktop-name-section">
+                            <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                ${player.name}
+                                ${(player.teamCaptain && player.teamId) ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 500;">CAPTAIN</span>' : ""}
+                            </h4>
                         </div>
                         
-                        ${player.teamId ? `<span style="background: #e8f5e8; color: #2d4a2d; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">Team ${player.teamId}</span>` : ""}
+                        <div class="desktop-contact-section">
+                            <a href="mailto:${player.email}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                                📧 ${player.email}
+                            </a>
+                            
+                            ${player.phone ? `
+                                <a href="tel:${player.phone}" style="color: #2563eb; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                                    📞 ${player.phone}
+                                </a>
+                            ` : '<span style="color: #ccc; font-size: 0.9rem;">📞 --</span>'}
+                        </div>
+                        
+                        <div class="desktop-tags-section">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                ${yearsParticipated.map(year => 
+                                    `<span style="background: #4a5d4a; color: white; padding: 3px 8px; font-size: 0.75rem; border-radius: 12px; font-weight: 500;">${year}</span>`
+                                ).join("")}
+                            </div>
+                            
+                            ${player.teamId ? `<span style="background: #e8f5e8; color: #2d4a2d; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; font-weight: 500;">Team ${player.teamId}</span>` : ""}
+                        </div>
                     </div>
                 </div>
             `;
