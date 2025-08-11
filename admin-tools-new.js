@@ -22,8 +22,8 @@ function initializeManageTeams() {
 // Load all players and teams from Firebase
 async function loadPlayersAndTeams() {
     try {
-        // Load participants
-        const participantsSnapshot = await dbHelper.collection('participants').orderBy('name', 'asc').get();
+        // Load participants from new nested structure
+        const participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').orderBy('name', 'asc').get();
         allPlayers = [];
         participantsSnapshot.forEach((doc) => {
             allPlayers.push({ id: doc.id, ...doc.data() });
@@ -32,8 +32,8 @@ async function loadPlayersAndTeams() {
         // Clean up any duplicate teams first
         const duplicatesRemoved = await cleanupDuplicateTeams();
         
-        // Load teams (or create default structure)
-        const teamsSnapshot = await dbHelper.collection('teams').orderBy('teamId', 'asc').get();
+        // Load teams from new nested structure (or create default structure)
+        const teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').orderBy('teamId', 'asc').get();
         
         console.log('Teams found in database:', teamsSnapshot.size);
         
@@ -83,7 +83,7 @@ async function createDefaultTeams() {
         try {
             // Use set() with specific document ID to prevent duplicates
             const docId = `team-${i}`;
-            await dbHelper.collection('teams').doc(docId).set(teamData);
+            await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(docId).set(teamData);
             currentTeams.push({ id: docId, ...teamData });
             console.log(`Created/Updated Team ${i} with ID: ${docId}`);
         } catch (error) {
@@ -574,7 +574,7 @@ async function updateTeamRoster(selectElement) {
             console.log(`Players being saved:`, players);
             console.log(`Captain being saved:`, captain);
             
-            await db.collection('teams').doc(docId).set({
+            await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(docId).set({
                 teamId: teamId,
                 teamName: team.teamName || `Team ${teamId}`,
                 players: players,
@@ -612,7 +612,7 @@ async function updateTeamRoster(selectElement) {
             console.log(`📝 Participant updates complete:`, participantUpdates);
             
             // Verify the save by reading it back
-            const savedDoc = await db.collection('teams').doc(docId).get();
+            const savedDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(docId).get();
             if (savedDoc.exists) {
                 console.log(`✅ Verification: Team ${teamId} data in database:`, savedDoc.data());
             } else {
@@ -873,7 +873,7 @@ async function removePlayerFromTeam(teamId, slotIdentifier) {
     // Save the updated team to database
     try {
         const team = currentTeams[teamIndex];
-        await db.collection('teams').doc(team.id).set({
+        await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(team.id).set({
             teamId: team.teamId,
             teamName: team.teamName,
             players: team.players,
