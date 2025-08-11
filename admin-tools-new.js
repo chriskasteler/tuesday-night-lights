@@ -3944,7 +3944,7 @@ function renderPlayerCards(players) {
                         <div style="min-width: 180px;">
                             <h4 style="margin: 0; color: #1e3a1e; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
                                 ${player.name}
-                                ${player.teamCaptain ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 500;">CAPTAIN</span>' : ""}
+                                ${(player.teamCaptain && player.teamId) ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: 500;">CAPTAIN</span>' : ""}
                             </h4>
                         </div>
                         
