@@ -187,11 +187,10 @@ async function assignCaptainRole(userEmail, teamId) {
             currentRoles.push('captain');
         }
         
-        // Update user with captain role and team assignment
+        // Update user with captain role (no teamId in global users)
         const userRef = db.collection('users').doc(foundUser.id);
         await userRef.update({
             roles: currentRoles,
-            teamId: teamId,
             lastUpdated: new Date().toISOString()
         });
         
