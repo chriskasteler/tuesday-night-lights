@@ -1004,7 +1004,7 @@ auth.onAuthStateChanged(async user => {
     } else {
         // No user logged in - show login option
         document.body.classList.remove('admin-logged-in', 'captain-logged-in');
-        document.getElementById('admin-login-btn').textContent = 'Admin Login';
+        document.getElementById('admin-login-btn').textContent = 'Captain & Admin Login';
         document.getElementById('admin-login-btn').onclick = showAdminLogin;
         console.log('No user logged in');
     }
