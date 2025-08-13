@@ -55,6 +55,9 @@ async function initializeSuperAdmin() {
     }
 }
 
+// Make function available globally for script.js
+window.initializeSuperAdmin = initializeSuperAdmin;
+
 // ===== DATA LOADING =====
 
 // Load all platform data for overview
@@ -1007,12 +1010,55 @@ function isSuperAdmin(userEmail) {
 
 // Initialize when page loads (if super admin section is visible)
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎯 SUPER ADMIN TOOLS: DOMContentLoaded fired');
+    
     // Check if super admin section exists and user has access
-    if (document.getElementById('super-admin-section')) {
-        const user = firebase.auth().currentUser;
-        if (user && isSuperAdmin(user.email)) {
-            // Will be initialized when section is shown
-            console.log('Super Admin tools ready for initialization');
+    const superAdminSection = document.getElementById('super-admin-section');
+    console.log('🔍 Checking for super-admin-section:', !!superAdminSection);
+    
+    if (superAdminSection) {
+        console.log('✅ super-admin-section found in DOM, checking visibility...');
+        
+        // Check if it's currently visible
+        const isVisible = superAdminSection.style.display !== 'none' && 
+                         superAdminSection.offsetParent !== null;
+        console.log('👁️ Super Admin section visible:', isVisible);
+        
+        // Initialize if visible, or set up observer for when it becomes visible
+        if (isVisible) {
+            console.log('🚀 Auto-initializing Super Admin (section is visible)');
+            initializeSuperAdmin();
+        } else {
+            console.log('⏳ Setting up visibility observer for Super Admin section');
+            // Set up observer to initialize when section becomes visible
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (superAdminSection.style.display !== 'none' && 
+                        superAdminSection.offsetParent !== null) {
+                        console.log('👁️ Super Admin section became visible, initializing...');
+                        initializeSuperAdmin();
+                        observer.disconnect();
+                    }
+                });
+            });
+            
+            observer.observe(superAdminSection, { 
+                attributes: true, 
+                attributeFilter: ['style', 'class'] 
+            });
+            
+            // Also check periodically in case we miss the visibility change
+            const checkInterval = setInterval(() => {
+                if (superAdminSection.style.display !== 'none' && 
+                    superAdminSection.offsetParent !== null) {
+                    console.log('⏰ Periodic check: Super Admin section visible, initializing...');
+                    initializeSuperAdmin();
+                    clearInterval(checkInterval);
+                    observer.disconnect();
+                }
+            }, 1000);
         }
+    } else {
+        console.log('❌ super-admin-section not found in DOM');
     }
 });
