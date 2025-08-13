@@ -324,6 +324,8 @@ function showSection(sectionName) {
     } else if (sectionName === 'manage-teams') {
         // Restore admin sub-section when admin tools is activated
         restoreAdminSubSection();
+    } else if (sectionName === 'super-admin') {
+        initializeSuperAdmin(); // Super Admin Dashboard
     }
     
     // Update mobile page title
@@ -970,8 +972,15 @@ auth.onAuthStateChanged(async user => {
         let buttonText = 'Logout';
         let isAdmin = false;
         let isCaptain = false;
+        let isSuperAdmin = false;
         
-        if (userRoles.includes('admin')) {
+        // Check for Super Admin (your specific email)
+        if (user.email === 'chris.kasteler@me.com') {
+            document.body.classList.add('admin-logged-in', 'super-admin-logged-in');
+            isAdmin = true;
+            isSuperAdmin = true;
+            console.log('🚀 Super Admin logged in:', user.email);
+        } else if (userRoles.includes('admin')) {
             document.body.classList.add('admin-logged-in');
             isAdmin = true;
             console.log('Admin logged in:', user.email);
@@ -984,7 +993,9 @@ auth.onAuthStateChanged(async user => {
         }
         
         // Set button text based on roles
-        if (isAdmin && isCaptain) {
+        if (isSuperAdmin) {
+            buttonText = '🚀 Super Admin Logout';
+        } else if (isAdmin && isCaptain) {
             buttonText = 'Logout'; // Both admin and captain
         } else if (isAdmin) {
             buttonText = 'Admin Logout'; // Admin only

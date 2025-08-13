@@ -1152,6 +1152,15 @@ body.admin-logged-in .admin-only {
     display: block !important;
 }
 
+/* Super Admin Styles */
+.super-admin-only {
+    display: none !important;
+}
+
+body.super-admin-logged-in .super-admin-only {
+    display: block !important;
+}
+
 body.admin-logged-in .remove-player-btn {
     display: inline-block !important;
 }
