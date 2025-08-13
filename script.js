@@ -339,7 +339,13 @@ function showSection(sectionName) {
         // Restore admin sub-section when admin tools is activated
         restoreAdminSubSection();
     } else if (sectionName === 'super-admin') {
-        initializeSuperAdmin(); // Super Admin Dashboard
+        console.log('📍 SHOW SECTION: super-admin triggered');
+        if (typeof initializeSuperAdmin === 'function') {
+            console.log('✅ initializeSuperAdmin function found, calling...');
+            initializeSuperAdmin(); // Super Admin Dashboard
+        } else {
+            console.error('❌ initializeSuperAdmin function not found! Type:', typeof initializeSuperAdmin);
+        }
     }
     
     // Update mobile page title

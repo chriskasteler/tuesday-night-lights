@@ -21,25 +21,37 @@ let superAdminData = {
 // Initialize Super Admin Dashboard
 async function initializeSuperAdmin() {
     try {
-        console.log('Initializing Super Admin Dashboard...');
+        console.log('🚀 INITIALIZING SUPER ADMIN DASHBOARD...');
+        
+        // Check if we have the required elements
+        const superAdminSection = document.getElementById('super-admin-section');
+        if (!superAdminSection) {
+            console.error('❌ super-admin-section element not found!');
+            return;
+        }
+        console.log('✅ super-admin-section found');
         
         // Load all platform data
+        console.log('🔄 Starting platform data load...');
         await loadPlatformData();
         
         // Populate context selectors
+        console.log('🔄 Populating context selectors...');
         populateContextSelectors();
         
         // Render dashboard data
+        console.log('🔄 Rendering dashboard components...');
         renderPlatformOverview();
         renderQuickTeamAccess();
         populateBulkLineupWeeks();
         renderTeamsGrid();
         loadRecentActivity();
         
-        console.log('✅ Super Admin Dashboard initialized');
+        console.log('🎉 SUPER ADMIN DASHBOARD INITIALIZATION COMPLETE!');
         
     } catch (error) {
-        console.error('❌ Error initializing Super Admin Dashboard:', error);
+        console.error('💥 CRITICAL ERROR initializing Super Admin Dashboard:', error);
+        console.error('Stack trace:', error.stack);
     }
 }
 
