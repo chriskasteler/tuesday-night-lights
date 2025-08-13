@@ -507,10 +507,13 @@ async function loadBulkLineups() {
                             ${hasLineup ? 'Set' : 'Missing'}
                         </span>
                     </h4>
-                    ${hasLineup ? renderLineupSummary(lineup) : '<p style="color: #666; font-style: italic; margin: 5px 0;">No lineup set for this week</p>'}
+                    ${hasLineup ? renderLineupSummary(lineup) : renderBulkLineupEditor(team.teamId, selectedWeek)}
                     <div style="margin-top: 10px;">
-                        <button onclick="quickAccessTeam(${team.teamId})" style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-right: 5px;">
-                            Edit
+                        <button onclick="toggleBulkLineupEditor(${team.teamId}, '${selectedWeek}')" style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-right: 5px;">
+                            ${hasLineup ? 'Edit Here' : 'Set Lineup'}
+                        </button>
+                        <button onclick="quickAccessTeam(${team.teamId})" style="background: #6c757d; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-right: 5px;">
+                            Captain View
                         </button>
                         ${hasLineup ? `<button onclick="clearTeamLineup(${team.teamId}, '${selectedWeek}')" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">Clear</button>` : ''}
                     </div>
@@ -546,10 +549,315 @@ function renderLineupSummary(lineup) {
     const positions = ['1', '2', '3', '4', '5', '6'];
     const positionNames = positions.map(pos => {
         const player = lineup[`position${pos}`];
-        return player ? player.name || 'Unknown' : 'Empty';
+        return player ? player.name || 'Empty';
     }).join(', ');
     
     return `<p style="font-size: 0.85rem; color: #666; margin: 5px 0;">${positionNames}</p>`;
+}
+
+// Render bulk lineup editor for teams without lineups
+function renderBulkLineupEditor(teamId, week) {
+    return `
+        <div id="bulk-editor-${teamId}" style="display: none; margin: 5px 0;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; font-size: 0.8rem;">
+                <select id="pos1-${teamId}" style="padding: 2px; font-size: 0.75rem;">
+                    <option value="">Position 1</option>
+                </select>
+                <select id="pos2-${teamId}" style="padding: 2px; font-size: 0.75rem;">
+                    <option value="">Position 2</option>
+                </select>
+                <select id="pos3-${teamId}" style="padding: 2px; font-size: 0.75rem;">
+                    <option value="">Position 3</option>
+                </select>
+                <select id="pos4-${teamId}" style="padding: 2px; font-size: 0.75rem;">
+                    <option value="">Position 4</option>
+                </select>
+                <select id="pos5-${teamId}" style="padding: 2px; font-size: 0.75rem;">
+                    <option value="">Position 5</option>
+                </select>
+                <select id="pos6-${teamId}" style="padding: 2px; font-size: 0.75rem;">
+                    <option value="">Position 6</option>
+                </select>
+            </div>
+            <div style="margin-top: 5px;">
+                <button onclick="saveBulkLineup(${teamId}, '${week}')" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem; margin-right: 5px;">
+                    Save Lineup
+                </button>
+                <button onclick="cancelBulkLineupEditor(${teamId})" style="background: #6c757d; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem;">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// Toggle bulk lineup editor visibility and populate player dropdowns
+async function toggleBulkLineupEditor(teamId, week) {
+    const editor = document.getElementById(`bulk-editor-${teamId}`);
+    if (!editor) return;
+    
+    if (editor.style.display === 'none') {
+        // Show editor and populate with team players
+        editor.style.display = 'block';
+        await populateBulkLineupDropdowns(teamId, week);
+    } else {
+        // Hide editor
+        editor.style.display = 'none';
+    }
+}
+
+// Populate dropdown selectors with team players
+async function populateBulkLineupDropdowns(teamId, week) {
+    try {
+        // Get team roster
+        const roster = await getTeamRoster(teamId);
+        
+        // Get current lineup if it exists
+        const currentLineup = await getTeamLineupForWeek(teamId, week);
+        
+        // Populate each position dropdown
+        for (let pos = 1; pos <= 6; pos++) {
+            const select = document.getElementById(`pos${pos}-${teamId}`);
+            if (!select) continue;
+            
+            // Clear existing options except placeholder
+            select.innerHTML = `<option value="">Position ${pos}</option>`;
+            
+            // Add team players
+            roster.forEach(player => {
+                const option = document.createElement('option');
+                option.value = JSON.stringify({
+                    name: player.name,
+                    email: player.email,
+                    userId: player.userId || null
+                });
+                option.textContent = player.name;
+                
+                // Select current player if lineup exists
+                if (currentLineup && currentLineup[`position${pos}`] && 
+                    currentLineup[`position${pos}`].name === player.name) {
+                    option.selected = true;
+                }
+                
+                select.appendChild(option);
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error populating bulk lineup dropdowns:', error);
+    }
+}
+
+// Get team roster from database
+async function getTeamRoster(teamId) {
+    try {
+        const participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants')
+            .where('teamId', '==', String(teamId))
+            .get();
+        
+        const roster = [];
+        participantsSnapshot.forEach(doc => {
+            const data = doc.data();
+            roster.push({
+                name: data.name,
+                email: data.email,
+                userId: data.userId || null
+            });
+        });
+        
+        return roster;
+    } catch (error) {
+        console.error('Error loading team roster:', error);
+        return [];
+    }
+}
+
+// Save bulk lineup to database
+async function saveBulkLineup(teamId, week) {
+    try {
+        const lineup = {};
+        let hasPlayers = false;
+        
+        // Collect selections from dropdowns
+        for (let pos = 1; pos <= 6; pos++) {
+            const select = document.getElementById(`pos${pos}-${teamId}`);
+            if (select && select.value) {
+                lineup[`position${pos}`] = JSON.parse(select.value);
+                hasPlayers = true;
+            }
+        }
+        
+        if (!hasPlayers) {
+            alert('Please select at least one player');
+            return;
+        }
+        
+        // Save to database
+        await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+            .doc(`${teamId}-${week}`)
+            .set(lineup);
+        
+        alert('Lineup saved successfully!');
+        
+        // Refresh the bulk lineups display
+        loadBulkLineups();
+        
+    } catch (error) {
+        console.error('Error saving bulk lineup:', error);
+        alert('Error saving lineup. Please try again.');
+    }
+}
+
+// Cancel bulk lineup editor
+function cancelBulkLineupEditor(teamId) {
+    const editor = document.getElementById(`bulk-editor-${teamId}`);
+    if (editor) {
+        editor.style.display = 'none';
+    }
+}
+
+// Show bulk lineup template modal
+function showBulkLineupTemplate() {
+    const modal = document.getElementById('bulk-template-modal');
+    if (!modal) return;
+    
+    // Populate team checkboxes
+    const checkboxContainer = document.getElementById('bulk-team-checkboxes');
+    const sourceTeamSelect = document.getElementById('source-team-select');
+    
+    if (checkboxContainer) {
+        const checkboxes = superAdminData.allTeams.map(team => {
+            const teamName = team.teamName || `Team ${team.teamId}`;
+            return `
+                <label style="display: flex; align-items: center; padding: 5px;">
+                    <input type="checkbox" value="${team.teamId}" style="margin-right: 8px;">
+                    ${teamName}
+                </label>
+            `;
+        }).join('');
+        checkboxContainer.innerHTML = checkboxes;
+    }
+    
+    // Populate source team selector
+    if (sourceTeamSelect) {
+        sourceTeamSelect.innerHTML = '<option value="">Choose team...</option>';
+        superAdminData.allTeams.forEach(team => {
+            const option = document.createElement('option');
+            option.value = team.teamId;
+            option.textContent = team.teamName || `Team ${team.teamId}`;
+            sourceTeamSelect.appendChild(option);
+        });
+    }
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Setup action selector change handler
+    const actionSelect = document.getElementById('bulk-template-action');
+    const copyTeamSelector = document.getElementById('copy-team-selector');
+    
+    actionSelect.onchange = function() {
+        if (this.value === 'copy-team') {
+            copyTeamSelector.style.display = 'block';
+        } else {
+            copyTeamSelector.style.display = 'none';
+        }
+    };
+}
+
+// Close bulk template modal
+function closeBulkTemplateModal() {
+    const modal = document.getElementById('bulk-template-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Execute bulk template action
+async function executeBulkTemplate() {
+    const selectedWeek = document.getElementById('bulk-lineup-week').value;
+    if (!selectedWeek) {
+        alert('Please select a week first');
+        return;
+    }
+    
+    // Get selected teams
+    const checkboxes = document.querySelectorAll('#bulk-team-checkboxes input[type="checkbox"]:checked');
+    const selectedTeamIds = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (selectedTeamIds.length === 0) {
+        alert('Please select at least one team');
+        return;
+    }
+    
+    const action = document.getElementById('bulk-template-action').value;
+    if (!action) {
+        alert('Please select an action');
+        return;
+    }
+    
+    try {
+        let successCount = 0;
+        const batch = db.batch();
+        
+        for (const teamId of selectedTeamIds) {
+            if (action === 'clear') {
+                // Clear lineup
+                const lineupRef = db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+                    .doc(`${teamId}-${selectedWeek}`);
+                batch.delete(lineupRef);
+                successCount++;
+                
+            } else if (action === 'copy-team') {
+                // Copy from another team
+                const sourceTeamId = document.getElementById('source-team-select').value;
+                if (!sourceTeamId) {
+                    alert('Please select a source team to copy from');
+                    return;
+                }
+                
+                const sourceLineup = await getTeamLineupForWeek(sourceTeamId, selectedWeek);
+                if (sourceLineup) {
+                    const lineupRef = db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+                        .doc(`${teamId}-${selectedWeek}`);
+                    batch.set(lineupRef, sourceLineup);
+                    successCount++;
+                }
+                
+            } else if (action === 'auto-assign') {
+                // Auto-assign players in roster order
+                const roster = await getTeamRoster(teamId);
+                if (roster.length > 0) {
+                    const lineup = {};
+                    for (let i = 0; i < Math.min(6, roster.length); i++) {
+                        lineup[`position${i + 1}`] = {
+                            name: roster[i].name,
+                            email: roster[i].email,
+                            userId: roster[i].userId || null
+                        };
+                    }
+                    
+                    const lineupRef = db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+                        .doc(`${teamId}-${selectedWeek}`);
+                    batch.set(lineupRef, lineup);
+                    successCount++;
+                }
+            }
+        }
+        
+        if (successCount > 0) {
+            await batch.commit();
+            alert(`Successfully applied action to ${successCount} teams`);
+            closeBulkTemplateModal();
+            loadBulkLineups(); // Refresh display
+        } else {
+            alert('No changes were made');
+        }
+        
+    } catch (error) {
+        console.error('Error executing bulk template:', error);
+        alert('Error applying bulk action. Please try again.');
+    }
 }
 
 // Refresh bulk lineups (reload current selection)

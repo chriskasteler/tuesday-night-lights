@@ -968,9 +968,53 @@
                             <button onclick="copyLineupsFromPreviousWeek()" style="background: #17a2b8; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
                                 Copy from Previous Week
                             </button>
+                            <button onclick="showBulkLineupTemplate()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+                                Set Multiple Teams
+                            </button>
                             <button onclick="clearAllLineups()" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
                                 Clear All Lineups
                             </button>
+                        </div>
+                        
+                        <!-- Bulk Template Modal -->
+                        <div id="bulk-template-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000;">
+                            <div style="background: white; margin: 5% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; max-height: 80%; overflow-y: auto;">
+                                <h3 style="color: #2c5aa0; margin-bottom: 15px;">Bulk Lineup Assignment</h3>
+                                <p style="color: #666; margin-bottom: 15px;">Select teams and set their lineups all at once</p>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <h4>Select Teams:</h4>
+                                    <div id="bulk-team-checkboxes" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin: 10px 0;">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <h4>Template Action:</h4>
+                                    <select id="bulk-template-action" style="padding: 8px; width: 100%; margin: 5px 0;">
+                                        <option value="">Choose action...</option>
+                                        <option value="copy-team">Copy from another team's lineup</option>
+                                        <option value="auto-assign">Auto-assign (position 1-6 order)</option>
+                                        <option value="clear">Clear lineups</option>
+                                    </select>
+                                    
+                                    <div id="copy-team-selector" style="display: none; margin-top: 10px;">
+                                        <label>Copy from team:</label>
+                                        <select id="source-team-select" style="padding: 8px; width: 100%; margin: 5px 0;">
+                                            <!-- Populated dynamically -->
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div style="text-align: right; margin-top: 20px;">
+                                    <button onclick="closeBulkTemplateModal()" style="background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+                                        Cancel
+                                    </button>
+                                    <button onclick="executeBulkTemplate()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
+                                        Apply to Selected Teams
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
