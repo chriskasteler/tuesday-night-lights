@@ -860,15 +860,19 @@ document.addEventListener('DOMContentLoaded', function() {
 let currentMatch = null;
 
 function openScorecard(matchId, team1, team2, format) {
+    // Convert team names from "Team 1" format to actual team names
+    const actualTeam1 = globalTeamNames[team1] || team1;
+    const actualTeam2 = globalTeamNames[team2] || team2;
+    
     currentMatch = {
         id: matchId,
-        team1: team1,
-        team2: team2,
+        team1: actualTeam1,
+        team2: actualTeam2,
         format: format
     };
     
-    // Update modal content
-    document.getElementById('scorecard-teams').textContent = `${team1} vs ${team2}`;
+    // Update modal content with actual team names
+    document.getElementById('scorecard-teams').textContent = `${actualTeam1} vs ${actualTeam2}`;
     document.getElementById('scorecard-format').textContent = format;
     document.getElementById('match-title').textContent = 'Match 1';
     document.getElementById('match2-title').textContent = 'Match 2';
@@ -1076,6 +1080,9 @@ function adminLogout() {
 
 // ===== TEAM LOADING =====
 
+// Global team name mapping for scorecard and other functions
+let globalTeamNames = {};
+
 // Update team names in the schedule section
 function updateScheduleTeamNames(teamsSnapshot) {
     try {
@@ -1096,10 +1103,13 @@ function updateScheduleTeamNames(teamsSnapshot) {
             const team = doc.data();
             if (team.teamId && team.teamName) {
                 teamNames[team.teamId] = team.teamName;
+                // Also store in global mapping for scorecard use
+                globalTeamNames[`Team ${team.teamId}`] = team.teamName;
             }
         });
         
         console.log('Team name mapping:', teamNames);
+        console.log('Global team names mapping:', globalTeamNames);
         
         // Find all team-name elements in the schedule section only
         const scheduleSection = document.getElementById('schedule-section');
@@ -1194,6 +1204,15 @@ async function loadAndDisplayTeams() {
             console.log('Teams grid not found');
             return;
         }
+        
+        // Populate global team names mapping
+        teamsSnapshot.forEach(doc => {
+            const team = doc.data();
+            if (team.teamId && team.teamName) {
+                globalTeamNames[`Team ${team.teamId}`] = team.teamName;
+            }
+        });
+        console.log('Global team names populated:', globalTeamNames);
         
         // Generate team cards HTML
         const teamCards = [];
