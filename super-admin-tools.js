@@ -83,6 +83,7 @@ function populateContextSelectors() {
             const option = document.createElement('option');
             option.value = team.teamId;
             option.textContent = team.teamName || `Team ${team.teamId}`;
+            console.log('Adding team option:', {value: team.teamId, text: team.teamName, type: typeof team.teamId});
             teamSelect.appendChild(option);
         });
     }
@@ -106,6 +107,7 @@ async function switchContext() {
         };
         
         console.log('Switching context:', superAdminData.currentContext);
+        console.log('Selected teamId:', teamId, 'Type:', typeof teamId);
         
         // Show admin mode indicator
         showAdminModeIndicator();
@@ -113,6 +115,7 @@ async function switchContext() {
         // Show appropriate sections based on role
         if (role === 'captain' && teamId) {
             // Show Captain's Tools for the selected team
+            console.log('Calling initializeMyTeam with teamId:', teamId);
             await initializeMyTeam('super-admin-impersonation', teamId);
             showSection('my-team');
             
@@ -433,7 +436,13 @@ function showContextSwitchSuccess(role, teamId) {
 
 // Get team name by ID
 function getTeamName(teamId) {
-    const team = superAdminData.allTeams.find(t => t.teamId == teamId);
+    console.log('Looking for team with ID:', teamId, 'Type:', typeof teamId);
+    console.log('Available teams:', superAdminData.allTeams.map(t => ({id: t.teamId, name: t.teamName, type: typeof t.teamId})));
+    
+    // Try both string and number matching
+    const team = superAdminData.allTeams.find(t => t.teamId == teamId || String(t.teamId) == String(teamId) || Number(t.teamId) == Number(teamId));
+    
+    console.log('Found team:', team);
     return team ? (team.teamName || `Team ${teamId}`) : `Team ${teamId}`;
 }
 
