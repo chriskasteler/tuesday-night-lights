@@ -1081,6 +1081,15 @@ function updateScheduleTeamNames(teamsSnapshot) {
     try {
         console.log('Updating schedule team names...');
         
+        // Show schedule loading overlay
+        const scheduleLoadingOverlay = document.getElementById('schedule-loading');
+        const scheduleContent = document.getElementById('schedule-content');
+        
+        if (scheduleLoadingOverlay) {
+            scheduleLoadingOverlay.style.display = 'flex';
+            console.log('Schedule loading overlay made visible');
+        }
+        
         // Create mapping of team numbers to actual team names
         const teamNames = {};
         teamsSnapshot.forEach(doc => {
@@ -1119,8 +1128,30 @@ function updateScheduleTeamNames(teamsSnapshot) {
         
         console.log(`✅ Updated ${updatesCount} team names in schedule`);
         
+        // Hide schedule loading overlay and show content after a short delay
+        setTimeout(() => {
+            if (scheduleLoadingOverlay) {
+                scheduleLoadingOverlay.style.display = 'none';
+            }
+            if (scheduleContent) {
+                scheduleContent.style.display = 'block';
+                console.log('Schedule content made visible');
+            }
+        }, 500); // Show loading for at least 500ms
+        
     } catch (error) {
         console.error('Error updating schedule team names:', error);
+        
+        // Hide loading overlay even on error
+        const scheduleLoadingOverlay = document.getElementById('schedule-loading');
+        const scheduleContent = document.getElementById('schedule-content');
+        
+        if (scheduleLoadingOverlay) {
+            scheduleLoadingOverlay.style.display = 'none';
+        }
+        if (scheduleContent) {
+            scheduleContent.style.display = 'block';
+        }
     }
 }
 

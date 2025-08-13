@@ -316,6 +316,17 @@
                         Team matchups will be finalized after Draft Day. Results will be updated after each week.
                     </p>
                     
+                    <!-- Schedule Loading Overlay -->
+                    <div id="schedule-loading" class="my-team-loading-overlay">
+                        <div class="my-team-loading-content">
+                            <div class="my-team-loading-spinner"></div>
+                            <p>Loading schedule with team names...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Schedule Content (hidden during loading) -->
+                    <div id="schedule-content" class="schedule-content" style="display: none;">
+                    
                     <!-- Week 1 -->
                     <div class="week-section">
                         <div class="week-header">
@@ -576,6 +587,7 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
