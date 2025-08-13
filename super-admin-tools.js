@@ -115,7 +115,7 @@ async function switchContext() {
         // Show appropriate sections based on role
         if (role === 'captain' && teamId) {
             // Show Captain's Tools for the selected team
-            console.log('Calling initializeMyTeam with teamId:', teamId);
+            console.log('🔥 SUPER ADMIN SWITCH: About to call initializeMyTeam with teamId:', teamId, 'Type:', typeof teamId);
             await initializeMyTeam('super-admin-impersonation', teamId);
             showSection('my-team');
             
@@ -171,9 +171,13 @@ function renderQuickTeamAccess() {
 // Quick access to team Captain Tools
 async function quickAccessTeam(teamId) {
     try {
+        console.log('🚀 QUICK ACCESS TEAM called with teamId:', teamId, 'Type:', typeof teamId);
+        
         // Set context selectors
         document.getElementById('context-role').value = 'captain';
         document.getElementById('context-team').value = teamId;
+        
+        console.log('🎯 Set context selectors - Role:', document.getElementById('context-role').value, 'Team:', document.getElementById('context-team').value);
         
         // Switch context automatically
         await switchContext();
