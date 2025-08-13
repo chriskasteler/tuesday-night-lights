@@ -322,7 +322,19 @@ function showSection(sectionName) {
     
     // Initialize specific sections
     if (sectionName === 'my-team') {
-        initializeMyTeamSection(); // Captain's Tools
+        // Check if this is a Super Admin impersonation - if so, skip auto-initialization
+        const user = firebase.auth().currentUser;
+        const isSuperAdminImpersonation = user && user.email === 'chris.kasteler@me.com' && 
+                                          typeof superAdminData !== 'undefined' && 
+                                          superAdminData.currentContext && 
+                                          superAdminData.currentContext.role === 'captain';
+                                          
+        if (isSuperAdminImpersonation) {
+            console.log('🔄 Skipping auto-initialization - Super Admin impersonation active');
+            // Super Admin will handle initialization manually with selected team
+        } else {
+            initializeMyTeamSection(); // Captain's Tools for regular users
+        }
     } else if (sectionName === 'manage-teams') {
         // Restore admin sub-section when admin tools is activated
         restoreAdminSubSection();
