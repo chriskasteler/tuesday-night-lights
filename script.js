@@ -1249,8 +1249,7 @@ async function loadAndDisplayTeams() {
         teamsGrid.innerHTML = teamCards.join('');
         
         // Hide loading overlay and show teams content
-        const loadingOverlay = document.getElementById('teams-loading');
-        const teamsContent = document.getElementById('teams-content');
+        // (loadingOverlay and teamsContent already declared above)
         
         if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
@@ -1268,8 +1267,7 @@ async function loadAndDisplayTeams() {
         console.error('Error loading teams:', error);
         
         // Hide loading overlay even on error and show fallback content
-        const loadingOverlay = document.getElementById('teams-loading');
-        const teamsContent = document.getElementById('teams-content');
+        // (reuse loadingOverlay and teamsContent from above)
         
         if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
