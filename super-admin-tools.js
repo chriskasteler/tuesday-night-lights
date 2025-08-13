@@ -57,6 +57,7 @@ async function initializeSuperAdmin() {
 
 // Make function available globally for script.js
 window.initializeSuperAdmin = initializeSuperAdmin;
+console.log('🔧 SUPER ADMIN: Function assigned to window.initializeSuperAdmin:', typeof window.initializeSuperAdmin);
 
 // ===== DATA LOADING =====
 
