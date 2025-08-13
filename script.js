@@ -741,7 +741,7 @@ function updateParticipantsList() {
                         <h4 style="margin: 0 0 5px 0; color: #1e3a1e; font-weight: 600; display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center;">
                                 ${player.name}
-                                ${player.teamCaptain ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.75rem; font-weight: 500; margin-left: 10px;">WILLING CAPTAIN</span>' : ''}
+
                             </div>
                             <button class="admin-only remove-player-btn" onclick="removeParticipant('${player.id}', '${player.name.replace(/'/g, "\\'")}') " 
                                     style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
@@ -1137,6 +1137,18 @@ async function loadAndDisplayTeams() {
         
         // Update the teams grid
         teamsGrid.innerHTML = teamCards.join('');
+        
+        // Hide loading overlay and show teams content
+        const loadingOverlay = document.getElementById('teams-loading');
+        const teamsContent = document.getElementById('teams-content');
+        
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+        if (teamsContent) {
+            teamsContent.style.display = 'block';
+        }
+        
         console.log(`✅ Successfully loaded ${teamCards.length} teams`);
         
     } catch (error) {

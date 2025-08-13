@@ -221,7 +221,17 @@
                         Teams will be formed on Draft Day (August 12th). Player names below are placeholders.
                     </p>
                     
-                    <div class="teams-grid">
+                    <!-- Teams Loading Overlay -->
+                    <div id="teams-loading" class="my-team-loading-overlay">
+                        <div class="my-team-loading-content">
+                            <div class="my-team-loading-spinner"></div>
+                            <p>Loading team rosters...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Teams Content (hidden during loading) -->
+                    <div id="teams-content" class="teams-content" style="display: none;">
+                        <div class="teams-grid">
                         <div class="team-card">
                             <h3 class="team-name">Team 1</h3>
                             <div class="team-players">
@@ -293,6 +303,7 @@
                                 <div class="player-slot">Player 6</div>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

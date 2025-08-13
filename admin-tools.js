@@ -1286,7 +1286,7 @@ function renderPendingRequests() {
                 <div style="flex: 1;">
                     <h4 style="margin: 0 0 5px 0; color: #333;">
                         ${request.name}
-                        ${request.teamCaptain ? '<span style="background: #2d4a2d; color: white; padding: 2px 6px; font-size: 0.7rem; margin-left: 8px;">WANTS CAPTAIN</span>' : ''}
+
                     </h4>
                     <p style="margin: 0 0 3px 0; font-size: 0.9rem; color: #666;">${request.email}</p>
                     <p style="margin: 0 0 3px 0; font-size: 0.9rem; color: #666;">${request.phone}</p>
