@@ -1111,12 +1111,12 @@ let signupSectionHTML = null; // Store the HTML when removed
 // Load signup visibility setting
 async function loadSignupVisibility() {
     try {
-        const doc = await db.collection('settings').doc('signupVisibility').get();
+        const doc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/settings').doc('signupVisibility').get();
         if (doc.exists) {
             signupVisible = doc.data().visible;
         } else {
             // Create default setting
-            await db.collection('settings').doc('signupVisibility').set({ visible: true });
+            await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/settings').doc('signupVisibility').set({ visible: true });
             signupVisible = true;
         }
         
@@ -1136,7 +1136,7 @@ async function toggleSignupVisibility() {
         signupVisible = !signupVisible;
         
         // Save to Firebase
-        await db.collection('settings').doc('signupVisibility').set({ visible: signupVisible });
+        await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/settings').doc('signupVisibility').set({ visible: signupVisible });
         
         // Update display
         updateSignupDisplay();
