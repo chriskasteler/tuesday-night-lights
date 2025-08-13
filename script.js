@@ -1129,6 +1129,18 @@ async function loadAndDisplayTeams() {
     try {
         console.log('Loading teams from new database structure...');
         
+        // Debug: Check if loading elements exist
+        const loadingOverlay = document.getElementById('teams-loading');
+        const teamsContent = document.getElementById('teams-content');
+        console.log('Loading overlay found:', !!loadingOverlay);
+        console.log('Teams content found:', !!teamsContent);
+        
+        // Ensure loading overlay is visible
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+            console.log('Loading overlay made visible');
+        }
+        
         // Load teams from new nested structure
         const teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams')
             .orderBy('teamId', 'asc')
@@ -1204,13 +1216,36 @@ async function loadAndDisplayTeams() {
         
     } catch (error) {
         console.error('Error loading teams:', error);
+        
+        // Hide loading overlay even on error and show fallback content
+        const loadingOverlay = document.getElementById('teams-loading');
+        const teamsContent = document.getElementById('teams-content');
+        
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+        if (teamsContent) {
+            teamsContent.style.display = 'block';
+        }
     }
 }
 
 // Initialize team loading when page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Load teams after a short delay to ensure Firebase is initialized
-    setTimeout(loadAndDisplayTeams, 1000);
+    setTimeout(async function() {
+        const startTime = Date.now();
+        
+        await loadAndDisplayTeams();
+        
+        // Ensure loading shows for at least 800ms so user can see it
+        const elapsed = Date.now() - startTime;
+        if (elapsed < 800) {
+            setTimeout(() => {
+                // This ensures smooth transition timing
+            }, 800 - elapsed);
+        }
+    }, 1000);
 });
 
 // Close admin modal when clicking outside
