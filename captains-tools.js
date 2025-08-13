@@ -14,7 +14,7 @@ let allTeamsData = {}; // Store all teams for name mapping
 // Initialize Captain's Tools page when captain accesses it
 async function initializeMyTeam(userId, teamId) {
     try {
-        console.log(`Initializing Captain's Tools for user: ${userId}, team: ${teamId}`);
+        console.log(`🚀 INITIALIZE MY TEAM - User: ${userId}, Team: ${teamId} (Type: ${typeof teamId})`);
         
         // Set current user ID
         currentUserId = userId;
@@ -23,12 +23,15 @@ async function initializeMyTeam(userId, teamId) {
         await loadAllTeams();
         
         // Load team data
+        console.log(`🎯 About to load team data for: ${teamId}`);
         await loadTeamData(teamId);
         
         // Load team roster
+        console.log(`🎯 About to load team roster for: ${teamId}`);
         await loadTeamRoster(teamId);
         
         // Load current lineups
+        console.log(`🎯 About to load team lineups for: ${teamId}`);
         await loadTeamLineups(teamId);
         
         // Render the page
@@ -38,8 +41,10 @@ async function initializeMyTeam(userId, teamId) {
         // Hide loading overlay - data is loaded
         hideMyTeamLoading();
         
+        console.log(`✅ INITIALIZATION COMPLETE for team: ${teamId}`);
+        
     } catch (error) {
-        console.error('Error initializing Captain\'s Tools:', error);
+        console.error('💥 Error initializing Captain\'s Tools:', error);
         // Even if there's an error, try to render the roster table with placeholders
         console.log('Error occurred during initialization, attempting to render placeholder table...');
         if (currentTeamData) {
@@ -104,36 +109,51 @@ async function loadTeamData(teamId) {
         // Ensure teamId is a string for document lookup
         const teamIdStr = String(teamId);
         const teamIdNum = parseInt(teamId);
-        console.log(`Loading team data for teamId: "${teamIdStr}" (also checking ${teamIdNum})`);
+        console.log(`🔍 Loading team data for teamId: "${teamIdStr}" (also checking ${teamIdNum})`);
         
-        // Try to get team by document ID first
-        let teamDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(teamIdStr).get();
+        let teamDoc = null;
         
-        // If not found by document ID, try searching by teamId field
-        if (!teamDoc.exists) {
-            console.log('Team not found by document ID, searching by teamId field...');
+        // Method 1: Try to get team by document ID first
+        console.log('🔍 Method 1: Searching by document ID...');
+        teamDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').doc(teamIdStr).get();
+        
+        if (teamDoc.exists) {
+            console.log('✅ Found team by document ID:', teamDoc.data());
+        } else {
+            console.log('❌ Team not found by document ID, trying teamId field...');
             
-            // Try with string teamId
+            // Method 2: Search by teamId field with string value
+            console.log('🔍 Method 2: Searching by teamId field (string)...');
             let teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').where('teamId', '==', teamIdStr).get();
-            
-            // Try with number teamId if string didn't work
-            if (teamsSnapshot.empty) {
-                teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').where('teamId', '==', teamIdNum).get();
-            }
             
             if (!teamsSnapshot.empty) {
                 teamDoc = teamsSnapshot.docs[0];
+                console.log('✅ Found team by teamId field (string):', teamDoc.data());
+            } else {
+                console.log('❌ Team not found with string teamId, trying number...');
+                
+                // Method 3: Search by teamId field with number value
+                console.log('🔍 Method 3: Searching by teamId field (number)...');
+                teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').where('teamId', '==', teamIdNum).get();
+                
+                if (!teamsSnapshot.empty) {
+                    teamDoc = teamsSnapshot.docs[0];
+                    console.log('✅ Found team by teamId field (number):', teamDoc.data());
+                } else {
+                    console.log('❌ Team not found with any method');
+                }
             }
         }
         
-        if (teamDoc.exists) {
+        if (teamDoc && teamDoc.exists) {
             currentTeamData = { id: teamDoc.id, ...teamDoc.data() };
-            console.log('Team data loaded:', currentTeamData);
+            console.log('✅ Final team data loaded:', currentTeamData);
         } else {
+            console.error(`❌ Team ${teamIdStr} not found with any method`);
             throw new Error(`Team ${teamIdStr} not found`);
         }
     } catch (error) {
-        console.error('Error loading team data:', error);
+        console.error('💥 Error loading team data:', error);
         throw error;
     }
 }
