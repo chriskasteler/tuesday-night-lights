@@ -31,6 +31,7 @@ async function initializeSuperAdmin() {
         
         // Render dashboard data
         renderPlatformOverview();
+        renderQuickTeamAccess();
         renderTeamsGrid();
         loadRecentActivity();
         
@@ -106,17 +107,35 @@ async function switchContext() {
         
         console.log('Switching context:', superAdminData.currentContext);
         
+        // Show admin mode indicator
+        showAdminModeIndicator();
+        
         // Show appropriate sections based on role
         if (role === 'captain' && teamId) {
             // Show Captain's Tools for the selected team
             await initializeMyTeam('super-admin-impersonation', teamId);
             showSection('my-team');
+            
+            // Update page title to show impersonation
+            updateAdminModeIndicator(`Viewing as Captain of ${getTeamName(teamId)}`);
+            
         } else if (role === 'admin') {
             // Show Admin Tools
             showSection('manage-teams');
+            updateAdminModeIndicator('Viewing as League Admin');
+            
+        } else if (role === 'player') {
+            // Show player view (home page)
+            showSection('info');
+            updateAdminModeIndicator('Viewing as Player');
+            
         } else {
             alert('Please select a team when viewing as Captain');
+            return;
         }
+        
+        // Add success feedback
+        showContextSwitchSuccess(role, teamId);
         
     } catch (error) {
         console.error('Error switching context:', error);
@@ -125,6 +144,42 @@ async function switchContext() {
 }
 
 // ===== DASHBOARD RENDERING =====
+
+// Render quick team access buttons
+function renderQuickTeamAccess() {
+    const quickTeamButtons = document.getElementById('quick-team-buttons');
+    if (!quickTeamButtons) return;
+    
+    const teamButtons = superAdminData.allTeams.map(team => {
+        const teamName = team.teamName || `Team ${team.teamId}`;
+        return `
+            <button onclick="quickAccessTeam(${team.teamId})" 
+                    style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s;"
+                    onmouseover="this.style.background='#0056b3'"
+                    onmouseout="this.style.background='#007bff'">
+                ${teamName}
+            </button>
+        `;
+    }).join('');
+    
+    quickTeamButtons.innerHTML = teamButtons;
+}
+
+// Quick access to team Captain Tools
+async function quickAccessTeam(teamId) {
+    try {
+        // Set context selectors
+        document.getElementById('context-role').value = 'captain';
+        document.getElementById('context-team').value = teamId;
+        
+        // Switch context automatically
+        await switchContext();
+        
+    } catch (error) {
+        console.error('Error in quick team access:', error);
+        alert('Error accessing team. Please try again.');
+    }
+}
 
 // Render platform overview statistics
 function renderPlatformOverview() {
@@ -294,6 +349,92 @@ function sendBulkMessage() {
     if (message) {
         alert(`Bulk messaging coming soon!\n\nMessage would be sent to all captains:\n"${message}"`);
     }
+}
+
+// ===== ADMIN MODE INDICATOR =====
+
+// Show the admin mode indicator
+function showAdminModeIndicator() {
+    // Remove existing indicator if present
+    removeAdminModeIndicator();
+    
+    // Create admin mode indicator
+    const indicator = document.createElement('div');
+    indicator.id = 'admin-mode-indicator';
+    indicator.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #dc3545;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 9999;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        cursor: pointer;
+    `;
+    indicator.textContent = 'SUPER ADMIN MODE';
+    indicator.onclick = () => showSection('super-admin');
+    
+    document.body.appendChild(indicator);
+}
+
+// Update admin mode indicator text
+function updateAdminModeIndicator(text) {
+    const indicator = document.getElementById('admin-mode-indicator');
+    if (indicator) {
+        indicator.textContent = `ADMIN: ${text}`;
+    }
+}
+
+// Remove admin mode indicator
+function removeAdminModeIndicator() {
+    const existing = document.getElementById('admin-mode-indicator');
+    if (existing) {
+        existing.remove();
+    }
+}
+
+// Show context switch success message
+function showContextSwitchSuccess(role, teamId) {
+    const message = document.createElement('div');
+    message.style.cssText = `
+        position: fixed;
+        top: 60px;
+        right: 10px;
+        background: #28a745;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        z-index: 9998;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    `;
+    
+    if (role === 'captain' && teamId) {
+        message.textContent = `Switched to Captain view for ${getTeamName(teamId)}`;
+    } else if (role === 'admin') {
+        message.textContent = 'Switched to League Admin view';
+    } else if (role === 'player') {
+        message.textContent = 'Switched to Player view';
+    }
+    
+    document.body.appendChild(message);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        if (message.parentNode) {
+            message.remove();
+        }
+    }, 3000);
+}
+
+// Get team name by ID
+function getTeamName(teamId) {
+    const team = superAdminData.allTeams.find(t => t.teamId == teamId);
+    return team ? (team.teamName || `Team ${teamId}`) : `Team ${teamId}`;
 }
 
 // ===== UTILITY FUNCTIONS =====
