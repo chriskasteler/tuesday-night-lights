@@ -539,15 +539,17 @@ async function loadBulkLineups() {
             const teamName = team.teamName || `Team ${team.teamId}`;
             const lineup = await getTeamLineupForWeek(team.teamId, selectedWeek);
             const hasLineup = lineup && Object.keys(lineup).length > 0;
+            const matchInfo = await renderMatchInfo(team.teamId, selectedWeek);
             
             return `
                 <div style="border: 1px solid #ddd; border-radius: 6px; padding: 15px; background: ${hasLineup ? '#f8f9fa' : '#fff8e1'};">
-                    <h4 style="color: #2c5aa0; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: space-between;">
+                    <h4 style="color: #2c5aa0; margin: 0 0 5px 0; display: flex; align-items: center; justify-content: space-between;">
                         ${teamName}
                         <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: ${hasLineup ? '#28a745' : '#ffc107'}; color: ${hasLineup ? 'white' : '#856404'};">
                             ${hasLineup ? 'Set' : 'Missing'}
                         </span>
                     </h4>
+                    ${matchInfo}
                     ${hasLineup ? renderLineupSummary(lineup) : renderBulkLineupEditor(team.teamId, selectedWeek)}
                     <div style="margin-top: 10px;">
                         <button onclick="toggleBulkLineupEditor(${team.teamId}, '${selectedWeek}')" style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-right: 5px;">
@@ -585,6 +587,60 @@ async function getTeamLineupForWeek(teamId, week) {
     }
 }
 
+// Render match information for a team
+async function renderMatchInfo(teamId, week) {
+    try {
+        // Get schedule data to find opponent
+        const schedule = await getScheduleForWeek(week);
+        const match = findMatchForTeam(schedule, teamId);
+        
+        if (match) {
+            const opponentId = match.team1 === `Team ${teamId}` ? match.team2 : match.team1;
+            const opponentName = getTeamName(opponentId.replace('Team ', ''));
+            
+            return `
+                <div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin: 5px 0; font-size: 0.85rem;">
+                    <strong>Match:</strong> vs ${opponentName} | 
+                    <strong>Format:</strong> ${match.format || 'Standard'} | 
+                    <strong>Time:</strong> ${match.time || 'TBD'}
+                </div>
+            `;
+        } else {
+            return `
+                <div style="background: #fff3cd; padding: 8px; border-radius: 4px; margin: 5px 0; font-size: 0.85rem; color: #856404;">
+                    <strong>Match:</strong> Schedule not available for this week
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading match info:', error);
+        return `
+            <div style="background: #f8d7da; padding: 8px; border-radius: 4px; margin: 5px 0; font-size: 0.85rem; color: #721c24;">
+                <strong>Match:</strong> Unable to load schedule
+            </div>
+        `;
+    }
+}
+
+// Get schedule data for a specific week
+async function getScheduleForWeek(week) {
+    // This is a simplified version - you may need to adjust based on your schedule structure
+    const scheduleSnapshot = await db.collection('schedule').where('date', '==', week).get();
+    const matches = [];
+    scheduleSnapshot.forEach(doc => {
+        matches.push(doc.data());
+    });
+    return matches;
+}
+
+// Find match for a specific team
+function findMatchForTeam(schedule, teamId) {
+    const teamName = `Team ${teamId}`;
+    return schedule.find(match => 
+        match.team1 === teamName || match.team2 === teamName
+    );
+}
+
 // Render lineup summary
 function renderLineupSummary(lineup) {
     const positions = ['1', '2', '3', '4', '5', '6'];
@@ -598,33 +654,56 @@ function renderLineupSummary(lineup) {
 
 // Render bulk lineup editor for teams without lineups
 function renderBulkLineupEditor(teamId, week) {
+    const teamName = getTeamName(teamId);
     return `
         <div id="bulk-editor-${teamId}" style="display: none; margin: 5px 0;">
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; font-size: 0.8rem;">
-                <select id="pos1-${teamId}" style="padding: 2px; font-size: 0.75rem;">
-                    <option value="">Position 1</option>
-                </select>
-                <select id="pos2-${teamId}" style="padding: 2px; font-size: 0.75rem;">
-                    <option value="">Position 2</option>
-                </select>
-                <select id="pos3-${teamId}" style="padding: 2px; font-size: 0.75rem;">
-                    <option value="">Position 3</option>
-                </select>
-                <select id="pos4-${teamId}" style="padding: 2px; font-size: 0.75rem;">
-                    <option value="">Position 4</option>
-                </select>
-                <select id="pos5-${teamId}" style="padding: 2px; font-size: 0.75rem;">
-                    <option value="">Position 5</option>
-                </select>
-                <select id="pos6-${teamId}" style="padding: 2px; font-size: 0.75rem;">
-                    <option value="">Position 6</option>
-                </select>
+            <div style="background: #f0f8ff; padding: 10px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #007bff;">
+                <strong>Setting lineup for: ${teamName}</strong><br>
+                <small style="color: #666;">Choose players for each position (1 = best player, 6 = weakest)</small>
             </div>
-            <div style="margin-top: 5px;">
-                <button onclick="saveBulkLineup(${teamId}, '${week}')" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem; margin-right: 5px;">
-                    Save Lineup
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.8rem;">
+                <div>
+                    <label style="font-weight: 500; color: #2c5aa0;">Position 1 (Strongest):</label>
+                    <select id="pos1-${teamId}" style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                        <option value="">Select Player</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: 500; color: #2c5aa0;">Position 2:</label>
+                    <select id="pos2-${teamId}" style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                        <option value="">Select Player</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: 500; color: #2c5aa0;">Position 3:</label>
+                    <select id="pos3-${teamId}" style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                        <option value="">Select Player</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: 500; color: #2c5aa0;">Position 4:</label>
+                    <select id="pos4-${teamId}" style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                        <option value="">Select Player</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: 500; color: #2c5aa0;">Position 5:</label>
+                    <select id="pos5-${teamId}" style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                        <option value="">Select Player</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: 500; color: #2c5aa0;">Position 6 (Weakest):</label>
+                    <select id="pos6-${teamId}" style="padding: 4px; font-size: 0.8rem; width: 100%;">
+                        <option value="">Select Player</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top: 10px; text-align: center;">
+                <button onclick="saveBulkLineup(${teamId}, '${week}')" style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-right: 10px;">
+                    Save ${teamName} Lineup
                 </button>
-                <button onclick="cancelBulkLineupEditor(${teamId})" style="background: #6c757d; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem;">
+                <button onclick="cancelBulkLineupEditor(${teamId})" style="background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">
                     Cancel
                 </button>
             </div>
