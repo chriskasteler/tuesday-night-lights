@@ -32,6 +32,7 @@ async function initializeSuperAdmin() {
         // Render dashboard data
         renderPlatformOverview();
         renderQuickTeamAccess();
+        populateBulkLineupWeeks();
         renderTeamsGrid();
         loadRecentActivity();
         
@@ -448,6 +449,208 @@ function getTeamName(teamId) {
     
     console.log('Found team:', team);
     return team ? (team.teamName || `Team ${teamId}`) : `Team ${teamId}`;
+}
+
+// ===== BULK LINEUP MANAGEMENT =====
+
+// Populate week selector for bulk lineup management
+function populateBulkLineupWeeks() {
+    const weekSelect = document.getElementById('bulk-lineup-week');
+    if (!weekSelect) return;
+    
+    // Generate weeks (adjust as needed for your season)
+    const weeks = [
+        { value: '2025-08-19', text: 'Week 1 (Aug 19)' },
+        { value: '2025-08-26', text: 'Week 2 (Aug 26)' },
+        { value: '2025-09-02', text: 'Week 3 (Sep 2)' },
+        { value: '2025-09-09', text: 'Week 4 (Sep 9)' },
+        { value: '2025-09-16', text: 'Week 5 (Sep 16)' },
+        { value: '2025-09-23', text: 'Week 6 (Sep 23)' },
+        { value: '2025-09-30', text: 'Week 7 (Sep 30)' },
+        { value: '2025-10-07', text: 'Week 8 (Oct 7)' }
+    ];
+    
+    weekSelect.innerHTML = '<option value="">Choose a week...</option>';
+    weeks.forEach(week => {
+        const option = document.createElement('option');
+        option.value = week.value;
+        option.textContent = week.text;
+        weekSelect.appendChild(option);
+    });
+}
+
+// Load and display bulk lineups for selected week
+async function loadBulkLineups() {
+    const selectedWeek = document.getElementById('bulk-lineup-week').value;
+    const grid = document.getElementById('bulk-lineups-grid');
+    const bulkActions = document.getElementById('bulk-actions');
+    
+    if (!selectedWeek) {
+        grid.innerHTML = '<p style="color: #999; text-align: center; grid-column: 1 / -1;">Select a week to view lineups</p>';
+        bulkActions.style.display = 'none';
+        return;
+    }
+    
+    try {
+        grid.innerHTML = '<p style="color: #666; text-align: center; grid-column: 1 / -1;">Loading lineups...</p>';
+        
+        const lineupCards = await Promise.all(superAdminData.allTeams.map(async (team) => {
+            const teamName = team.teamName || `Team ${team.teamId}`;
+            const lineup = await getTeamLineupForWeek(team.teamId, selectedWeek);
+            const hasLineup = lineup && Object.keys(lineup).length > 0;
+            
+            return `
+                <div style="border: 1px solid #ddd; border-radius: 6px; padding: 15px; background: ${hasLineup ? '#f8f9fa' : '#fff8e1'};">
+                    <h4 style="color: #2c5aa0; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: space-between;">
+                        ${teamName}
+                        <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: ${hasLineup ? '#28a745' : '#ffc107'}; color: ${hasLineup ? 'white' : '#856404'};">
+                            ${hasLineup ? 'Set' : 'Missing'}
+                        </span>
+                    </h4>
+                    ${hasLineup ? renderLineupSummary(lineup) : '<p style="color: #666; font-style: italic; margin: 5px 0;">No lineup set for this week</p>'}
+                    <div style="margin-top: 10px;">
+                        <button onclick="quickAccessTeam(${team.teamId})" style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-right: 5px;">
+                            Edit
+                        </button>
+                        ${hasLineup ? `<button onclick="clearTeamLineup(${team.teamId}, '${selectedWeek}')" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">Clear</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }));
+        
+        grid.innerHTML = lineupCards.join('');
+        bulkActions.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading bulk lineups:', error);
+        grid.innerHTML = '<p style="color: #dc3545; text-align: center; grid-column: 1 / -1;">Error loading lineups. Please try again.</p>';
+    }
+}
+
+// Get team lineup for specific week
+async function getTeamLineupForWeek(teamId, week) {
+    try {
+        const lineupDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+            .doc(`${teamId}-${week}`)
+            .get();
+        
+        return lineupDoc.exists ? lineupDoc.data() : null;
+    } catch (error) {
+        console.error(`Error loading lineup for team ${teamId}, week ${week}:`, error);
+        return null;
+    }
+}
+
+// Render lineup summary
+function renderLineupSummary(lineup) {
+    const positions = ['1', '2', '3', '4', '5', '6'];
+    const positionNames = positions.map(pos => {
+        const player = lineup[`position${pos}`];
+        return player ? player.name || 'Unknown' : 'Empty';
+    }).join(', ');
+    
+    return `<p style="font-size: 0.85rem; color: #666; margin: 5px 0;">${positionNames}</p>`;
+}
+
+// Refresh bulk lineups (reload current selection)
+function refreshBulkLineups() {
+    loadBulkLineups();
+}
+
+// Copy lineups from previous week
+async function copyLineupsFromPreviousWeek() {
+    const selectedWeek = document.getElementById('bulk-lineup-week').value;
+    if (!selectedWeek) {
+        alert('Please select a week first');
+        return;
+    }
+    
+    if (!confirm('Copy lineups from the previous week for all teams? This will overwrite any existing lineups.')) {
+        return;
+    }
+    
+    try {
+        // Calculate previous week (simplified - assumes weekly intervals)
+        const currentDate = new Date(selectedWeek);
+        const previousDate = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const previousWeek = previousDate.toISOString().split('T')[0];
+        
+        let copiedCount = 0;
+        const batch = db.batch();
+        
+        for (const team of superAdminData.allTeams) {
+            const previousLineup = await getTeamLineupForWeek(team.teamId, previousWeek);
+            if (previousLineup) {
+                const newLineupRef = db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+                    .doc(`${team.teamId}-${selectedWeek}`);
+                batch.set(newLineupRef, previousLineup);
+                copiedCount++;
+            }
+        }
+        
+        if (copiedCount > 0) {
+            await batch.commit();
+            alert(`Copied lineups for ${copiedCount} teams from previous week`);
+            loadBulkLineups(); // Refresh display
+        } else {
+            alert('No lineups found in previous week to copy');
+        }
+        
+    } catch (error) {
+        console.error('Error copying lineups:', error);
+        alert('Error copying lineups. Please try again.');
+    }
+}
+
+// Clear all lineups for selected week
+async function clearAllLineups() {
+    const selectedWeek = document.getElementById('bulk-lineup-week').value;
+    if (!selectedWeek) {
+        alert('Please select a week first');
+        return;
+    }
+    
+    if (!confirm('Clear ALL lineups for this week? This cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const batch = db.batch();
+        
+        for (const team of superAdminData.allTeams) {
+            const lineupRef = db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+                .doc(`${team.teamId}-${selectedWeek}`);
+            batch.delete(lineupRef);
+        }
+        
+        await batch.commit();
+        alert('All lineups cleared for this week');
+        loadBulkLineups(); // Refresh display
+        
+    } catch (error) {
+        console.error('Error clearing lineups:', error);
+        alert('Error clearing lineups. Please try again.');
+    }
+}
+
+// Clear specific team lineup
+async function clearTeamLineup(teamId, week) {
+    if (!confirm('Clear this team\'s lineup? This cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/lineups')
+            .doc(`${teamId}-${week}`)
+            .delete();
+        
+        alert('Lineup cleared');
+        loadBulkLineups(); // Refresh display
+        
+    } catch (error) {
+        console.error('Error clearing team lineup:', error);
+        alert('Error clearing lineup. Please try again.');
+    }
 }
 
 // ===== UTILITY FUNCTIONS =====

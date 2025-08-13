@@ -941,6 +941,39 @@
                         </div>
                     </div>
                     
+                    <!-- Bulk Lineup Management -->
+                    <div class="bulk-lineup-management" style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                        <h3 style="color: #2c5aa0; margin-bottom: 15px;">Bulk Lineup Management</h3>
+                        <p style="color: #666; margin-bottom: 15px; font-size: 0.9rem;">View and manage lineups across all teams for any week</p>
+                        
+                        <!-- Week Selector -->
+                        <div style="margin-bottom: 20px;">
+                            <label for="bulk-lineup-week" style="font-weight: 500; margin-right: 10px;">Select Week:</label>
+                            <select id="bulk-lineup-week" onchange="loadBulkLineups()" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; margin-right: 15px;">
+                                <option value="">Choose a week...</option>
+                            </select>
+                            <button onclick="refreshBulkLineups()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
+                                Refresh
+                            </button>
+                        </div>
+                        
+                        <!-- Lineup Overview Grid -->
+                        <div id="bulk-lineups-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px;">
+                            <p style="color: #999; text-align: center; grid-column: 1 / -1;">Select a week to view lineups</p>
+                        </div>
+                        
+                        <!-- Bulk Actions -->
+                        <div id="bulk-actions" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; display: none;">
+                            <h4 style="color: #2c5aa0; margin-bottom: 10px;">Bulk Actions</h4>
+                            <button onclick="copyLineupsFromPreviousWeek()" style="background: #17a2b8; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+                                Copy from Previous Week
+                            </button>
+                            <button onclick="clearAllLineups()" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
+                                Clear All Lineups
+                            </button>
+                        </div>
+                    </div>
+                    
                     <!-- Teams Management -->
                     <div class="teams-management" style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px;">
                         <h3 style="color: #2c5aa0; margin-bottom: 15px;">Teams & Captains</h3>
