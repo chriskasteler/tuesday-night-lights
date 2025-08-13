@@ -48,26 +48,33 @@ async function initializeSuperAdmin() {
 // Load all platform data for overview
 async function loadPlatformData() {
     try {
+        console.log('🔄 Loading platform data...');
         const basePath = `clubs/${superAdminData.currentContext.clubId}/leagues/${superAdminData.currentContext.leagueId}/seasons/${superAdminData.currentContext.seasonId}`;
+        console.log('📍 Using path:', basePath);
         
         // Load participants
+        console.log('📥 Loading participants...');
         const participantsSnapshot = await db.collection(`${basePath}/participants`).get();
         superAdminData.allParticipants = [];
         participantsSnapshot.forEach(doc => {
             superAdminData.allParticipants.push({ id: doc.id, ...doc.data() });
         });
+        console.log(`✅ Loaded ${superAdminData.allParticipants.length} participants`);
         
         // Load teams
+        console.log('📥 Loading teams...');
         const teamsSnapshot = await db.collection(`${basePath}/teams`).orderBy('teamId', 'asc').get();
         superAdminData.allTeams = [];
         teamsSnapshot.forEach(doc => {
             superAdminData.allTeams.push({ id: doc.id, ...doc.data() });
         });
+        console.log(`✅ Loaded ${superAdminData.allTeams.length} teams:`, superAdminData.allTeams.map(t => t.teamName || `Team ${t.teamId}`));
         
-        console.log(`📊 Loaded ${superAdminData.allParticipants.length} participants and ${superAdminData.allTeams.length} teams`);
+        console.log('📊 Platform data loading complete');
         
     } catch (error) {
-        console.error('Error loading platform data:', error);
+        console.error('❌ Error loading platform data:', error);
+        throw error;
     }
 }
 
@@ -151,8 +158,19 @@ async function switchContext() {
 
 // Render quick team access buttons
 function renderQuickTeamAccess() {
+    console.log('🎯 Rendering quick team access...');
     const quickTeamButtons = document.getElementById('quick-team-buttons');
-    if (!quickTeamButtons) return;
+    if (!quickTeamButtons) {
+        console.error('❌ quick-team-buttons element not found');
+        return;
+    }
+    
+    console.log('📋 Teams available for quick access:', superAdminData.allTeams.length);
+    
+    if (superAdminData.allTeams.length === 0) {
+        quickTeamButtons.innerHTML = '<p style="color: #999; font-style: italic;">No teams loaded</p>';
+        return;
+    }
     
     const teamButtons = superAdminData.allTeams.map(team => {
         const teamName = team.teamName || `Team ${team.teamId}`;
@@ -167,6 +185,7 @@ function renderQuickTeamAccess() {
     }).join('');
     
     quickTeamButtons.innerHTML = teamButtons;
+    console.log('✅ Quick team access rendered with', superAdminData.allTeams.length, 'teams');
 }
 
 // Quick access to team Captain Tools
@@ -455,8 +474,12 @@ function getTeamName(teamId) {
 
 // Populate week selector for bulk lineup management
 function populateBulkLineupWeeks() {
+    console.log('📅 Populating bulk lineup weeks...');
     const weekSelect = document.getElementById('bulk-lineup-week');
-    if (!weekSelect) return;
+    if (!weekSelect) {
+        console.error('❌ bulk-lineup-week element not found');
+        return;
+    }
     
     // Generate weeks (adjust as needed for your season)
     const weeks = [
@@ -477,6 +500,8 @@ function populateBulkLineupWeeks() {
         option.textContent = week.text;
         weekSelect.appendChild(option);
     });
+    
+    console.log('✅ Bulk lineup weeks populated with', weeks.length, 'weeks');
 }
 
 // Load and display bulk lineups for selected week
