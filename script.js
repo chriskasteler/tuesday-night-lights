@@ -1074,6 +1074,82 @@ function adminLogout() {
     });
 }
 
+// ===== TEAM LOADING =====
+
+// Load and display teams from the new database structure
+async function loadAndDisplayTeams() {
+    try {
+        console.log('Loading teams from new database structure...');
+        
+        // Load teams from new nested structure
+        const teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams')
+            .orderBy('teamId', 'asc')
+            .get();
+        
+        if (teamsSnapshot.empty) {
+            console.log('No teams found in new structure');
+            return;
+        }
+        
+        // Load participants to get player names
+        const participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').get();
+        const participants = {};
+        participantsSnapshot.forEach(doc => {
+            participants[doc.id] = doc.data();
+        });
+        
+        const teamsGrid = document.querySelector('#teams-section .teams-grid');
+        if (!teamsGrid) {
+            console.log('Teams grid not found');
+            return;
+        }
+        
+        // Generate team cards HTML
+        const teamCards = [];
+        teamsSnapshot.forEach(doc => {
+            const team = doc.data();
+            const players = team.players || [];
+            
+            // Get player names
+            const teamPlayers = players.map(playerId => {
+                const participant = participants[playerId];
+                return participant ? participant.name : 'Open Slot';
+            });
+            
+            // Ensure we have 6 slots
+            while (teamPlayers.length < 6) {
+                teamPlayers.push('Open Slot');
+            }
+            
+            // Create team card HTML
+            teamCards.push(`
+                <div class="team-card">
+                    <h3 class="team-name">${team.teamName || `Team ${team.teamId}`}</h3>
+                    <div class="team-players">
+                        ${teamPlayers.map((playerName, index) => {
+                            const isCaptain = index === 0 && team.captain;
+                            return `<div class="player-slot ${isCaptain ? 'captain-slot' : ''}">${playerName}${isCaptain ? ' (Captain)' : ''}</div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `);
+        });
+        
+        // Update the teams grid
+        teamsGrid.innerHTML = teamCards.join('');
+        console.log(`✅ Successfully loaded ${teamCards.length} teams`);
+        
+    } catch (error) {
+        console.error('Error loading teams:', error);
+    }
+}
+
+// Initialize team loading when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Load teams after a short delay to ensure Firebase is initialized
+    setTimeout(loadAndDisplayTeams, 1000);
+});
+
 // Close admin modal when clicking outside
 document.addEventListener('click', function(event) {
     const modal = document.getElementById('admin-login-modal');
