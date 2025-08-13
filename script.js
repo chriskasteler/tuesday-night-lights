@@ -1178,6 +1178,91 @@ function updateScheduleTeamNames(teamsSnapshot) {
     }
 }
 
+// Update team names in the standings section
+function updateStandingsTeamNames(teamsSnapshot) {
+    try {
+        console.log('Updating standings team names...');
+        
+        // Show standings loading overlay
+        const standingsLoadingOverlay = document.getElementById('standings-loading');
+        const standingsContent = document.getElementById('standings-content');
+        
+        if (standingsLoadingOverlay) {
+            standingsLoadingOverlay.style.display = 'flex';
+            console.log('Standings loading overlay made visible');
+        }
+        
+        // Create mapping of team numbers to actual team names
+        const teamNames = {};
+        teamsSnapshot.forEach(doc => {
+            const team = doc.data();
+            if (team.teamId && team.teamName) {
+                teamNames[team.teamId] = team.teamName;
+                // Also store in global mapping for consistency
+                globalTeamNames[`Team ${team.teamId}`] = team.teamName;
+            }
+        });
+        
+        console.log('Team name mapping for standings:', teamNames);
+        
+        // Find all team name cells in the standings table
+        const standingsSection = document.getElementById('standings-section');
+        if (!standingsSection) {
+            console.log('Standings section not found');
+            return;
+        }
+        
+        // Find all table cells that contain team names (2nd column in standings table)
+        const tableRows = standingsSection.querySelectorAll('.standings-table tbody tr');
+        let updatesCount = 0;
+        
+        tableRows.forEach((row, index) => {
+            const teamCell = row.cells[1]; // Team name is in the 2nd column (index 1)
+            if (teamCell) {
+                const currentText = teamCell.textContent.trim();
+                
+                // Match patterns like "Team 1", "Team 2", etc.
+                const match = currentText.match(/^Team (\d+)$/);
+                if (match) {
+                    const teamNumber = parseInt(match[1]);
+                    if (teamNames[teamNumber]) {
+                        teamCell.textContent = teamNames[teamNumber];
+                        updatesCount++;
+                        console.log(`Updated standings: "${currentText}" → "${teamNames[teamNumber]}"`);
+                    }
+                }
+            }
+        });
+        
+        console.log(`✅ Updated ${updatesCount} team names in standings`);
+        
+        // Hide standings loading overlay and show content after a short delay
+        setTimeout(() => {
+            if (standingsLoadingOverlay) {
+                standingsLoadingOverlay.style.display = 'none';
+            }
+            if (standingsContent) {
+                standingsContent.style.display = 'block';
+                console.log('Standings content made visible');
+            }
+        }, 500); // Show loading for at least 500ms
+        
+    } catch (error) {
+        console.error('Error updating standings team names:', error);
+        
+        // Hide loading overlay even on error
+        const standingsLoadingOverlay = document.getElementById('standings-loading');
+        const standingsContent = document.getElementById('standings-content');
+        
+        if (standingsLoadingOverlay) {
+            standingsLoadingOverlay.style.display = 'none';
+        }
+        if (standingsContent) {
+            standingsContent.style.display = 'block';
+        }
+    }
+}
+
 // Load and display teams from the new database structure
 async function loadAndDisplayTeams() {
     try {
