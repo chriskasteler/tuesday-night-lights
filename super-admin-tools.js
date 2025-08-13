@@ -590,7 +590,7 @@ function renderLineupSummary(lineup) {
     const positions = ['1', '2', '3', '4', '5', '6'];
     const positionNames = positions.map(pos => {
         const player = lineup[`position${pos}`];
-        return player ? player.name || 'Empty';
+        return player ? (player.name || 'Unknown') : 'Empty';
     }).join(', ');
     
     return `<p style="font-size: 0.85rem; color: #666; margin: 5px 0;">${positionNames}</p>`;
