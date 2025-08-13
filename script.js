@@ -903,24 +903,24 @@ function openScorecard(matchId, team1, team2, format) {
         const playerNames = document.querySelectorAll('.player-name');
         const statusLabels = document.querySelectorAll('.match-status-label');
         
-        // Update player names - assuming order: Team1P1, Team1P2, Team2P1, Team2P2, Team1P3, Team1P4, Team2P3, Team2P4
+        // Update player names with actual team names - assuming order: Team1P1, Team1P2, Team2P1, Team2P2, Team1P3, Team1P4, Team2P3, Team2P4
         if (playerNames.length >= 8) {
-            playerNames[0].textContent = `${team1} Player 1`;
-            playerNames[1].textContent = `${team1} Player 2`;
-            playerNames[2].textContent = `${team2} Player 1`;
-            playerNames[3].textContent = `${team2} Player 2`;
-            playerNames[4].textContent = `${team1} Player 3`;
-            playerNames[5].textContent = `${team1} Player 4`;
-            playerNames[6].textContent = `${team2} Player 3`;
-            playerNames[7].textContent = `${team2} Player 4`;
+            playerNames[0].textContent = `${actualTeam1} Player 1`;
+            playerNames[1].textContent = `${actualTeam1} Player 2`;
+            playerNames[2].textContent = `${actualTeam2} Player 1`;
+            playerNames[3].textContent = `${actualTeam2} Player 2`;
+            playerNames[4].textContent = `${actualTeam1} Player 3`;
+            playerNames[5].textContent = `${actualTeam1} Player 4`;
+            playerNames[6].textContent = `${actualTeam2} Player 3`;
+            playerNames[7].textContent = `${actualTeam2} Player 4`;
         }
         
-        // Update status labels
+        // Update status labels with actual team names
         if (statusLabels.length >= 4) {
-            statusLabels[0].textContent = `${team1} Status`;
-            statusLabels[1].textContent = `${team2} Status`;
-            statusLabels[2].textContent = `${team1} Status`;
-            statusLabels[3].textContent = `${team2} Status`;
+            statusLabels[0].textContent = `${actualTeam1} Status`;
+            statusLabels[1].textContent = `${actualTeam2} Status`;
+            statusLabels[2].textContent = `${actualTeam1} Status`;
+            statusLabels[3].textContent = `${actualTeam2} Status`;
         }
     } catch (error) {
         console.log('Error updating player names:', error);
