@@ -1076,6 +1076,54 @@ function adminLogout() {
 
 // ===== TEAM LOADING =====
 
+// Update team names in the schedule section
+function updateScheduleTeamNames(teamsSnapshot) {
+    try {
+        console.log('Updating schedule team names...');
+        
+        // Create mapping of team numbers to actual team names
+        const teamNames = {};
+        teamsSnapshot.forEach(doc => {
+            const team = doc.data();
+            if (team.teamId && team.teamName) {
+                teamNames[team.teamId] = team.teamName;
+            }
+        });
+        
+        console.log('Team name mapping:', teamNames);
+        
+        // Find all team-name elements in the schedule section only
+        const scheduleSection = document.getElementById('schedule-section');
+        if (!scheduleSection) {
+            console.log('Schedule section not found');
+            return;
+        }
+        
+        const teamNameElements = scheduleSection.querySelectorAll('.team-name');
+        let updatesCount = 0;
+        
+        teamNameElements.forEach(element => {
+            const currentText = element.textContent.trim();
+            
+            // Match patterns like "Team 1", "Team 2", etc.
+            const match = currentText.match(/^Team (\d+)$/);
+            if (match) {
+                const teamNumber = parseInt(match[1]);
+                if (teamNames[teamNumber]) {
+                    element.textContent = teamNames[teamNumber];
+                    updatesCount++;
+                    console.log(`Updated: "${currentText}" → "${teamNames[teamNumber]}"`);
+                }
+            }
+        });
+        
+        console.log(`✅ Updated ${updatesCount} team names in schedule`);
+        
+    } catch (error) {
+        console.error('Error updating schedule team names:', error);
+    }
+}
+
 // Load and display teams from the new database structure
 async function loadAndDisplayTeams() {
     try {
@@ -1150,6 +1198,9 @@ async function loadAndDisplayTeams() {
         }
         
         console.log(`✅ Successfully loaded ${teamCards.length} teams`);
+        
+        // Update schedule team names
+        updateScheduleTeamNames(teamsSnapshot);
         
     } catch (error) {
         console.error('Error loading teams:', error);
