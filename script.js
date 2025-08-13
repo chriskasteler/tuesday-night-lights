@@ -306,16 +306,18 @@ function showSection(sectionName) {
         }
     }
     
-    // Show/hide hero section and countdown - only visible on Home page
+    // Show/hide hero section - countdown permanently hidden
     const heroSection = document.querySelector('.hero');
     const countdownSection = document.querySelector('.countdown-container');
     
     if (sectionName === 'info') {
         if (heroSection) heroSection.style.display = 'block';
-        if (countdownSection) countdownSection.style.display = 'block';
+        // Countdown permanently hidden - draft is over
+        if (countdownSection) countdownSection.style.display = 'none !important';
     } else {
         if (heroSection) heroSection.style.display = 'none';
-        if (countdownSection) countdownSection.style.display = 'none';
+        // Countdown permanently hidden - draft is over
+        if (countdownSection) countdownSection.style.display = 'none !important';
     }
     
     // Initialize specific sections
@@ -809,9 +811,9 @@ function updateCountdown() {
 
 // Add some hover effects and animations
 document.addEventListener('DOMContentLoaded', function() {
-    // Start the countdown timer
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+    // Countdown timer disabled - draft is over
+    // updateCountdown();
+    // setInterval(updateCountdown, 1000);
     
     // Load participants for public signup page (no auth required)
     loadParticipants();
@@ -979,7 +981,7 @@ auth.onAuthStateChanged(async user => {
             document.body.classList.add('admin-logged-in', 'super-admin-logged-in');
             isAdmin = true;
             isSuperAdmin = true;
-            console.log('🚀 Super Admin logged in:', user.email);
+            console.log('Super Admin logged in:', user.email);
         } else if (userRoles.includes('admin')) {
             document.body.classList.add('admin-logged-in');
             isAdmin = true;
@@ -994,7 +996,7 @@ auth.onAuthStateChanged(async user => {
         
         // Set button text based on roles
         if (isSuperAdmin) {
-            buttonText = '🚀 Super Admin Logout';
+            buttonText = 'Super Admin Logout';
         } else if (isAdmin && isCaptain) {
             buttonText = 'Logout'; // Both admin and captain
         } else if (isAdmin) {
@@ -1273,6 +1275,9 @@ async function loadAndDisplayTeams() {
         
         // Update schedule team names
         updateScheduleTeamNames(teamsSnapshot);
+        
+        // Update standings team names
+        updateStandingsTeamNames(teamsSnapshot);
         
     } catch (error) {
         console.error('Error loading teams:', error);

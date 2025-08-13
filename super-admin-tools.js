@@ -21,7 +21,7 @@ let superAdminData = {
 // Initialize Super Admin Dashboard
 async function initializeSuperAdmin() {
     try {
-        console.log('🚀 Initializing Super Admin Dashboard...');
+        console.log('Initializing Super Admin Dashboard...');
         
         // Load all platform data
         await loadPlatformData();
@@ -104,7 +104,7 @@ async function switchContext() {
             teamId: teamId || null
         };
         
-        console.log('🎯 Switching context:', superAdminData.currentContext);
+        console.log('Switching context:', superAdminData.currentContext);
         
         // Show appropriate sections based on role
         if (role === 'captain' && teamId) {
@@ -213,7 +213,7 @@ async function loadRecentActivity() {
 // Access Captain's Tools for a specific team
 async function accessCaptainTools(teamId) {
     try {
-        console.log(`🎯 Accessing Captain's Tools for Team ${teamId}`);
+        console.log(`Accessing Captain's Tools for Team ${teamId}`);
         
         // Set context
         document.getElementById('context-role').value = 'captain';
@@ -265,20 +265,20 @@ function openCaptainToolsFor() {
 
 // View all lineups (placeholder)
 function viewAllLineups() {
-    alert('🚧 All Lineups view coming soon!\n\nThis will show a master view of all team lineups across all weeks.');
+    alert('All Lineups view coming soon!\n\nThis will show a master view of all team lineups across all weeks.');
 }
 
 // Generate platform report (placeholder)
 function generateReport() {
     const report = `
-🚀 SUPER ADMIN PLATFORM REPORT
+SUPER ADMIN PLATFORM REPORT
 
-📊 Overview:
+Overview:
 • Total Players: ${superAdminData.allParticipants.length}
 • Total Teams: ${superAdminData.allTeams.length}
 • Captains Assigned: ${superAdminData.allParticipants.filter(p => p.teamCaptain).length}
 
-👥 Team Status:
+Team Status:
 ${superAdminData.allTeams.map(team => {
     const players = superAdminData.allParticipants.filter(p => p.teamId === team.teamId);
     return `• ${team.teamName || `Team ${team.teamId}`}: ${players.length}/6 players`;
@@ -292,7 +292,7 @@ ${superAdminData.allTeams.map(team => {
 function sendBulkMessage() {
     const message = prompt('Enter message to send to all captains:');
     if (message) {
-        alert(`🚧 Bulk messaging coming soon!\n\nMessage would be sent to all captains:\n"${message}"`);
+        alert(`Bulk messaging coming soon!\n\nMessage would be sent to all captains:\n"${message}"`);
     }
 }
 
