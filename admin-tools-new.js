@@ -3188,9 +3188,11 @@ async function loadScorecards() {
             </div>
         `;
         
-        // Fetch scorecards from Firebase
+        // Fetch scorecards from Firebase - using nested structure path
         console.log('🎯 SCORECARD SETUP: Fetching from Firebase...');
-        const scorecardsSnapshot = await db.collection('scorecards').orderBy('createdAt', 'desc').get();
+        const scorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+        console.log('🎯 SCORECARD SETUP: Using path:', scorecardPath);
+        const scorecardsSnapshot = await db.collection(scorecardPath).orderBy('createdAt', 'desc').get();
         console.log('🎯 SCORECARD SETUP: Firebase response:', scorecardsSnapshot.size, 'documents found');
         
         if (scorecardsSnapshot.empty) {
@@ -3503,7 +3505,8 @@ async function saveScorecardConfig() {
                 updatedBy: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email || 'unknown') : 'unknown'
             };
             
-            await db.collection('scorecards').doc(editingIdInput.value).update(scorecardConfig);
+            const scorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+            await db.collection(scorecardPath).doc(editingIdInput.value).update(scorecardConfig);
             console.log('✅ Scorecard updated with ID:', editingIdInput.value);
             
             // Show success message
@@ -3518,7 +3521,8 @@ async function saveScorecardConfig() {
                 createdBy: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email || 'unknown') : 'unknown'
             };
             
-            const docRef = await db.collection('scorecards').add(scorecardConfig);
+            const scorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+            const docRef = await db.collection(scorecardPath).add(scorecardConfig);
             console.log('✅ Scorecard created with ID:', docRef.id);
             
             // Show success message
@@ -3552,7 +3556,8 @@ function cancelScorecardConfig() {
 async function editScorecard(scorecardId) {
     try {
         // Fetch the scorecard data from Firebase
-        const scorecardDoc = await db.collection('scorecards').doc(scorecardId).get();
+        const scorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+        const scorecardDoc = await db.collection(scorecardPath).doc(scorecardId).get();
         
         if (!scorecardDoc.exists) {
             alert('Scorecard not found.');
@@ -3573,12 +3578,14 @@ async function editScorecard(scorecardId) {
 function deleteScorecard(scorecardId, scorecardName) {
     if (confirm(`Are you sure you want to delete "${scorecardName}"?\n\nThis will also remove it from any weeks where it's currently assigned.`)) {
         // First delete the scorecard
-        db.collection('scorecards').doc(scorecardId).delete()
+        const scorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+        db.collection(scorecardPath).doc(scorecardId).delete()
             .then(() => {
                 console.log('✅ Scorecard deleted');
                 
                 // Clean up any week assignments that reference this scorecard
-                return db.collection('weekScorecards').where('scorecardId', '==', scorecardId).get();
+                const weekScorecardsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
+                return db.collection(weekScorecardsPath).where('scorecardId', '==', scorecardId).get();
             })
             .then(weekAssignments => {
                 const deletePromises = [];
