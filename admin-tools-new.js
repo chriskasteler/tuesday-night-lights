@@ -4253,3 +4253,225 @@ function showPlayerDetails(playerId) {
         }
     });
 }
+
+// ===== SET LINEUPS FUNCTIONALITY =====
+
+// Load and display week lineups when week is selected
+async function loadWeekLineups() {
+    const weekSelect = document.getElementById('lineup-week-select');
+    const selectedWeek = weekSelect.value;
+    const contentContainer = document.getElementById('lineups-content');
+    
+    if (!selectedWeek) {
+        contentContainer.innerHTML = `
+            <p style="text-align: center; color: #999; padding: 40px; font-style: italic;">
+                Select a week above to view and manage lineups
+            </p>
+        `;
+        return;
+    }
+    
+    console.log(`🎯 SET LINEUPS: Loading week ${selectedWeek} lineups`);
+    
+    try {
+        // Show loading state
+        contentContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <p style="color: #666; font-size: 1.1rem;">Loading week ${selectedWeek} matchups...</p>
+            </div>
+        `;
+        
+        // Get the week's schedule data
+        const weekData = getWeekScheduleData(selectedWeek);
+        
+        // Render the week's matchups and lineup interface
+        renderWeekLineupsInterface(selectedWeek, weekData);
+        
+    } catch (error) {
+        console.error('❌ SET LINEUPS: Error loading week lineups:', error);
+        contentContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #dc3545;">
+                <p style="font-size: 1.1rem; margin-bottom: 15px;">Error loading week ${selectedWeek} lineups.</p>
+                <button onclick="loadWeekLineups()" style="background: #4a5d4a; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                    Retry
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Get schedule data for a specific week
+function getWeekScheduleData(week) {
+    const scheduleData = {
+        '1': {
+            date: 'August 19',
+            format: 'Four-Ball (Best Ball)',
+            matches: [
+                { team1: 'Team 1', team2: 'Team 2' },
+                { team1: 'Team 3', team2: 'Team 4' },
+                { team1: 'Team 5', team2: 'Team 6' }
+            ]
+        },
+        '2': {
+            date: 'August 26',
+            format: 'Alternate Shot',
+            matches: [
+                { team1: 'Team 1', team2: 'Team 3' },
+                { team1: 'Team 2', team2: 'Team 5' },
+                { team1: 'Team 4', team2: 'Team 6' }
+            ]
+        },
+        '3': {
+            date: 'September 2',
+            format: 'Scramble',
+            matches: [
+                { team1: 'Team 1', team2: 'Team 4' },
+                { team1: 'Team 2', team2: 'Team 6' },
+                { team1: 'Team 3', team2: 'Team 5' }
+            ]
+        },
+        '4': {
+            date: 'September 9',
+            format: 'High-Low',
+            matches: [
+                { team1: 'Team 1', team2: 'Team 5' },
+                { team1: 'Team 2', team2: 'Team 3' },
+                { team1: 'Team 4', team2: 'Team 6' }
+            ]
+        },
+        '5': {
+            date: 'September 23',
+            format: 'Modified Stableford',
+            matches: [
+                { team1: 'Team 1', team2: 'Team 6' },
+                { team1: 'Team 2', team2: 'Team 4' },
+                { team1: 'Team 3', team2: 'Team 5' }
+            ]
+        }
+    };
+    
+    return scheduleData[week] || null;
+}
+
+// Render the lineups interface for a specific week
+function renderWeekLineupsInterface(week, weekData) {
+    const contentContainer = document.getElementById('lineups-content');
+    
+    if (!weekData) {
+        contentContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #dc3545;">
+                <p>No schedule data found for Week ${week}</p>
+            </div>
+        `;
+        return;
+    }
+    
+    console.log(`🎯 SET LINEUPS: Rendering interface for Week ${week}`, weekData);
+    
+    // Build the interface HTML
+    let interfaceHTML = `
+        <div class="week-lineups-container">
+            <div class="week-header" style="text-align: center; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h4 style="color: #2d4a2d; margin: 0 0 10px 0;">Week ${week} - ${weekData.date}</h4>
+                <p style="color: #666; margin: 0; font-size: 1.1rem;">${weekData.format}</p>
+            </div>
+            
+            <div class="matchups-grid" style="display: grid; gap: 30px;">
+    `;
+    
+    // Add each matchup
+    weekData.matches.forEach((match, index) => {
+        interfaceHTML += `
+            <div class="matchup-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div class="matchup-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+                    <h5 style="color: #2d4a2d; margin: 0; font-size: 1.2rem;">${match.team1} vs ${match.team2}</h5>
+                    <p style="color: #666; margin: 5px 0 0 0; font-size: 0.9rem;">Match ${index + 1}</p>
+                </div>
+                
+                <div class="teams-lineups" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Team 1 Lineup -->
+                    <div class="team-lineup">
+                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${match.team1} Lineup</h6>
+                        <div class="lineup-slots">
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 1 (Strongest):</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                    <!-- Players will be populated dynamically -->
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 2:</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 3:</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 4:</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Team 2 Lineup -->
+                    <div class="team-lineup">
+                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${match.team2} Lineup</h6>
+                        <div class="lineup-slots">
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 1 (Strongest):</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 2:</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 3:</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 4:</label>
+                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <option value="">Select Player...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    interfaceHTML += `
+            </div>
+            
+            <div class="save-lineups-section" style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <button onclick="saveWeekLineups(${week})" style="background: #2d4a2d; color: white; border: none; padding: 12px 30px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                    Save Week ${week} Lineups
+                </button>
+            </div>
+        </div>
+    `;
+    
+    contentContainer.innerHTML = interfaceHTML;
+}
+
+// Placeholder function for saving lineups (to be implemented)
+function saveWeekLineups(week) {
+    console.log(`🎯 SET LINEUPS: Save lineups for week ${week} - TO BE IMPLEMENTED`);
+    alert(`Save Week ${week} lineups functionality will be implemented next.`);
+}

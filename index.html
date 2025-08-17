@@ -795,10 +795,25 @@
                         </p>
                         
                         <div class="set-lineups-section">
-                            <!-- Content will be populated dynamically -->
-                            <p style="text-align: center; color: #999; padding: 40px;">
-                                Set Lineups functionality will be implemented here
-                            </p>
+                            <!-- Week Selector -->
+                            <div class="week-selector-container" style="margin-bottom: 30px; text-align: center;">
+                                <label for="lineup-week-select" style="font-weight: 600; margin-right: 15px; color: #2d4a2d;">Select Week:</label>
+                                <select id="lineup-week-select" onchange="loadWeekLineups()" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; background: white;">
+                                    <option value="">Choose a week...</option>
+                                    <option value="1">Week 1 - August 19 • Four-Ball (Best Ball)</option>
+                                    <option value="2">Week 2 - August 26 • Alternate Shot</option>
+                                    <option value="3">Week 3 - September 2 • Scramble</option>
+                                    <option value="4">Week 4 - September 9 • High-Low</option>
+                                    <option value="5">Week 5 - September 23 • Modified Stableford</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Lineups Content -->
+                            <div id="lineups-content">
+                                <p style="text-align: center; color: #999; padding: 40px; font-style: italic;">
+                                    Select a week above to view and manage lineups
+                                </p>
+                            </div>
                         </div>
                     </div>
                     
