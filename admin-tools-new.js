@@ -4350,13 +4350,58 @@ async function loadLineupsTeamRosters() {
             .get();
         
         lineupsTeamRosters = {};
-        teamsSnapshot.forEach(doc => {
-            const team = doc.data();
-            if (team.teamId && team.roster) {
-                lineupsTeamRosters[`Team ${team.teamId}`] = team.roster;
-                console.log(`🎯 SET LINEUPS: Team ${team.teamId} roster:`, team.roster.length, 'players');
+        
+        // Load each team's roster by fetching participant details
+        for (const teamDoc of teamsSnapshot.docs) {
+            const team = teamDoc.data();
+            if (team.teamId && team.players) {
+                console.log(`🎯 SET LINEUPS: Loading Team ${team.teamId} players:`, team.players);
+                
+                const roster = [];
+                
+                // Get participant details for each player ID
+                for (const playerId of team.players) {
+                    if (playerId) {
+                        try {
+                            const playerDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').doc(playerId).get();
+                            if (playerDoc.exists) {
+                                const playerData = playerDoc.data();
+                                roster.push({
+                                    playerId: playerId,
+                                    name: playerData.name || `Player ${playerId}`,
+                                    email: playerData.email || null
+                                });
+                                console.log(`🎯 SET LINEUPS: Added player:`, playerData.name);
+                            }
+                        } catch (err) {
+                            console.log(`❌ Could not find participant ${playerId}:`, err);
+                        }
+                    }
+                }
+                
+                // Also add captain if not already in players array
+                if (team.captain && !team.players.includes(team.captain)) {
+                    try {
+                        const captainDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').doc(team.captain).get();
+                        if (captainDoc.exists) {
+                            const captainData = captainDoc.data();
+                            roster.push({
+                                playerId: team.captain,
+                                name: captainData.name || `Captain ${team.captain}`,
+                                email: captainData.email || null
+                            });
+                            console.log(`🎯 SET LINEUPS: Added captain:`, captainData.name);
+                        }
+                    } catch (err) {
+                        console.log(`❌ Could not find captain ${team.captain}:`, err);
+                    }
+                }
+                
+                lineupsTeamRosters[`Team ${team.teamId}`] = roster;
+                console.log(`🎯 SET LINEUPS: Team ${team.teamId} roster loaded:`, roster.length, 'players');
             }
-        });
+        }
+        
         console.log('🎯 SET LINEUPS: Team rosters loaded for', Object.keys(lineupsTeamRosters).length, 'teams');
     } catch (error) {
         console.error('❌ SET LINEUPS: Error loading team rosters:', error);
