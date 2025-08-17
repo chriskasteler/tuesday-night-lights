@@ -4695,6 +4695,7 @@ function renderWeekLineupsInterface(week, weekData) {
         </div>
     `;
     
+    // Set the interface HTML (no week-level save button - individual saves only)
     contentContainer.innerHTML = interfaceHTML;
 }
 
