@@ -4277,11 +4277,14 @@ async function loadWeekLineups() {
         // Show loading state
         contentContainer.innerHTML = `
             <div style="text-align: center; padding: 40px;">
-                <p style="color: #666; font-size: 1.1rem;">Loading week ${selectedWeek} matchups...</p>
+                <p style="color: #666; font-size: 1.1rem;">Loading week ${selectedWeek} teams and matchups...</p>
             </div>
         `;
         
-        // Get the week's schedule data
+        // Load team names from database first
+        await loadLineupsTeamNames();
+        
+        // Get the week's schedule data (now with actual team names)
         const weekData = getWeekScheduleData(selectedWeek);
         
         // Render the week's matchups and lineup interface
@@ -4297,6 +4300,41 @@ async function loadWeekLineups() {
                 </button>
             </div>
         `;
+    }
+}
+
+// Load team names for lineups functionality
+let lineupsTeamNames = {};
+async function loadLineupsTeamNames() {
+    try {
+        console.log('🎯 SET LINEUPS: Loading team names from database...');
+        const teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams')
+            .orderBy('teamId', 'asc')
+            .get();
+        
+        lineupsTeamNames = {};
+        teamsSnapshot.forEach(doc => {
+            const team = doc.data();
+            if (team.teamId && team.teamName) {
+                // Map from "Team X" format to actual team name
+                lineupsTeamNames[`Team ${team.teamId}`] = team.teamName;
+                console.log(`🎯 SET LINEUPS: Team ${team.teamId} -> ${team.teamName}`);
+            }
+        });
+        
+        console.log('🎯 SET LINEUPS: Team names loaded:', lineupsTeamNames);
+        
+    } catch (error) {
+        console.error('❌ SET LINEUPS: Error loading team names:', error);
+        // Fallback to generic names
+        lineupsTeamNames = {
+            'Team 1': 'Team 1',
+            'Team 2': 'Team 2', 
+            'Team 3': 'Team 3',
+            'Team 4': 'Team 4',
+            'Team 5': 'Team 5',
+            'Team 6': 'Team 6'
+        };
     }
 }
 
@@ -4381,17 +4419,21 @@ function renderWeekLineupsInterface(week, weekData) {
     
     // Add each matchup
     weekData.matches.forEach((match, index) => {
+        // Get actual team names
+        const actualTeam1Name = lineupsTeamNames[match.team1] || match.team1;
+        const actualTeam2Name = lineupsTeamNames[match.team2] || match.team2;
+        
         interfaceHTML += `
             <div class="matchup-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <div class="matchup-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
-                    <h5 style="color: #2d4a2d; margin: 0; font-size: 1.2rem;">${match.team1} vs ${match.team2}</h5>
+                    <h5 style="color: #2d4a2d; margin: 0; font-size: 1.2rem;">${actualTeam1Name} vs ${actualTeam2Name}</h5>
                     <p style="color: #666; margin: 5px 0 0 0; font-size: 0.9rem;">Match ${index + 1}</p>
                 </div>
                 
                 <div class="teams-lineups" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <!-- Team 1 Lineup -->
                     <div class="team-lineup">
-                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${match.team1} Lineup</h6>
+                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${actualTeam1Name} Lineup</h6>
                         <div class="lineup-slots">
                             <div style="margin-bottom: 10px;">
                                 <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 1 (Strongest):</label>
@@ -4423,7 +4465,7 @@ function renderWeekLineupsInterface(week, weekData) {
                     
                     <!-- Team 2 Lineup -->
                     <div class="team-lineup">
-                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${match.team2} Lineup</h6>
+                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${actualTeam2Name} Lineup</h6>
                         <div class="lineup-slots">
                             <div style="margin-bottom: 10px;">
                                 <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 1 (Strongest):</label>
