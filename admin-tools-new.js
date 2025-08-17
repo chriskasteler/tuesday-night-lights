@@ -4261,6 +4261,7 @@ function showPlayerDetails(playerId) {
 
 // Load and display week lineups when week is selected
 window.loadWeekLineups = async function() {
+    console.log('🎯 LOAD WEEK LINEUPS: Function called');
     const weekSelect = document.getElementById('lineup-week-select');
     const selectedWeek = weekSelect.value;
     const contentContainer = document.getElementById('lineups-content');
