@@ -1956,6 +1956,9 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
         return renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum);
     }
     
+    // Get actual player names from lineup data, fallback to generic if not available
+    const playerNames = getAdminPlayerNames(weekNumber, groupIndex, matchNum, matchup);
+    
     // Default Best Ball format
     const team1Player1 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'A' : 'C'}`;
     const team1Player2 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'B' : 'D'}`;
@@ -1990,7 +1993,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                    <tbody>
                        ${generateParRow(weekNumber)}
                        <tr class="player-row">
-                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${playerNames.team1Player1}</td>
                            ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
@@ -4697,10 +4700,126 @@ function renderWeekLineupsInterface(week, weekData) {
     
     // Set the interface HTML (no week-level save button - individual saves only)
     contentContainer.innerHTML = interfaceHTML;
+    
+    // Load and display any existing lineups for this week
+    await loadExistingLineups(week);
+}
+
+// Load and display existing lineups for the week
+async function loadExistingLineups(week) {
+    try {
+        console.log(`🎯 LOAD EXISTING: Loading existing lineups for week ${week}`);
+        
+        // Load lineup data from weeklyLineups collection
+        const lineupDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups')
+            .doc(`week-${week}`).get();
+        
+        if (!lineupDoc.exists) {
+            console.log(`ℹ️ LOAD EXISTING: No existing lineups found for week ${week}`);
+            return;
+        }
+        
+        const lineupData = lineupDoc.data();
+        console.log(`🎯 LOAD EXISTING: Found lineup data:`, lineupData);
+        
+        // Process each matchup in the data
+        for (let matchIndex = 0; matchIndex < 3; matchIndex++) { // 3 matchups per week
+            const matchupField = `matchup${matchIndex}`;
+            const matchupLineup = lineupData[matchupField];
+            
+            if (matchupLineup) {
+                console.log(`🎯 LOAD EXISTING: Restoring ${matchupField}:`, matchupLineup);
+                await restoreMatchupLineup(matchIndex, matchupLineup);
+            }
+        }
+        
+        console.log(`✅ LOAD EXISTING: Successfully loaded existing lineups for week ${week}`);
+        
+        // Refresh dropdowns to exclude selected players
+        await refreshDropdownsAfterLoad();
+        
+    } catch (error) {
+        console.error('❌ LOAD EXISTING: Error loading existing lineups:', error);
+        // Don't throw error - just log it, so interface still works
+    }
+}
+
+// Restore a specific matchup's lineup to the UI
+async function restoreMatchupLineup(matchIndex, matchupLineup) {
+    try {
+        console.log(`🎯 RESTORE MATCHUP: Restoring matchup ${matchIndex}:`, matchupLineup);
+        
+        // Match 1 players
+        const team1Match1Players = matchupLineup.match1?.team1Players || [];
+        const team2Match1Players = matchupLineup.match1?.team2Players || [];
+        
+        // Match 2 players
+        const team1Match2Players = matchupLineup.match2?.team1Players || [];
+        const team2Match2Players = matchupLineup.match2?.team2Players || [];
+        
+        // Restore Match 1 players
+        if (team1Match1Players[0]) await setPlayerInUI(`player-${matchIndex}-1-1`, team1Match1Players[0]);
+        if (team1Match1Players[1]) await setPlayerInUI(`player-${matchIndex}-1-2`, team1Match1Players[1]);
+        if (team2Match1Players[0]) await setPlayerInUI(`player-${matchIndex}-2-1`, team2Match1Players[0]);
+        if (team2Match1Players[1]) await setPlayerInUI(`player-${matchIndex}-2-2`, team2Match1Players[1]);
+        
+        // Restore Match 2 players
+        if (team1Match2Players[0]) await setPlayerInUI(`player-${matchIndex}-1-3`, team1Match2Players[0]);
+        if (team1Match2Players[1]) await setPlayerInUI(`player-${matchIndex}-1-4`, team1Match2Players[1]);
+        if (team2Match2Players[0]) await setPlayerInUI(`player-${matchIndex}-2-3`, team2Match2Players[0]);
+        if (team2Match2Players[1]) await setPlayerInUI(`player-${matchIndex}-2-4`, team2Match2Players[1]);
+        
+        console.log(`✅ RESTORE MATCHUP: Successfully restored matchup ${matchIndex}`);
+        
+    } catch (error) {
+        console.error(`❌ RESTORE MATCHUP: Error restoring matchup ${matchIndex}:`, error);
+    }
+}
+
+// Set a player in the UI (convert dropdown to selected state)
+async function setPlayerInUI(uniqueId, playerData) {
+    try {
+        const selectElement = document.getElementById(`select-${uniqueId}`);
+        const selectedDisplay = document.getElementById(`selected-${uniqueId}`);
+        const playerNameSpan = selectedDisplay?.querySelector('.player-name');
+        
+        if (!selectElement || !selectedDisplay || !playerNameSpan) {
+            console.warn(`⚠️ SET PLAYER UI: UI elements not found for ${uniqueId}`);
+            return;
+        }
+        
+        // Set the dropdown value (even though it will be hidden)
+        selectElement.value = playerData.playerId;
+        
+        // Hide dropdown, show selected state
+        selectElement.style.display = 'none';
+        playerNameSpan.textContent = playerData.name;
+        selectedDisplay.style.display = 'flex';
+        selectedDisplay.dataset.playerId = playerData.playerId;
+        
+        console.log(`🎯 SET PLAYER UI: Set ${uniqueId} to ${playerData.name}`);
+        
+    } catch (error) {
+        console.error(`❌ SET PLAYER UI: Error setting player for ${uniqueId}:`, error);
+    }
+}
+
+// Refresh dropdowns after loading existing lineups
+async function refreshDropdownsAfterLoad() {
+    try {
+        console.log('🎯 REFRESH AFTER LOAD: Refreshing all dropdowns to exclude selected players');
+        
+        // Small delay to ensure UI is fully rendered
+        setTimeout(() => {
+            refreshAllPlayerDropdowns();
+        }, 100);
+        
+    } catch (error) {
+        console.error('❌ REFRESH AFTER LOAD: Error refreshing dropdowns:', error);
+    }
 }
 
 // Individual matchup saving is now implemented above
-// The saveWeekLineups function is no longer needed since we save matchups individually
 
 // Save lineup for a specific matchup
 window.saveMatchupLineup = async function(matchIndex, team1Key, team2Key) {
