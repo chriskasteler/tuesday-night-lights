@@ -4692,23 +4692,14 @@ function renderWeekLineupsInterface(week, weekData) {
     
     interfaceHTML += `
             </div>
-            
-            <div class="save-lineups-section" style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                <button onclick="saveWeekLineups(${week})" style="background: #2d4a2d; color: white; border: none; padding: 12px 30px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">
-                    Save Week ${week} Lineups
-                </button>
-            </div>
         </div>
     `;
     
     contentContainer.innerHTML = interfaceHTML;
 }
 
-// Placeholder function for saving lineups (to be implemented)
-function saveWeekLineups(week) {
-    console.log(`🎯 SET LINEUPS: Save lineups for week ${week} - TO BE IMPLEMENTED`);
-    alert(`Save Week ${week} lineups functionality will be implemented next.`);
-}
+// Individual matchup saving is now implemented above
+// The saveWeekLineups function is no longer needed since we save matchups individually
 
 // Save lineup for a specific matchup
 window.saveMatchupLineup = async function(matchIndex, team1Key, team2Key) {
@@ -4873,17 +4864,111 @@ async function saveMatchupToDatabase(week, matchIndex, matchupData) {
 async function updateScorecardsForMatchup(week, matchIndex, matchupData) {
     try {
         console.log(`🎯 UPDATE SCORECARDS: Updating scorecards for week ${week}, matchup ${matchIndex}`);
-        
-        // This will be expanded to update both schedule and admin scorecards
-        // For now, we'll add a placeholder that can be enhanced
-        
         console.log(`🎯 UPDATE SCORECARDS: Matchup data:`, matchupData);
-        console.log(`🎯 UPDATE SCORECARDS: This will update scorecards in schedule and admin sections`);
         
-        // TODO: Implement scorecard updates in schedule and admin sections
+        // 1. Update weekScorecards with lineup data for Enter Scores admin section
+        await updateWeekScorecardWithLineup(week, matchIndex, matchupData);
+        
+        // 2. Update any scorecard templates if needed for schedule display
+        await updateScorecardTemplateForSchedule(week, matchIndex, matchupData);
+        
+        console.log(`✅ UPDATE SCORECARDS: Successfully updated scorecards for week ${week}, matchup ${matchIndex}`);
         
     } catch (error) {
         console.error('❌ UPDATE SCORECARDS: Error updating scorecards:', error);
+        throw error;
+    }
+}
+
+// Update weekScorecards collection with lineup data for Enter Scores section
+async function updateWeekScorecardWithLineup(week, matchIndex, matchupData) {
+    try {
+        console.log(`🎯 WEEK SCORECARD: Updating week scorecard for week ${week}, matchup ${matchIndex}`);
+        
+        // Check if a scorecard is already assigned to this week
+        const weekScorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
+        const weekDocRef = db.collection(weekScorecardPath).doc(`week-${week}`);
+        const weekDoc = await weekDocRef.get();
+        
+        let updateData = {};
+        
+        if (weekDoc.exists) {
+            // Week scorecard exists, update with lineup data
+            const existingData = weekDoc.data();
+            updateData = {
+                ...existingData,
+                [`matchup${matchIndex}Lineup`]: {
+                    team1: matchupData.team1,
+                    team2: matchupData.team2,
+                    team1Name: matchupData.team1Name,
+                    team2Name: matchupData.team2Name,
+                    match1: {
+                        team1Players: matchupData.match1.team1Players,
+                        team2Players: matchupData.match1.team2Players
+                    },
+                    match2: {
+                        team1Players: matchupData.match2.team1Players,
+                        team2Players: matchupData.match2.team2Players
+                    },
+                    lastUpdated: new Date().toISOString()
+                }
+            };
+            
+            await weekDocRef.update(updateData);
+            console.log(`✅ WEEK SCORECARD: Updated existing week ${week} scorecard with lineup data`);
+            
+        } else {
+            // Create new week scorecard with lineup data (will need scorecard assignment later)
+            updateData = {
+                weekNumber: parseInt(week),
+                [`matchup${matchIndex}Lineup`]: {
+                    team1: matchupData.team1,
+                    team2: matchupData.team2,
+                    team1Name: matchupData.team1Name,
+                    team2Name: matchupData.team2Name,
+                    match1: {
+                        team1Players: matchupData.match1.team1Players,
+                        team2Players: matchupData.match1.team2Players
+                    },
+                    match2: {
+                        team1Players: matchupData.match2.team1Players,
+                        team2Players: matchupData.match2.team2Players
+                    },
+                    lastUpdated: new Date().toISOString(),
+                    createdAt: new Date().toISOString()
+                }
+            };
+            
+            await weekDocRef.set(updateData);
+            console.log(`✅ WEEK SCORECARD: Created new week ${week} scorecard with lineup data`);
+        }
+        
+    } catch (error) {
+        console.error('❌ WEEK SCORECARD: Error updating week scorecard:', error);
+        throw error;
+    }
+}
+
+// Update scorecard template for schedule display (placeholder for future enhancement)
+async function updateScorecardTemplateForSchedule(week, matchIndex, matchupData) {
+    try {
+        console.log(`🎯 SCHEDULE SCORECARD: Updating schedule display for week ${week}, matchup ${matchIndex}`);
+        
+        // For now, this is a placeholder for future scorecard schedule updates
+        // The schedule will be able to show actual player names when scorecards are opened
+        // This could include updating a cache or directly modifying schedule display elements
+        
+        console.log(`🎯 SCHEDULE SCORECARD: Player lineup data available for schedule display:`, {
+            team1Name: matchupData.team1Name,
+            team2Name: matchupData.team2Name,
+            match1Players: matchupData.match1,
+            match2Players: matchupData.match2
+        });
+        
+        // TODO: Implement real-time schedule updates when this feature is expanded
+        
+    } catch (error) {
+        console.error('❌ SCHEDULE SCORECARD: Error updating schedule scorecard:', error);
         throw error;
     }
 }
