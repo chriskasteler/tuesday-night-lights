@@ -882,9 +882,14 @@ document.addEventListener('DOMContentLoaded', function() {
 let currentMatch = null;
 
 function openScorecard(matchId, team1, team2, format) {
-    // Convert team names from "Team 1" format to actual team names
-    const actualTeam1 = globalTeamNames[team1] || team1;
-    const actualTeam2 = globalTeamNames[team2] || team2;
+    console.log('🎯 SCORECARD: Opening scorecard for', matchId, team1, team2, format);
+    console.log('🎯 SCORECARD: Current user state:', firebase.auth().currentUser?.email);
+    console.log('🎯 SCORECARD: Global team names:', globalTeamNames);
+    
+    try {
+        // Convert team names from "Team 1" format to actual team names
+        const actualTeam1 = globalTeamNames[team1] || team1;
+        const actualTeam2 = globalTeamNames[team2] || team2;
     
     currentMatch = {
         id: matchId,
@@ -952,9 +957,23 @@ function openScorecard(matchId, team1, team2, format) {
     // Show placeholder scores (read-only)
     document.getElementById('match-winner').textContent = 'Scores not yet entered';
     
-    // Show modal
-    document.getElementById('scorecard-modal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
+        // Show modal
+        console.log('🎯 SCORECARD: About to show modal...');
+        const modal = document.getElementById('scorecard-modal');
+        console.log('🎯 SCORECARD: Modal element found:', modal);
+        
+        if (modal) {
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            console.log('🎯 SCORECARD: Modal should now be visible');
+        } else {
+            console.error('❌ SCORECARD: Modal element not found!');
+        }
+        
+    } catch (error) {
+        console.error('💥 SCORECARD: Error opening scorecard:', error);
+        console.error('Stack trace:', error.stack);
+    }
 }
 
 function closeScorecard() {
