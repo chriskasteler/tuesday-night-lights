@@ -4423,7 +4423,6 @@ async function loadLineupsTeamRosters() {
 function getPlayerOptionsForTeam(teamKey, excludePlayerIds = []) {
     const roster = lineupsTeamRosters[teamKey] || [];
     let options = '<option value="">Select Player...</option>';
-    options += '<option value="REMOVE" style="color: #dc3545; font-style: italic;">✖ Remove Player</option>';
     
     roster.forEach(player => {
         if (player && player.name && !excludePlayerIds.includes(player.playerId)) {
@@ -4434,14 +4433,45 @@ function getPlayerOptionsForTeam(teamKey, excludePlayerIds = []) {
     return options;
 }
 
+// Helper function to create player selection UI (dropdown or selected player with remove button)
+function createPlayerSelectionUI(teamKey, position, matchIndex, teamIndex) {
+    const uniqueId = `player-${matchIndex}-${teamIndex}-${position}`;
+    
+    return `
+        <div class="player-selection-container" id="container-${uniqueId}" style="margin-bottom: 6px;">
+            <select id="select-${uniqueId}" data-team-key="${teamKey}" onchange="handlePlayerSelection(this, '${uniqueId}')" 
+                    style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                ${getPlayerOptionsForTeam(teamKey)}
+            </select>
+            <div id="selected-${uniqueId}" class="selected-player-display" style="display: none; padding: 6px; border: 1px solid #ddd; border-radius: 4px; background: #f8f9fa; align-items: center; justify-content: space-between;">
+                <span class="player-name"></span>
+                <button type="button" onclick="removePlayer('${uniqueId}')" 
+                        style="background: #dc3545; color: white; border: none; border-radius: 3px; padding: 2px 8px; font-size: 12px; cursor: pointer;">
+                    Remove
+                </button>
+            </div>
+        </div>
+    `;
+}
+
 // Get all selected player IDs from the lineups interface
 function getSelectedPlayerIds() {
     const selectedIds = [];
+    
+    // Check both visible dropdowns and selected player displays
     const selects = document.querySelectorAll('#lineups-content select');
+    const selectedDisplays = document.querySelectorAll('#lineups-content .selected-player-display');
     
     selects.forEach(select => {
-        if (select.value && select.value !== '' && select.value !== 'REMOVE') {
+        if (select.value && select.value !== '' && select.style.display !== 'none') {
             selectedIds.push(select.value);
+        }
+    });
+    
+    selectedDisplays.forEach(display => {
+        const playerId = display.dataset.playerId;
+        if (playerId && display.style.display !== 'none') {
+            selectedIds.push(playerId);
         }
     });
     
@@ -4449,13 +4479,45 @@ function getSelectedPlayerIds() {
 }
 
 // Handle player selection change in dropdowns
-window.handlePlayerSelection = function(selectElement) {
+window.handlePlayerSelection = function(selectElement, uniqueId) {
     const selectedValue = selectElement.value;
+    const selectedPlayerId = selectedValue;
     
-    if (selectedValue === 'REMOVE') {
-        // Reset the dropdown to empty
-        selectElement.value = '';
+    if (selectedPlayerId && selectedPlayerId !== '') {
+        // Find the player name
+        const teamKey = selectElement.dataset.teamKey;
+        const roster = lineupsTeamRosters[teamKey] || [];
+        const selectedPlayer = roster.find(p => p.playerId === selectedPlayerId);
+        
+        if (selectedPlayer) {
+            // Hide the dropdown and show the selected player with remove button
+            const selectElement = document.getElementById(`select-${uniqueId}`);
+            const selectedDisplay = document.getElementById(`selected-${uniqueId}`);
+            const playerNameSpan = selectedDisplay.querySelector('.player-name');
+            
+            selectElement.style.display = 'none';
+            playerNameSpan.textContent = selectedPlayer.name;
+            selectedDisplay.style.display = 'flex';
+            
+            // Store the player ID for later retrieval
+            selectedDisplay.dataset.playerId = selectedPlayerId;
+        }
     }
+    
+    // Refresh all dropdowns to update available players
+    refreshAllPlayerDropdowns();
+};
+
+// Remove a selected player and show dropdown again
+window.removePlayer = function(uniqueId) {
+    const selectElement = document.getElementById(`select-${uniqueId}`);
+    const selectedDisplay = document.getElementById(`selected-${uniqueId}`);
+    
+    // Reset the dropdown
+    selectElement.value = '';
+    selectElement.style.display = 'block';
+    selectedDisplay.style.display = 'none';
+    selectedDisplay.dataset.playerId = '';
     
     // Refresh all dropdowns to update available players
     refreshAllPlayerDropdowns();
@@ -4583,22 +4645,14 @@ function renderWeekLineupsInterface(week, weekData) {
                         <!-- Team 1 Match 1 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
-                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                ${getPlayerOptionsForTeam(match.team1)}
-                            </select>
-                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                ${getPlayerOptionsForTeam(match.team1)}
-                            </select>
+                            ${createPlayerSelectionUI(match.team1, 1, index, 1)}
+                            ${createPlayerSelectionUI(match.team1, 2, index, 1)}
                         </div>
                         <!-- Team 2 Match 1 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
-                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                ${getPlayerOptionsForTeam(match.team2)}
-                            </select>
-                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                ${getPlayerOptionsForTeam(match.team2)}
-                            </select>
+                            ${createPlayerSelectionUI(match.team2, 1, index, 2)}
+                            ${createPlayerSelectionUI(match.team2, 2, index, 2)}
                         </div>
                     </div>
                 </div>
@@ -4610,22 +4664,14 @@ function renderWeekLineupsInterface(week, weekData) {
                         <!-- Team 1 Match 2 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
-                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                ${getPlayerOptionsForTeam(match.team1)}
-                            </select>
-                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                ${getPlayerOptionsForTeam(match.team1)}
-                            </select>
+                            ${createPlayerSelectionUI(match.team1, 3, index, 1)}
+                            ${createPlayerSelectionUI(match.team1, 4, index, 1)}
                         </div>
                         <!-- Team 2 Match 2 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
-                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                ${getPlayerOptionsForTeam(match.team2)}
-                            </select>
-                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                ${getPlayerOptionsForTeam(match.team2)}
-                            </select>
+                            ${createPlayerSelectionUI(match.team2, 3, index, 2)}
+                            ${createPlayerSelectionUI(match.team2, 4, index, 2)}
                         </div>
                     </div>
                 </div>
