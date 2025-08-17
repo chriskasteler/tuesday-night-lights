@@ -392,9 +392,13 @@ function showAdminSubSection(subSectionName) {
     
     // Load data for specific sections
     if (subSectionName === 'scorecard-setup') {
+        console.log('🎯 ADMIN SUB-SECTION: scorecard-setup selected');
         // Load scorecards when switching to scorecard setup
         if (typeof loadScorecards === 'function') {
+            console.log('🎯 ADMIN SUB-SECTION: loadScorecards function found, calling...');
             loadScorecards();
+        } else {
+            console.error('❌ ADMIN SUB-SECTION: loadScorecards function not found! Type:', typeof loadScorecards);
         }
     }
     

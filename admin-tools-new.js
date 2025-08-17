@@ -3172,9 +3172,14 @@ function advanceToNextHoleDesktop(currentCell) {
 
 // Load and display existing scorecards
 async function loadScorecards() {
+    console.log('🎯 SCORECARD SETUP: loadScorecards() called');
     try {
         const scorecardsContainer = document.querySelector('.scorecard-list-section');
-        if (!scorecardsContainer) return;
+        console.log('🎯 SCORECARD SETUP: Container found:', scorecardsContainer);
+        if (!scorecardsContainer) {
+            console.error('❌ SCORECARD SETUP: .scorecard-list-section not found!');
+            return;
+        }
         
         // Show loading state
         scorecardsContainer.innerHTML = `
@@ -3184,7 +3189,9 @@ async function loadScorecards() {
         `;
         
         // Fetch scorecards from Firebase
+        console.log('🎯 SCORECARD SETUP: Fetching from Firebase...');
         const scorecardsSnapshot = await db.collection('scorecards').orderBy('createdAt', 'desc').get();
+        console.log('🎯 SCORECARD SETUP: Firebase response:', scorecardsSnapshot.size, 'documents found');
         
         if (scorecardsSnapshot.empty) {
             // Show "no scorecards" state
@@ -3195,7 +3202,8 @@ async function loadScorecards() {
         }
         
     } catch (error) {
-        console.error('❌ Error loading scorecards:', error);
+        console.error('❌ SCORECARD SETUP: Error loading scorecards:', error);
+        console.error('❌ SCORECARD SETUP: Error stack:', error.stack);
         const scorecardsContainer = document.querySelector('.scorecard-list-section');
         if (scorecardsContainer) {
             scorecardsContainer.innerHTML = `
