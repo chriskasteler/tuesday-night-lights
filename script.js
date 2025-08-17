@@ -885,7 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Scorecard functionality
 let currentMatch = null;
 
-function openScorecard(matchId, team1, team2, format) {
+async function openScorecard(matchId, team1, team2, format) {
     console.log('🎯 SCORECARD: Opening scorecard for', matchId, team1, team2, format);
     console.log('🎯 SCORECARD: Current user state:', firebase.auth().currentUser?.email);
     console.log('🎯 SCORECARD: Global team names:', globalTeamNames);
@@ -928,13 +928,16 @@ function openScorecard(matchId, team1, team2, format) {
     document.getElementById('team1-format-label2').textContent = `${team1} ${formatLabel}`;
     document.getElementById('team2-format-label2').textContent = `${team2} ${formatLabel}`;
     
-    // Update player names dynamically based on teams
+    // Update player names dynamically with actual lineup data
     try {
-        // Get all player name elements
+        await updateScorecardWithLineupData(matchId, team1, team2, actualTeam1, actualTeam2);
+    } catch (error) {
+        console.log('Error loading lineup data, using generic names:', error);
+        
+        // Fallback to generic names if lineup data not available
         const playerNames = document.querySelectorAll('.player-name');
         const statusLabels = document.querySelectorAll('.match-status-label');
         
-        // Update player names with actual team names - assuming order: Team1P1, Team1P2, Team2P1, Team2P2, Team1P3, Team1P4, Team2P3, Team2P4
         if (playerNames.length >= 8) {
             playerNames[0].textContent = `${actualTeam1} Player 1`;
             playerNames[1].textContent = `${actualTeam1} Player 2`;
@@ -946,16 +949,12 @@ function openScorecard(matchId, team1, team2, format) {
             playerNames[7].textContent = `${actualTeam2} Player 4`;
         }
         
-        // Update status labels with actual team names
         if (statusLabels.length >= 4) {
             statusLabels[0].textContent = `${actualTeam1} Status`;
             statusLabels[1].textContent = `${actualTeam2} Status`;
             statusLabels[2].textContent = `${actualTeam1} Status`;
             statusLabels[3].textContent = `${actualTeam2} Status`;
         }
-    } catch (error) {
-        console.log('Error updating player names:', error);
-        // Modal will still open even if player name updates fail
     }
     
     // Show placeholder scores (read-only)
@@ -984,6 +983,80 @@ function closeScorecard() {
     document.getElementById('scorecard-modal').style.display = 'none';
     document.body.style.overflow = 'auto';
     currentMatch = null;
+}
+
+// Update scorecard with actual lineup data from database
+async function updateScorecardWithLineupData(matchId, team1, team2, actualTeam1, actualTeam2) {
+    try {
+        console.log('🎯 LINEUP DATA: Loading lineup data for scorecard', matchId);
+        
+        // Extract week and match index from matchId (e.g., "week1-match1" -> week=1, matchIndex=0)
+        const weekMatch = matchId.match(/week(\d+)-match(\d+)/);
+        if (!weekMatch) {
+            throw new Error('Could not parse week and match from matchId');
+        }
+        
+        const week = weekMatch[1];
+        const matchIndex = parseInt(weekMatch[2]) - 1; // Convert to 0-based index
+        
+        console.log(`🎯 LINEUP DATA: Parsed week=${week}, matchIndex=${matchIndex}`);
+        
+        // Load lineup data from weeklyLineups collection
+        const lineupDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups')
+            .doc(`week-${week}`).get();
+        
+        if (!lineupDoc.exists) {
+            throw new Error(`No lineup data found for week ${week}`);
+        }
+        
+        const lineupData = lineupDoc.data();
+        const matchupField = `matchup${matchIndex}`;
+        const matchupLineup = lineupData[matchupField];
+        
+        if (!matchupLineup) {
+            throw new Error(`No lineup data found for ${matchupField} in week ${week}`);
+        }
+        
+        console.log(`🎯 LINEUP DATA: Found lineup data:`, matchupLineup);
+        
+        // Update player names in the scorecard
+        const playerNames = document.querySelectorAll('.player-name');
+        const statusLabels = document.querySelectorAll('.match-status-label');
+        
+        if (playerNames.length >= 8) {
+            // Match 1 players
+            const team1Match1Players = matchupLineup.match1.team1Players || [];
+            const team2Match1Players = matchupLineup.match1.team2Players || [];
+            
+            // Match 2 players  
+            const team1Match2Players = matchupLineup.match2.team1Players || [];
+            const team2Match2Players = matchupLineup.match2.team2Players || [];
+            
+            // Update scorecard player names - order: Team1P1, Team1P2, Team2P1, Team2P2, Team1P3, Team1P4, Team2P3, Team2P4
+            playerNames[0].textContent = team1Match1Players[0]?.name || `${actualTeam1} Player 1`;
+            playerNames[1].textContent = team1Match1Players[1]?.name || `${actualTeam1} Player 2`;
+            playerNames[2].textContent = team2Match1Players[0]?.name || `${actualTeam2} Player 1`;
+            playerNames[3].textContent = team2Match1Players[1]?.name || `${actualTeam2} Player 2`;
+            playerNames[4].textContent = team1Match2Players[0]?.name || `${actualTeam1} Player 3`;
+            playerNames[5].textContent = team1Match2Players[1]?.name || `${actualTeam1} Player 4`;
+            playerNames[6].textContent = team2Match2Players[0]?.name || `${actualTeam2} Player 3`;
+            playerNames[7].textContent = team2Match2Players[1]?.name || `${actualTeam2} Player 4`;
+            
+            console.log('🎯 LINEUP DATA: Updated scorecard with actual player names');
+        }
+        
+        // Update status labels with actual team names
+        if (statusLabels.length >= 4) {
+            statusLabels[0].textContent = `${actualTeam1} Status`;
+            statusLabels[1].textContent = `${actualTeam2} Status`;
+            statusLabels[2].textContent = `${actualTeam1} Status`;
+            statusLabels[3].textContent = `${actualTeam2} Status`;
+        }
+        
+    } catch (error) {
+        console.error('❌ LINEUP DATA: Error loading lineup data:', error);
+        throw error; // Re-throw to trigger fallback in openScorecard
+    }
 }
 
 // Note: Scorecard is now read-only for regular users
