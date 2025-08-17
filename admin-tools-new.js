@@ -4274,11 +4274,21 @@ async function loadWeekLineups() {
     console.log(`🎯 SET LINEUPS: Loading week ${selectedWeek} lineups`);
     
     try {
-        // Show loading state
+        // Show loading state with progress indicator
         contentContainer.innerHTML = `
             <div style="text-align: center; padding: 40px;">
-                <p style="color: #666; font-size: 1.1rem;">Loading week ${selectedWeek} teams and matchups...</p>
+                <div style="display: inline-block; margin-bottom: 15px;">
+                    <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #2d4a2d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                </div>
+                <p style="color: #666; font-size: 1.1rem; margin: 0;">Loading week ${selectedWeek} teams and matchups...</p>
+                <p style="color: #999; font-size: 0.9rem; margin: 5px 0 0 0;">Please wait while we fetch team rosters...</p>
             </div>
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
         `;
         
         // Load team names and rosters from database first
@@ -4410,17 +4420,69 @@ async function loadLineupsTeamRosters() {
 }
 
 // Helper function to generate player options for a team
-function getPlayerOptionsForTeam(teamKey) {
+function getPlayerOptionsForTeam(teamKey, excludePlayerIds = []) {
     const roster = lineupsTeamRosters[teamKey] || [];
     let options = '<option value="">Select Player...</option>';
+    options += '<option value="REMOVE" style="color: #dc3545; font-style: italic;">✖ Remove Player</option>';
     
     roster.forEach(player => {
-        if (player && player.name) {
+        if (player && player.name && !excludePlayerIds.includes(player.playerId)) {
             options += `<option value="${player.playerId}">${player.name}</option>`;
         }
     });
     
     return options;
+}
+
+// Get all selected player IDs from the lineups interface
+function getSelectedPlayerIds() {
+    const selectedIds = [];
+    const selects = document.querySelectorAll('#lineups-content select');
+    
+    selects.forEach(select => {
+        if (select.value && select.value !== '' && select.value !== 'REMOVE') {
+            selectedIds.push(select.value);
+        }
+    });
+    
+    return selectedIds;
+}
+
+// Handle player selection change in dropdowns
+window.handlePlayerSelection = function(selectElement) {
+    const selectedValue = selectElement.value;
+    
+    if (selectedValue === 'REMOVE') {
+        // Reset the dropdown to empty
+        selectElement.value = '';
+    }
+    
+    // Refresh all dropdowns to update available players
+    refreshAllPlayerDropdowns();
+};
+
+// Refresh all player dropdowns to exclude selected players
+function refreshAllPlayerDropdowns() {
+    const selectedPlayerIds = getSelectedPlayerIds();
+    const allSelects = document.querySelectorAll('#lineups-content select[data-team-key]');
+    
+    allSelects.forEach(select => {
+        const teamKey = select.dataset.teamKey;
+        const currentValue = select.value;
+        
+        if (teamKey) {
+            // Exclude all selected players except the current selection in this dropdown
+            const excludeIds = selectedPlayerIds.filter(id => id !== currentValue);
+            
+            // Update the dropdown options
+            select.innerHTML = getPlayerOptionsForTeam(teamKey, excludeIds);
+            
+            // Restore the current selection (if it's still valid)
+            if (currentValue && (currentValue === '' || currentValue === 'REMOVE' || !excludeIds.includes(currentValue))) {
+                select.value = currentValue;
+            }
+        }
+    });
 }
 
 // Get schedule data for a specific week
@@ -4521,20 +4583,20 @@ function renderWeekLineupsInterface(week, weekData) {
                         <!-- Team 1 Match 1 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
                                 ${getPlayerOptionsForTeam(match.team1)}
                             </select>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                                 ${getPlayerOptionsForTeam(match.team1)}
                             </select>
                         </div>
                         <!-- Team 2 Match 1 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
                                 ${getPlayerOptionsForTeam(match.team2)}
                             </select>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                                 ${getPlayerOptionsForTeam(match.team2)}
                             </select>
                         </div>
@@ -4548,20 +4610,20 @@ function renderWeekLineupsInterface(week, weekData) {
                         <!-- Team 1 Match 2 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
                                 ${getPlayerOptionsForTeam(match.team1)}
                             </select>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                            <select data-team-key="${match.team1}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                                 ${getPlayerOptionsForTeam(match.team1)}
                             </select>
                         </div>
                         <!-- Team 2 Match 2 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
                                 ${getPlayerOptionsForTeam(match.team2)}
                             </select>
-                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                            <select data-team-key="${match.team2}" onchange="handlePlayerSelection(this)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                                 ${getPlayerOptionsForTeam(match.team2)}
                             </select>
                         </div>
