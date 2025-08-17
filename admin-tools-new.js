@@ -4424,73 +4424,61 @@ function renderWeekLineupsInterface(week, weekData) {
         const actualTeam2Name = lineupsTeamNames[match.team2] || match.team2;
         
         interfaceHTML += `
-            <div class="matchup-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <div class="matchup-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+            <div class="matchup-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                <div class="matchup-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0;">
                     <h5 style="color: #2d4a2d; margin: 0; font-size: 1.2rem;">${actualTeam1Name} vs ${actualTeam2Name}</h5>
-                    <p style="color: #666; margin: 5px 0 0 0; font-size: 0.9rem;">Match ${index + 1}</p>
                 </div>
                 
-                <div class="teams-lineups" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <!-- Team 1 Lineup -->
-                    <div class="team-lineup">
-                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${actualTeam1Name} Lineup</h6>
-                        <div class="lineup-slots">
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 1 (Strongest):</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                    <!-- Players will be populated dynamically -->
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 2:</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 3:</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 4:</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                </select>
-                            </div>
+                <!-- Match 1 -->
+                <div class="match-section" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
+                    <h6 style="color: #2d4a2d; margin: 0 0 12px 0; text-align: center; font-size: 1rem;">Match 1</h6>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Team 1 Match 1 -->
+                        <div style="text-align: center;">
+                            <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                                <option value="">Select Player 1...</option>
+                            </select>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Select Player 2...</option>
+                            </select>
+                        </div>
+                        <!-- Team 2 Match 1 -->
+                        <div style="text-align: center;">
+                            <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                                <option value="">Select Player 1...</option>
+                            </select>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Select Player 2...</option>
+                            </select>
                         </div>
                     </div>
-                    
-                    <!-- Team 2 Lineup -->
-                    <div class="team-lineup">
-                        <h6 style="color: #2d4a2d; margin: 0 0 15px 0; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">${actualTeam2Name} Lineup</h6>
-                        <div class="lineup-slots">
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 1 (Strongest):</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 2:</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 3:</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Position 4:</label>
-                                <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                    <option value="">Select Player...</option>
-                                </select>
-                            </div>
+                </div>
+                
+                <!-- Match 2 -->
+                <div class="match-section" style="padding: 15px; background: #f8f9fa; border-radius: 6px;">
+                    <h6 style="color: #2d4a2d; margin: 0 0 12px 0; text-align: center; font-size: 1rem;">Match 2</h6>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Team 1 Match 2 -->
+                        <div style="text-align: center;">
+                            <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                                <option value="">Select Player 1...</option>
+                            </select>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Select Player 2...</option>
+                            </select>
+                        </div>
+                        <!-- Team 2 Match 2 -->
+                        <div style="text-align: center;">
+                            <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
+                                <option value="">Select Player 1...</option>
+                            </select>
+                            <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">Select Player 2...</option>
+                            </select>
                         </div>
                     </div>
                 </div>
