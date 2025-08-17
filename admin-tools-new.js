@@ -4281,8 +4281,11 @@ async function loadWeekLineups() {
             </div>
         `;
         
-        // Load team names from database first
-        await loadLineupsTeamNames();
+        // Load team names and rosters from database first
+        await Promise.all([
+            loadLineupsTeamNames(),
+            loadLineupsTeamRosters()
+        ]);
         
         // Get the week's schedule data (now with actual team names)
         const weekData = getWeekScheduleData(selectedWeek);
@@ -4303,8 +4306,9 @@ async function loadWeekLineups() {
     }
 }
 
-// Load team names for lineups functionality
+// Load team data for lineups functionality
 let lineupsTeamNames = {};
+let lineupsTeamRosters = {};
 async function loadLineupsTeamNames() {
     try {
         console.log('🎯 SET LINEUPS: Loading team names from database...');
@@ -4336,6 +4340,42 @@ async function loadLineupsTeamNames() {
             'Team 6': 'Team 6'
         };
     }
+}
+
+async function loadLineupsTeamRosters() {
+    try {
+        console.log('🎯 SET LINEUPS: Loading team rosters from database...');
+        const teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams')
+            .orderBy('teamId', 'asc')
+            .get();
+        
+        lineupsTeamRosters = {};
+        teamsSnapshot.forEach(doc => {
+            const team = doc.data();
+            if (team.teamId && team.roster) {
+                lineupsTeamRosters[`Team ${team.teamId}`] = team.roster;
+                console.log(`🎯 SET LINEUPS: Team ${team.teamId} roster:`, team.roster.length, 'players');
+            }
+        });
+        console.log('🎯 SET LINEUPS: Team rosters loaded for', Object.keys(lineupsTeamRosters).length, 'teams');
+    } catch (error) {
+        console.error('❌ SET LINEUPS: Error loading team rosters:', error);
+        lineupsTeamRosters = {};
+    }
+}
+
+// Helper function to generate player options for a team
+function getPlayerOptionsForTeam(teamKey) {
+    const roster = lineupsTeamRosters[teamKey] || [];
+    let options = '<option value="">Select Player...</option>';
+    
+    roster.forEach(player => {
+        if (player && player.name) {
+            options += `<option value="${player.playerId}">${player.name}</option>`;
+        }
+    });
+    
+    return options;
 }
 
 // Get schedule data for a specific week
@@ -4437,20 +4477,20 @@ function renderWeekLineupsInterface(week, weekData) {
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                <option value="">Select Player 1...</option>
+                                ${getPlayerOptionsForTeam(match.team1)}
                             </select>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">Select Player 2...</option>
+                                ${getPlayerOptionsForTeam(match.team1)}
                             </select>
                         </div>
                         <!-- Team 2 Match 1 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                <option value="">Select Player 1...</option>
+                                ${getPlayerOptionsForTeam(match.team2)}
                             </select>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">Select Player 2...</option>
+                                ${getPlayerOptionsForTeam(match.team2)}
                             </select>
                         </div>
                     </div>
@@ -4464,20 +4504,20 @@ function renderWeekLineupsInterface(week, weekData) {
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam1Name}</p>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                <option value="">Select Player 1...</option>
+                                ${getPlayerOptionsForTeam(match.team1)}
                             </select>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">Select Player 2...</option>
+                                ${getPlayerOptionsForTeam(match.team1)}
                             </select>
                         </div>
                         <!-- Team 2 Match 2 -->
                         <div style="text-align: center;">
                             <p style="margin: 0 0 8px 0; font-weight: 600; color: #2d4a2d;">${actualTeam2Name}</p>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px;">
-                                <option value="">Select Player 1...</option>
+                                ${getPlayerOptionsForTeam(match.team2)}
                             </select>
                             <select style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
-                                <option value="">Select Player 2...</option>
+                                ${getPlayerOptionsForTeam(match.team2)}
                             </select>
                         </div>
                     </div>
