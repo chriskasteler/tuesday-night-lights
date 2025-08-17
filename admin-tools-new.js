@@ -4675,6 +4675,17 @@ function renderWeekLineupsInterface(week, weekData) {
                         </div>
                     </div>
                 </div>
+                
+                <!-- Save Button for this matchup -->
+                <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                    <button onclick="saveMatchupLineup(${index}, '${match.team1}', '${match.team2}')" 
+                            style="background: #2d4a2d; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                        Save This Matchup
+                    </button>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">
+                        Saves lineup for this matchup and updates scorecards
+                    </p>
+                </div>
             </div>
         `;
     });
@@ -4697,4 +4708,182 @@ function renderWeekLineupsInterface(week, weekData) {
 function saveWeekLineups(week) {
     console.log(`🎯 SET LINEUPS: Save lineups for week ${week} - TO BE IMPLEMENTED`);
     alert(`Save Week ${week} lineups functionality will be implemented next.`);
+}
+
+// Save lineup for a specific matchup
+window.saveMatchupLineup = async function(matchIndex, team1Key, team2Key) {
+    try {
+        const selectedWeek = document.getElementById('lineup-week-select').value;
+        if (!selectedWeek) {
+            alert('Please select a week first');
+            return;
+        }
+        
+        console.log(`🎯 SAVE MATCHUP: Saving matchup ${matchIndex} for week ${selectedWeek}`);
+        console.log(`🎯 SAVE MATCHUP: Teams: ${team1Key} vs ${team2Key}`);
+        
+        // Get the lineup data for this specific matchup
+        const matchupData = getMatchupLineupData(matchIndex, team1Key, team2Key);
+        
+        if (!matchupData.hasPlayers) {
+            alert('Please select at least one player before saving this matchup.');
+            return;
+        }
+        
+        // Show saving state
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Saving...';
+        button.disabled = true;
+        
+        // Save to weeklyLineups collection
+        await saveMatchupToDatabase(selectedWeek, matchIndex, matchupData);
+        
+        // Update scorecards in both schedule and admin sections
+        await updateScorecardsForMatchup(selectedWeek, matchIndex, matchupData);
+        
+        // Show success
+        button.textContent = '✓ Saved!';
+        button.style.background = '#28a745';
+        
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '#2d4a2d';
+            button.disabled = false;
+        }, 2000);
+        
+        console.log(`✅ SAVE MATCHUP: Successfully saved matchup ${matchIndex}`);
+        
+    } catch (error) {
+        console.error('❌ SAVE MATCHUP: Error saving matchup:', error);
+        alert('Error saving matchup. Please try again.');
+        
+        // Reset button
+        const button = event.target;
+        button.textContent = 'Save This Matchup';
+        button.style.background = '#2d4a2d';
+        button.disabled = false;
+    }
+};
+
+// Get lineup data for a specific matchup
+function getMatchupLineupData(matchIndex, team1Key, team2Key) {
+    const matchupData = {
+        matchIndex: matchIndex,
+        team1: team1Key,
+        team2: team2Key,
+        team1Name: lineupsTeamNames[team1Key] || team1Key,
+        team2Name: lineupsTeamNames[team2Key] || team2Key,
+        match1: {
+            team1Players: [],
+            team2Players: []
+        },
+        match2: {
+            team1Players: [],
+            team2Players: []
+        },
+        hasPlayers: false
+    };
+    
+    // Get Match 1 players
+    const team1Match1Player1 = getSelectedPlayerFromUI(`player-${matchIndex}-1-1`);
+    const team1Match1Player2 = getSelectedPlayerFromUI(`player-${matchIndex}-1-2`);
+    const team2Match1Player1 = getSelectedPlayerFromUI(`player-${matchIndex}-2-1`);
+    const team2Match1Player2 = getSelectedPlayerFromUI(`player-${matchIndex}-2-2`);
+    
+    // Get Match 2 players
+    const team1Match2Player1 = getSelectedPlayerFromUI(`player-${matchIndex}-1-3`);
+    const team1Match2Player2 = getSelectedPlayerFromUI(`player-${matchIndex}-1-4`);
+    const team2Match2Player1 = getSelectedPlayerFromUI(`player-${matchIndex}-2-3`);
+    const team2Match2Player2 = getSelectedPlayerFromUI(`player-${matchIndex}-2-4`);
+    
+    // Populate matchup data
+    if (team1Match1Player1) matchupData.match1.team1Players.push(team1Match1Player1);
+    if (team1Match1Player2) matchupData.match1.team1Players.push(team1Match1Player2);
+    if (team2Match1Player1) matchupData.match1.team2Players.push(team2Match1Player1);
+    if (team2Match1Player2) matchupData.match1.team2Players.push(team2Match1Player2);
+    
+    if (team1Match2Player1) matchupData.match2.team1Players.push(team1Match2Player1);
+    if (team1Match2Player2) matchupData.match2.team1Players.push(team1Match2Player2);
+    if (team2Match2Player1) matchupData.match2.team2Players.push(team2Match2Player1);
+    if (team2Match2Player2) matchupData.match2.team2Players.push(team2Match2Player2);
+    
+    // Check if any players are selected
+    matchupData.hasPlayers = matchupData.match1.team1Players.length > 0 || 
+                           matchupData.match1.team2Players.length > 0 ||
+                           matchupData.match2.team1Players.length > 0 || 
+                           matchupData.match2.team2Players.length > 0;
+    
+    return matchupData;
+}
+
+// Get selected player data from UI element
+function getSelectedPlayerFromUI(uniqueId) {
+    const selectedDisplay = document.getElementById(`selected-${uniqueId}`);
+    const selectElement = document.getElementById(`select-${uniqueId}`);
+    
+    if (selectedDisplay && selectedDisplay.style.display !== 'none' && selectedDisplay.dataset.playerId) {
+        const playerId = selectedDisplay.dataset.playerId;
+        const playerName = selectedDisplay.querySelector('.player-name')?.textContent;
+        return { playerId, name: playerName };
+    }
+    
+    if (selectElement && selectElement.value && selectElement.style.display !== 'none') {
+        const playerId = selectElement.value;
+        const teamKey = selectElement.dataset.teamKey;
+        const roster = lineupsTeamRosters[teamKey] || [];
+        const player = roster.find(p => p.playerId === playerId);
+        return player ? { playerId, name: player.name } : null;
+    }
+    
+    return null;
+}
+
+// Save matchup data to database
+async function saveMatchupToDatabase(week, matchIndex, matchupData) {
+    const docPath = `clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups/week-${week}`;
+    const fieldName = `matchup${matchIndex}`;
+    
+    try {
+        // Get existing document or create new one
+        const docRef = db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups').doc(`week-${week}`);
+        const existingDoc = await docRef.get();
+        
+        const updateData = {
+            [fieldName]: matchupData,
+            lastUpdated: new Date().toISOString(),
+            week: parseInt(week)
+        };
+        
+        if (existingDoc.exists) {
+            await docRef.update(updateData);
+            console.log(`🎯 SAVE MATCHUP: Updated existing week ${week} document`);
+        } else {
+            await docRef.set(updateData);
+            console.log(`🎯 SAVE MATCHUP: Created new week ${week} document`);
+        }
+        
+    } catch (error) {
+        console.error('❌ SAVE MATCHUP: Database error:', error);
+        throw error;
+    }
+}
+
+// Update scorecards for the saved matchup
+async function updateScorecardsForMatchup(week, matchIndex, matchupData) {
+    try {
+        console.log(`🎯 UPDATE SCORECARDS: Updating scorecards for week ${week}, matchup ${matchIndex}`);
+        
+        // This will be expanded to update both schedule and admin scorecards
+        // For now, we'll add a placeholder that can be enhanced
+        
+        console.log(`🎯 UPDATE SCORECARDS: Matchup data:`, matchupData);
+        console.log(`🎯 UPDATE SCORECARDS: This will update scorecards in schedule and admin sections`);
+        
+        // TODO: Implement scorecard updates in schedule and admin sections
+        
+    } catch (error) {
+        console.error('❌ UPDATE SCORECARDS: Error updating scorecards:', error);
+        throw error;
+    }
 }
