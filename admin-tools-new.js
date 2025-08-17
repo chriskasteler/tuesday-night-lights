@@ -4260,7 +4260,7 @@ function showPlayerDetails(playerId) {
 // ===== SET LINEUPS FUNCTIONALITY =====
 
 // Load and display week lineups when week is selected
-async function loadWeekLineups() {
+window.loadWeekLineups = async function() {
     const weekSelect = document.getElementById('lineup-week-select');
     const selectedWeek = weekSelect.value;
     const contentContainer = document.getElementById('lineups-content');
@@ -4703,7 +4703,7 @@ function renderWeekLineupsInterface(week, weekData) {
     
     // Load and display any existing lineups for this week
     await loadExistingLineups(week);
-}
+};
 
 // Load and display existing lineups for the week
 async function loadExistingLineups(week) {
