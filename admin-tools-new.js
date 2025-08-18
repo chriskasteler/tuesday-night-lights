@@ -1,5 +1,7 @@
 // Team Management JavaScript Functions
 
+console.log('ADMIN TOOLS NEW: File loading started...');
+
 let allPlayers = [];
 let currentTeams = [];
 let playerDirectoryData = [];
@@ -4261,21 +4263,21 @@ function showPlayerDetails(playerId) {
 
 // Initialize Set Lineups functionality when page loads
 window.initializeSetLineups = function() {
-    console.log('🎯 INIT SET LINEUPS: Initializing...');
+    console.log('INIT SET LINEUPS: Initializing...');
     
     // Add event listener to week selector dropdown
     const weekSelect = document.getElementById('lineup-week-select');
     if (weekSelect) {
         weekSelect.addEventListener('change', loadWeekLineups);
-        console.log('🎯 INIT SET LINEUPS: Event listener added to week selector');
+        console.log('INIT SET LINEUPS: Event listener added to week selector');
     } else {
-        console.warn('⚠️ INIT SET LINEUPS: Week selector not found');
+        console.warn('INIT SET LINEUPS: Week selector not found');
     }
 };
 
 // Load and display week lineups when week is selected
 window.loadWeekLineups = async function() {
-    console.log('🎯 LOAD WEEK LINEUPS: Function called');
+    console.log('LOAD WEEK LINEUPS: Function called');
     const weekSelect = document.getElementById('lineup-week-select');
     const selectedWeek = weekSelect.value;
     const contentContainer = document.getElementById('lineups-content');
