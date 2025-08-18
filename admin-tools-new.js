@@ -4259,6 +4259,20 @@ function showPlayerDetails(playerId) {
 
 // ===== SET LINEUPS FUNCTIONALITY =====
 
+// Initialize Set Lineups functionality when page loads
+window.initializeSetLineups = function() {
+    console.log('🎯 INIT SET LINEUPS: Initializing...');
+    
+    // Add event listener to week selector dropdown
+    const weekSelect = document.getElementById('lineup-week-select');
+    if (weekSelect) {
+        weekSelect.addEventListener('change', loadWeekLineups);
+        console.log('🎯 INIT SET LINEUPS: Event listener added to week selector');
+    } else {
+        console.warn('⚠️ INIT SET LINEUPS: Week selector not found');
+    }
+};
+
 // Load and display week lineups when week is selected
 window.loadWeekLineups = async function() {
     console.log('🎯 LOAD WEEK LINEUPS: Function called');

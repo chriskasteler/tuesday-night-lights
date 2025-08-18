@@ -400,6 +400,15 @@ function showAdminSubSection(subSectionName) {
         } else {
             console.error('❌ ADMIN SUB-SECTION: loadScorecards function not found! Type:', typeof loadScorecards);
         }
+    } else if (subSectionName === 'set-lineups') {
+        console.log('🎯 ADMIN SUB-SECTION: set-lineups selected');
+        // Initialize set lineups when switching to this section
+        if (typeof initializeSetLineups === 'function') {
+            console.log('🎯 ADMIN SUB-SECTION: initializeSetLineups function found, calling...');
+            initializeSetLineups();
+        } else {
+            console.error('❌ ADMIN SUB-SECTION: initializeSetLineups function not found! Type:', typeof initializeSetLineups);
+        }
     }
     
     // Save current admin sub-section to localStorage
