@@ -4321,7 +4321,7 @@ window.loadWeekLineups = async function() {
         const weekData = getWeekScheduleData(selectedWeek);
         
         // Render the week's matchups and lineup interface
-        renderWeekLineupsInterface(selectedWeek, weekData);
+        await renderWeekLineupsInterface(selectedWeek, weekData);
         
     } catch (error) {
         console.error('❌ SET LINEUPS: Error loading week lineups:', error);
@@ -4621,7 +4621,7 @@ function getWeekScheduleData(week) {
 }
 
 // Render the lineups interface for a specific week
-function renderWeekLineupsInterface(week, weekData) {
+async function renderWeekLineupsInterface(week, weekData) {
     const contentContainer = document.getElementById('lineups-content');
     
     if (!weekData) {
