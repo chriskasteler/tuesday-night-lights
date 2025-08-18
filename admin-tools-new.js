@@ -4917,7 +4917,7 @@ window.executePlayerReplacement = async function() {
         
         // Hide form and refresh teams
         hideReplacePlayerForm();
-        await loadTeamsData();
+        await loadPlayersAndTeams();
         renderTeamsManagement();
         
     } catch (error) {
