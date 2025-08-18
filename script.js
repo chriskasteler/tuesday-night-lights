@@ -402,12 +402,15 @@ function showAdminSubSection(subSectionName) {
         }
     } else if (subSectionName === 'set-lineups') {
         console.log('🎯 ADMIN SUB-SECTION: set-lineups selected');
+        console.log('🎯 ADMIN SUB-SECTION: Checking for initializeSetLineups...', typeof initializeSetLineups);
+        console.log('🎯 ADMIN SUB-SECTION: Checking window.initializeSetLineups...', typeof window.initializeSetLineups);
+        
         // Initialize set lineups when switching to this section
-        if (typeof initializeSetLineups === 'function') {
+        if (typeof window.initializeSetLineups === 'function') {
             console.log('🎯 ADMIN SUB-SECTION: initializeSetLineups function found, calling...');
-            initializeSetLineups();
+            window.initializeSetLineups();
         } else {
-            console.error('❌ ADMIN SUB-SECTION: initializeSetLineups function not found! Type:', typeof initializeSetLineups);
+            console.error('❌ ADMIN SUB-SECTION: initializeSetLineups function not found! Type:', typeof window.initializeSetLineups);
         }
     }
     
