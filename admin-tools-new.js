@@ -1,7 +1,5 @@
 // Team Management JavaScript Functions
 
-console.log('ADMIN TOOLS NEW: File loading started...');
-
 let allPlayers = [];
 let currentTeams = [];
 let playerDirectoryData = [];
@@ -228,7 +226,7 @@ window.fixParticipantTeamIds = async function() {
         }
     }
     
-    console.log(`🎯 Fix complete: ${fixedCount} fixed, ${errorCount} errors`);
+    console.log(`Team captain fix complete: ${fixedCount} fixed, ${errorCount} errors`);
     return { fixed: fixedCount, errors: errorCount };
 };
 
@@ -3177,10 +3175,10 @@ function advanceToNextHoleDesktop(currentCell) {
 
 // Load and display existing scorecards
 async function loadScorecards() {
-    console.log('🎯 SCORECARD SETUP: loadScorecards() called');
+
     try {
         const scorecardsContainer = document.querySelector('.scorecard-list-section');
-        console.log('🎯 SCORECARD SETUP: Container found:', scorecardsContainer);
+
         if (!scorecardsContainer) {
             console.error('❌ SCORECARD SETUP: .scorecard-list-section not found!');
             return;
@@ -3194,11 +3192,9 @@ async function loadScorecards() {
         `;
         
         // Fetch scorecards from Firebase - using nested structure path
-        console.log('🎯 SCORECARD SETUP: Fetching from Firebase...');
+
         const scorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
-        console.log('🎯 SCORECARD SETUP: Using path:', scorecardPath);
         const scorecardsSnapshot = await db.collection(scorecardPath).orderBy('createdAt', 'desc').get();
-        console.log('🎯 SCORECARD SETUP: Firebase response:', scorecardsSnapshot.size, 'documents found');
         
         if (scorecardsSnapshot.empty) {
             // Show "no scorecards" state
@@ -4291,7 +4287,7 @@ window.loadWeekLineups = async function() {
         return;
     }
     
-    console.log(`🎯 SET LINEUPS: Loading week ${selectedWeek} lineups`);
+
     
     try {
         // Show loading state with progress indicator
@@ -4341,7 +4337,7 @@ let lineupsTeamNames = {};
 let lineupsTeamRosters = {};
 async function loadLineupsTeamNames() {
     try {
-        console.log('🎯 SET LINEUPS: Loading team names from database...');
+
         const teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams')
             .orderBy('teamId', 'asc')
             .get();
@@ -4352,11 +4348,11 @@ async function loadLineupsTeamNames() {
             if (team.teamId && team.teamName) {
                 // Map from "Team X" format to actual team name
                 lineupsTeamNames[`Team ${team.teamId}`] = team.teamName;
-                console.log(`🎯 SET LINEUPS: Team ${team.teamId} -> ${team.teamName}`);
+
             }
         });
         
-        console.log('🎯 SET LINEUPS: Team names loaded:', lineupsTeamNames);
+
         
     } catch (error) {
         console.error('❌ SET LINEUPS: Error loading team names:', error);
@@ -4705,19 +4701,15 @@ async function renderWeekLineupsInterface(week, weekData) {
 // Load and display existing lineups for the week
 async function loadExistingLineups(week) {
     try {
-        console.log(`🎯 LOAD EXISTING: Loading existing lineups for week ${week}`);
-        
         // Load lineup data from weeklyLineups collection
         const lineupDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups')
             .doc(`week-${week}`).get();
         
         if (!lineupDoc.exists) {
-            console.log(`ℹ️ LOAD EXISTING: No existing lineups found for week ${week}`);
             return;
         }
         
         const lineupData = lineupDoc.data();
-        console.log(`🎯 LOAD EXISTING: Found lineup data:`, lineupData);
         
         // Process each matchup in the data
         for (let matchIndex = 0; matchIndex < 3; matchIndex++) { // 3 matchups per week
@@ -4725,12 +4717,9 @@ async function loadExistingLineups(week) {
             const matchupLineup = lineupData[matchupField];
             
             if (matchupLineup) {
-                console.log(`🎯 LOAD EXISTING: Restoring ${matchupField}:`, matchupLineup);
                 await restoreMatchupLineup(matchIndex, matchupLineup);
             }
         }
-        
-        console.log(`✅ LOAD EXISTING: Successfully loaded existing lineups for week ${week}`);
         
         // Refresh dropdowns to exclude selected players
         await refreshDropdownsAfterLoad();
@@ -4805,7 +4794,7 @@ async function setPlayerInUI(uniqueId, playerData) {
 // Refresh dropdowns after loading existing lineups
 async function refreshDropdownsAfterLoad() {
     try {
-        console.log('🎯 REFRESH AFTER LOAD: Refreshing all dropdowns to exclude selected players');
+
         
         // Small delay to ensure UI is fully rendered
         setTimeout(() => {
@@ -5014,39 +5003,6 @@ async function performPlayerReplacement(oldPlayerId, newPlayerData) {
     }
 }
 
-// Quick fix function to update Tyler Slade's record (temporary)
-window.fixTylerSladeRecord = async function() {
-    try {
-        console.log('Looking for Tyler Slade...');
-        
-        const participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants')
-            .where('name', '==', 'Tyler Slade')
-            .get();
-        
-        if (participantsSnapshot.empty) {
-            alert('Tyler Slade not found in participants');
-            return;
-        }
-        
-        const tylerDoc = participantsSnapshot.docs[0];
-        await tylerDoc.ref.update({
-            status: 'paid',
-            joinedAt: new Date(),
-            paymentReceived: true
-        });
-        
-        console.log('Updated Tyler Slade record');
-        
-        // Refresh Player Directory
-        await loadPlayerDirectory();
-        
-        alert('Tyler Slade record updated! He should now appear in Player Directory.');
-        
-    } catch (error) {
-        console.error('Error fixing Tyler record:', error);
-        alert('Error updating Tyler record');
-    }
-};
 
 // Individual matchup saving is now implemented above
 
