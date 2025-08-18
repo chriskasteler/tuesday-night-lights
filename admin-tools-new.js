@@ -4458,18 +4458,14 @@ function createPlayerSelectionUI(teamKey, position, matchIndex, teamIndex) {
     const uniqueId = `player-${matchIndex}-${teamIndex}-${position}`;
     
     return `
-        <div class="player-selection-container" id="container-${uniqueId}" style="margin-bottom: 6px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
             <select id="select-${uniqueId}" data-team-key="${teamKey}" onchange="handlePlayerSelection(this, '${uniqueId}')" 
-                    style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                    style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                 ${getPlayerOptionsForTeam(teamKey)}
             </select>
-            <div id="selected-${uniqueId}" class="selected-player-display" style="display: none; padding: 6px; border: 1px solid #ddd; border-radius: 4px; background: #f8f9fa; align-items: center; justify-content: space-between;">
-                <span class="player-name"></span>
-                <button type="button" onclick="removePlayer('${uniqueId}')" 
-                        style="background: #dc3545; color: white; border: none; border-radius: 3px; padding: 2px 8px; font-size: 12px; cursor: pointer;">
-                    Remove
-                </button>
-            </div>
+            <span id="remove-container-${uniqueId}" style="width: 60px;">
+                <!-- Remove button will be inserted here when player is selected -->
+            </span>
         </div>
     `;
 }
@@ -4478,20 +4474,12 @@ function createPlayerSelectionUI(teamKey, position, matchIndex, teamIndex) {
 function getSelectedPlayerIds() {
     const selectedIds = [];
     
-    // Check both visible dropdowns and selected player displays
-    const selects = document.querySelectorAll('#lineups-content select');
-    const selectedDisplays = document.querySelectorAll('#lineups-content .selected-player-display');
+    // Check all dropdowns for selected values
+    const selects = document.querySelectorAll('#lineups-content select[data-team-key]');
     
     selects.forEach(select => {
-        if (select.value && select.value !== '' && select.style.display !== 'none') {
+        if (select.value && select.value !== '') {
             selectedIds.push(select.value);
-        }
-    });
-    
-    selectedDisplays.forEach(display => {
-        const playerId = display.dataset.playerId;
-        if (playerId && display.style.display !== 'none') {
-            selectedIds.push(playerId);
         }
     });
     
@@ -4500,44 +4488,33 @@ function getSelectedPlayerIds() {
 
 // Handle player selection change in dropdowns
 window.handlePlayerSelection = function(selectElement, uniqueId) {
-    const selectedValue = selectElement.value;
-    const selectedPlayerId = selectedValue;
+    const removeContainer = document.getElementById(`remove-container-${uniqueId}`);
     
-    if (selectedPlayerId && selectedPlayerId !== '') {
-        // Find the player name
-        const teamKey = selectElement.dataset.teamKey;
-        const roster = lineupsTeamRosters[teamKey] || [];
-        const selectedPlayer = roster.find(p => p.playerId === selectedPlayerId);
-        
-        if (selectedPlayer) {
-            // Hide the dropdown and show the selected player with remove button
-            const selectElement = document.getElementById(`select-${uniqueId}`);
-            const selectedDisplay = document.getElementById(`selected-${uniqueId}`);
-            const playerNameSpan = selectedDisplay.querySelector('.player-name');
-            
-            selectElement.style.display = 'none';
-            playerNameSpan.textContent = selectedPlayer.name;
-            selectedDisplay.style.display = 'flex';
-            
-            // Store the player ID for later retrieval
-            selectedDisplay.dataset.playerId = selectedPlayerId;
-        }
+    if (selectElement.value && selectElement.value !== '') {
+        // Player selected - show remove button
+        removeContainer.innerHTML = `
+            <button onclick="removePlayer('${uniqueId}')" 
+                    style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                Remove
+            </button>
+        `;
+    } else {
+        // No player selected - hide remove button
+        removeContainer.innerHTML = '';
     }
     
     // Refresh all dropdowns to update available players
     refreshAllPlayerDropdowns();
 };
 
-// Remove a selected player and show dropdown again
+// Remove a selected player and hide remove button
 window.removePlayer = function(uniqueId) {
     const selectElement = document.getElementById(`select-${uniqueId}`);
-    const selectedDisplay = document.getElementById(`selected-${uniqueId}`);
+    const removeContainer = document.getElementById(`remove-container-${uniqueId}`);
     
-    // Reset the dropdown
+    // Reset the dropdown and hide remove button
     selectElement.value = '';
-    selectElement.style.display = 'block';
-    selectedDisplay.style.display = 'none';
-    selectedDisplay.dataset.playerId = '';
+    removeContainer.innerHTML = '';
     
     // Refresh all dropdowns to update available players
     refreshAllPlayerDropdowns();
@@ -4552,11 +4529,6 @@ function refreshAllPlayerDropdowns() {
         const teamKey = select.dataset.teamKey;
         const currentValue = select.value;
         
-        // Skip hidden dropdowns (they have selected players shown)
-        if (select.style.display === 'none') {
-            return;
-        }
-        
         if (teamKey) {
             // Exclude all selected players except the current selection in this dropdown
             const excludeIds = selectedPlayerIds.filter(id => id !== currentValue);
@@ -4565,7 +4537,7 @@ function refreshAllPlayerDropdowns() {
             select.innerHTML = getPlayerOptionsForTeam(teamKey, excludeIds);
             
             // Restore the current selection (if it's still valid)
-            if (currentValue && (currentValue === '' || currentValue === 'REMOVE' || !excludeIds.includes(currentValue))) {
+            if (currentValue && currentValue !== '') {
                 select.value = currentValue;
             }
         }
@@ -4723,6 +4695,9 @@ async function renderWeekLineupsInterface(week, weekData) {
     // Set the interface HTML (no week-level save button - individual saves only)
     contentContainer.innerHTML = interfaceHTML;
     
+    // Small delay to ensure DOM is fully rendered before restoring state
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     // Load and display any existing lineups for this week
     await loadExistingLineups(week);
 };
@@ -4798,31 +4773,32 @@ async function restoreMatchupLineup(matchIndex, matchupLineup) {
     }
 }
 
-// Set a player in the UI (convert dropdown to selected state)
+// Set a player in the UI (set dropdown value and show remove button)
 async function setPlayerInUI(uniqueId, playerData) {
     try {
         const selectElement = document.getElementById(`select-${uniqueId}`);
-        const selectedDisplay = document.getElementById(`selected-${uniqueId}`);
-        const playerNameSpan = selectedDisplay?.querySelector('.player-name');
+        const removeContainer = document.getElementById(`remove-container-${uniqueId}`);
         
-        if (!selectElement || !selectedDisplay || !playerNameSpan) {
-            console.warn(`⚠️ SET PLAYER UI: UI elements not found for ${uniqueId}`);
+        if (!selectElement || !removeContainer) {
+            console.warn(`SET PLAYER UI: UI elements not found for ${uniqueId}`);
             return;
         }
         
-        // Set the dropdown value (even though it will be hidden)
+        // Set the dropdown value
         selectElement.value = playerData.playerId;
         
-        // Hide dropdown, show selected state
-        selectElement.style.display = 'none';
-        playerNameSpan.textContent = playerData.name;
-        selectedDisplay.style.display = 'flex';
-        selectedDisplay.dataset.playerId = playerData.playerId;
+        // Show the remove button
+        removeContainer.innerHTML = `
+            <button onclick="removePlayer('${uniqueId}')" 
+                    style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                Remove
+            </button>
+        `;
         
-        console.log(`🎯 SET PLAYER UI: Set ${uniqueId} to ${playerData.name}`);
+        console.log(`SET PLAYER UI: Set ${uniqueId} to ${playerData.name}`);
         
     } catch (error) {
-        console.error(`❌ SET PLAYER UI: Error setting player for ${uniqueId}:`, error);
+        console.error(`SET PLAYER UI: Error setting player for ${uniqueId}:`, error);
     }
 }
 
