@@ -5014,6 +5014,40 @@ async function performPlayerReplacement(oldPlayerId, newPlayerData) {
     }
 }
 
+// Quick fix function to update Tyler Slade's record (temporary)
+window.fixTylerSladeRecord = async function() {
+    try {
+        console.log('Looking for Tyler Slade...');
+        
+        const participantsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants')
+            .where('name', '==', 'Tyler Slade')
+            .get();
+        
+        if (participantsSnapshot.empty) {
+            alert('Tyler Slade not found in participants');
+            return;
+        }
+        
+        const tylerDoc = participantsSnapshot.docs[0];
+        await tylerDoc.ref.update({
+            status: 'paid',
+            joinedAt: new Date(),
+            paymentReceived: true
+        });
+        
+        console.log('Updated Tyler Slade record');
+        
+        // Refresh Player Directory
+        await loadPlayerDirectory();
+        
+        alert('Tyler Slade record updated! He should now appear in Player Directory.');
+        
+    } catch (error) {
+        console.error('Error fixing Tyler record:', error);
+        alert('Error updating Tyler record');
+    }
+};
+
 // Individual matchup saving is now implemented above
 
 // Save lineup for a specific matchup
