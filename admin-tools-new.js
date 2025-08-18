@@ -4915,9 +4915,10 @@ window.executePlayerReplacement = async function() {
         // Success feedback
         alert(`Successfully replaced ${oldPlayer.name} with ${newPlayerName}!\n\n${newPlayerName} is now in the unassigned players section.`);
         
-        // Hide form and refresh teams
+        // Hide form and refresh teams and player directory
         hideReplacePlayerForm();
         await loadPlayersAndTeams();
+        await loadPlayerDirectory(); // Refresh Player Directory to show new player
         renderTeamsManagement();
         
     } catch (error) {
@@ -4942,14 +4943,15 @@ async function performPlayerReplacement(oldPlayerId, newPlayerData) {
             throw new Error('Old player not found');
         }
         
-        // 2. Create new player in participants collection
+        // 2. Create new player in participants collection  
         const newPlayerDoc = {
             name: formatName(newPlayerData.name),
             email: newPlayerData.email.toLowerCase(),
             phone: newPlayerData.phone,
-            status: 'approved',
+            status: 'paid', // Set to paid so they appear in Player Directory
             createdAt: new Date().toISOString(),
-            paymentReceived: false,
+            joinedAt: new Date(), // Add joinedAt for Player Directory
+            paymentReceived: true, // Mark as paid since they're replacing a paid player
             notes: `Replacement for ${oldPlayer.name}`,
             replacementFor: oldPlayer.id
         };
