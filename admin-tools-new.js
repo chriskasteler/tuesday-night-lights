@@ -4552,6 +4552,11 @@ function refreshAllPlayerDropdowns() {
         const teamKey = select.dataset.teamKey;
         const currentValue = select.value;
         
+        // Skip hidden dropdowns (they have selected players shown)
+        if (select.style.display === 'none') {
+            return;
+        }
+        
         if (teamKey) {
             // Exclude all selected players except the current selection in this dropdown
             const excludeIds = selectedPlayerIds.filter(id => id !== currentValue);
