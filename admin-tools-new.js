@@ -4817,6 +4817,201 @@ async function refreshDropdownsAfterLoad() {
     }
 }
 
+// ===== REPLACE PLAYER FUNCTIONALITY =====
+
+// Show the replace player form and populate the dropdown
+window.showReplacePlayerForm = function() {
+    const form = document.getElementById('replace-player-form');
+    const playerDropdown = document.getElementById('player-to-replace');
+    
+    // Show the form
+    form.style.display = 'block';
+    
+    // Populate dropdown with all current participants
+    const assignedPlayerIds = new Set();
+    currentTeams.forEach(team => {
+        team.players.forEach(playerId => assignedPlayerIds.add(playerId));
+        if (team.captain) assignedPlayerIds.add(team.captain);
+    });
+    
+    const assignedPlayers = allPlayers.filter(player => assignedPlayerIds.has(player.id));
+    
+    playerDropdown.innerHTML = '<option value="">Select player to replace...</option>' +
+        assignedPlayers.map(player => {
+            const teamName = getPlayerTeamName(player.id);
+            return `<option value="${player.id}">${player.name} (${teamName})</option>`;
+        }).join('');
+};
+
+// Hide the replace player form and clear inputs
+window.hideReplacePlayerForm = function() {
+    const form = document.getElementById('replace-player-form');
+    form.style.display = 'none';
+    
+    // Clear all inputs
+    document.getElementById('player-to-replace').value = '';
+    document.getElementById('new-player-name').value = '';
+    document.getElementById('new-player-phone').value = '';
+    document.getElementById('new-player-email').value = '';
+};
+
+// Get the team name for a given player ID
+function getPlayerTeamName(playerId) {
+    for (const team of currentTeams) {
+        if (team.players.includes(playerId) || team.captain === playerId) {
+            return team.teamName;
+        }
+    }
+    return 'No Team';
+}
+
+// Execute the player replacement
+window.executePlayerReplacement = async function() {
+    try {
+        const oldPlayerId = document.getElementById('player-to-replace').value;
+        const newPlayerName = document.getElementById('new-player-name').value.trim();
+        const newPlayerPhone = document.getElementById('new-player-phone').value.trim();
+        const newPlayerEmail = document.getElementById('new-player-email').value.trim();
+        
+        // Validation
+        if (!oldPlayerId) {
+            alert('Please select a player to replace');
+            return;
+        }
+        
+        if (!newPlayerName || !newPlayerPhone || !newPlayerEmail) {
+            alert('Please fill in all fields for the new player');
+            return;
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newPlayerEmail)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        
+        // Confirm replacement
+        const oldPlayer = allPlayers.find(p => p.id === oldPlayerId);
+        const teamName = getPlayerTeamName(oldPlayerId);
+        
+        if (!confirm(`Are you sure you want to replace ${oldPlayer.name} from ${teamName} with ${newPlayerName}?\n\nThis will:\n- Remove ${oldPlayer.name} from their team\n- Add ${newPlayerName} to unassigned players\n- You can then assign ${newPlayerName} to any team`)) {
+            return;
+        }
+        
+        // Show progress
+        const replaceButton = document.querySelector('#replace-player-form button[onclick="executePlayerReplacement()"]');
+        const originalText = replaceButton.textContent;
+        replaceButton.textContent = 'Replacing...';
+        replaceButton.disabled = true;
+        
+        // Execute replacement
+        await performPlayerReplacement(oldPlayerId, {
+            name: newPlayerName,
+            phone: newPlayerPhone,
+            email: newPlayerEmail
+        });
+        
+        // Success feedback
+        alert(`Successfully replaced ${oldPlayer.name} with ${newPlayerName}!\n\n${newPlayerName} is now in the unassigned players section.`);
+        
+        // Hide form and refresh teams
+        hideReplacePlayerForm();
+        await loadTeamsData();
+        renderTeamsManagement();
+        
+    } catch (error) {
+        console.error('Error replacing player:', error);
+        alert('Error replacing player. Please try again.');
+    } finally {
+        // Reset button
+        const replaceButton = document.querySelector('#replace-player-form button[onclick="executePlayerReplacement()"]');
+        if (replaceButton) {
+            replaceButton.textContent = 'Replace Player';
+            replaceButton.disabled = false;
+        }
+    }
+};
+
+// Perform the actual player replacement in the database
+async function performPlayerReplacement(oldPlayerId, newPlayerData) {
+    try {
+        // 1. Find the old player and their team
+        const oldPlayer = allPlayers.find(p => p.id === oldPlayerId);
+        if (!oldPlayer) {
+            throw new Error('Old player not found');
+        }
+        
+        // 2. Create new player in participants collection
+        const newPlayerDoc = {
+            name: formatName(newPlayerData.name),
+            email: newPlayerData.email.toLowerCase(),
+            phone: newPlayerData.phone,
+            status: 'approved',
+            createdAt: new Date().toISOString(),
+            paymentReceived: false,
+            notes: `Replacement for ${oldPlayer.name}`,
+            replacementFor: oldPlayer.id
+        };
+        
+        const newParticipantRef = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants').add(newPlayerDoc);
+        const newPlayerId = newParticipantRef.id;
+        
+        console.log(`Created new player: ${newPlayerData.name} with ID: ${newPlayerId}`);
+        
+        // 3. Remove old player from their team
+        let teamToUpdate = null;
+        let isOldPlayerCaptain = false;
+        
+        for (const team of currentTeams) {
+            if (team.captain === oldPlayerId) {
+                // Old player is captain
+                isOldPlayerCaptain = true;
+                team.captain = null;
+                teamToUpdate = team;
+                break;
+            } else if (team.players.includes(oldPlayerId)) {
+                // Old player is regular player
+                team.players = team.players.filter(id => id !== oldPlayerId);
+                teamToUpdate = team;
+                break;
+            }
+        }
+        
+        if (teamToUpdate) {
+            // Update team in database
+            await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams')
+                .doc(teamToUpdate.id)
+                .update({
+                    captain: teamToUpdate.captain,
+                    players: teamToUpdate.players,
+                    lastUpdated: new Date().toISOString()
+                });
+            
+            console.log(`Removed ${oldPlayer.name} from ${teamToUpdate.teamName}`);
+        }
+        
+        // 4. Remove old player from participants collection
+        await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/participants')
+            .doc(oldPlayerId)
+            .delete();
+        
+        console.log(`Deleted old player: ${oldPlayer.name}`);
+        
+        // 5. If old player was captain, remove captain role from users collection
+        if (isOldPlayerCaptain && oldPlayer.email) {
+            await removeCaptainRole(oldPlayer.email);
+            console.log(`Removed captain role from ${oldPlayer.email}`);
+        }
+        
+        console.log('Player replacement completed successfully');
+        
+    } catch (error) {
+        console.error('Error in performPlayerReplacement:', error);
+        throw error;
+    }
+}
+
 // Individual matchup saving is now implemented above
 
 // Save lineup for a specific matchup
