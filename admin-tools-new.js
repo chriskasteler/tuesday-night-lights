@@ -1582,22 +1582,6 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 </tr>
             </thead>
             <tbody>
-                <!-- Team 1 Best Ball (Net) -->
-                <tr class="team-best-ball-row" data-team="1" style="background: #e8f5e8;">
-                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600; background: #d4edda;">${team1Name} Best Ball</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="3" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="4" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="5" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="6" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="7" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="8" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="1" data-hole="9" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-total-cell" data-team="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #d4edda;">-</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;"></td>
-                </tr>
-
                 <!-- Team 1 Players -->
                 <tr class="player-row" data-team="1" data-player="1">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;" 
@@ -1660,6 +1644,22 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td colspan="2" style="border: 1px solid #ddd;"></td>
                 </tr>
                 
+                <!-- Team 1 Best Ball Row -->
+                <tr class="team-best-ball-row" data-team="1" style="background: #e8f5e8;">
+                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600; background: #d4edda;">${team1Name} Best Ball</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="3" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="4" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="5" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="6" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="7" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="8" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="9" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-total-cell" data-team="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #d4edda;">-</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;"></td>
+                </tr>
+
                 <!-- Team 1 Score Row -->
                 <tr class="team-score-row" data-team="1">
                     <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; font-weight: 600;">${team1Name} Team Score</td>
@@ -1679,22 +1679,6 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 <!-- Spacer Row -->
                 <tr style="height: 10px;"><td colspan="12" style="border: none; background: #f8f9fa;"></td></tr>
                 
-                <!-- Team 2 Best Ball (Net) -->
-                <tr class="team-best-ball-row" data-team="2" style="background: #fff3cd;">
-                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">${team2Name} Best Ball</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="3" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="4" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="5" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="6" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="7" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="8" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-cell" data-team="2" data-hole="9" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
-                    <td class="team-best-ball-total-cell" data-team="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #fff3cd;"></td>
-                </tr>
-
                 <!-- Team 2 Players -->
                 <tr class="player-row" data-team="2" data-player="1">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
@@ -1757,6 +1741,22 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td colspan="2" style="border: 1px solid #ddd;"></td>
                 </tr>
                 
+                <!-- Team 2 Best Ball Row -->
+                <tr class="team-best-ball-row" data-team="2" style="background: #fff3cd;">
+                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">${team2Name} Best Ball</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="3" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="4" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="5" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="6" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="7" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="8" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="9" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-total-cell" data-team="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #fff3cd;"></td>
+                </tr>
+
                 <!-- Team 2 Score Row -->
                 <tr class="team-score-row" data-team="2">
                     <td style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; font-weight: 600;">${team2Name} Team Score</td>
