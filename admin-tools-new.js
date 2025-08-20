@@ -7457,8 +7457,17 @@ function updateBestBallScores() {
             
             if (!team || !hole) return;
             
-            // Find the players for this team in this match
-            const teamPlayerRows = cell.closest('table').querySelectorAll(`tr.player-row[data-team="${team}"]`);
+            // Find the players for this team in this match - look in the table section
+            let teamPlayerRows;
+            if (team === "1") {
+                // For team 1, get the first 2 player rows (before the spacer)
+                teamPlayerRows = cell.closest('table').querySelectorAll(`tr.player-row`);
+                teamPlayerRows = Array.from(teamPlayerRows).slice(0, 2); // First 2 players
+            } else {
+                // For team 2, get the last 2 player rows (after the spacer)
+                teamPlayerRows = cell.closest('table').querySelectorAll(`tr.player-row`);
+                teamPlayerRows = Array.from(teamPlayerRows).slice(-2); // Last 2 players
+            }
             
             let bestNetScore = null;
             let hasAnyScore = false;
