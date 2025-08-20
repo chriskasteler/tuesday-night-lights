@@ -1629,7 +1629,8 @@ let adminAllTeamsData = {};
 async function loadAdminTeamsData() {
     try {
         console.log('Loading all teams for admin scoring...');
-        const teamsSnapshot = await db.collection('teams').get();
+        const teamsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams';
+        const teamsSnapshot = await db.collection(teamsPath).get();
         
         adminAllTeamsData = {};
         teamsSnapshot.forEach(doc => {
