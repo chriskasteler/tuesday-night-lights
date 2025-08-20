@@ -1768,9 +1768,20 @@ function populatePlayerDropdown(dropdown, teamName) {
         const teamPlayers = window.teamPlayersMap ? window.teamPlayersMap[teamName] : null;
         
         if (!teamPlayers) {
-            console.warn(`No player data found for team: ${teamName}`);
+            console.warn(`❌ No player data found for team: ${teamName}`);
             console.log('Available teams in teamPlayersMap:', window.teamPlayersMap ? Object.keys(window.teamPlayersMap) : 'not built');
             console.log('Available teams in currentTeams:', window.currentTeams ? window.currentTeams.map(t => t.teamName) : 'not loaded');
+            
+            // Show exact team name matching
+            if (window.teamPlayersMap) {
+                const exactMatch = window.teamPlayersMap[teamName];
+                const similarTeams = Object.keys(window.teamPlayersMap).filter(name => 
+                    name.toLowerCase().includes(teamName.toLowerCase()) || 
+                    teamName.toLowerCase().includes(name.toLowerCase())
+                );
+                console.log(`Exact match for "${teamName}":`, exactMatch ? 'Found' : 'Not found');
+                console.log(`Similar team names:`, similarTeams);
+            }
             return;
         }
         
@@ -5654,7 +5665,7 @@ function getWeekScheduleData(week) {
             matches: [
                 { team1: 'Whack Shack', team2: 'Cream Team' },
                 { team1: 'Bump & Run', team2: 'So Sushi Samurai' },
-                { team1: 'Avery', team2: 'Be The Ball' }
+                { team1: 'Aviari', team2: 'Be The Ball' }
             ]
         },
         '2': {
@@ -5662,7 +5673,7 @@ function getWeekScheduleData(week) {
             format: 'Alternate Shot',
             matches: [
                 { team1: 'Whack Shack', team2: 'Bump & Run' },
-                { team1: 'Cream Team', team2: 'Avery' },
+                { team1: 'Cream Team', team2: 'Aviari' },
                 { team1: 'So Sushi Samurai', team2: 'Be The Ball' }
             ]
         },
@@ -5672,14 +5683,14 @@ function getWeekScheduleData(week) {
             matches: [
                 { team1: 'Whack Shack', team2: 'So Sushi Samurai' },
                 { team1: 'Cream Team', team2: 'Be The Ball' },
-                { team1: 'Bump & Run', team2: 'Avery' }
+                { team1: 'Bump & Run', team2: 'Aviari' }
             ]
         },
         '4': {
             date: 'September 9',
             format: 'High-Low',
             matches: [
-                { team1: 'Whack Shack', team2: 'Avery' },
+                { team1: 'Whack Shack', team2: 'Aviari' },
                 { team1: 'Cream Team', team2: 'Bump & Run' },
                 { team1: 'So Sushi Samurai', team2: 'Be The Ball' }
             ]
@@ -5690,7 +5701,7 @@ function getWeekScheduleData(week) {
             matches: [
                 { team1: 'Whack Shack', team2: 'Be The Ball' },
                 { team1: 'Cream Team', team2: 'So Sushi Samurai' },
-                { team1: 'Bump & Run', team2: 'Avery' }
+                { team1: 'Bump & Run', team2: 'Aviari' }
             ]
         }
     };
