@@ -1745,6 +1745,7 @@ async function loadAdminWeekScores() {
             if (referencedScorecardDoc.exists) {
                 window.currentWeekScorecard = weekScorecardData;
                 console.log(`✅ Loaded scorecard for Week ${selectedWeek}:`, window.currentWeekScorecard.scorecardName);
+                console.log('Full week scorecard data:', weekScorecardData);
             } else {
                 // Scorecard was deleted, clean up the week assignment
                 console.log(`Scorecard "${weekScorecardData.scorecardName}" no longer exists, cleaning up week assignment`);
