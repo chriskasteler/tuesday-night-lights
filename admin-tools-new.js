@@ -1452,6 +1452,9 @@ window.loadWeeklyScoring = async function() {
         // Load existing lineups from weeklyLineups collection
         await loadExistingLineupsFromDatabase(selectedWeek);
         
+        // Add save buttons to each matchup
+        addSaveButtonsToMatchups(selectedWeek);
+        
         console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
         
     } catch (error) {
@@ -6779,6 +6782,53 @@ async function saveMatchupLineup(weekNumber, matchupIndex) {
 
 // Make the function globally available
 window.saveMatchupLineup = saveMatchupLineup;
+
+// Add save buttons to each matchup dynamically
+function addSaveButtonsToMatchups(weekNumber) {
+    try {
+        console.log(`🎯 ADDING SAVE BUTTONS: Adding save buttons for Week ${weekNumber}`);
+        
+        // Find all unified scorecards
+        const scorecards = document.querySelectorAll('.unified-scorecard');
+        console.log(`🎯 ADDING SAVE BUTTONS: Found ${scorecards.length} scorecards`);
+        
+        scorecards.forEach((scorecard, index) => {
+            const matchupIndex = scorecard.dataset.matchup || index;
+            
+            // Check if save button already exists
+            if (scorecard.querySelector('.save-matchup-button')) {
+                console.log(`🎯 ADDING SAVE BUTTONS: Save button already exists for matchup ${matchupIndex}`);
+                return;
+            }
+            
+            // Get team names from the header
+            const header = scorecard.querySelector('.matchup-header h3');
+            const teamNames = header ? header.textContent : `Matchup ${matchupIndex}`;
+            
+            // Create save button HTML
+            const saveButtonDiv = document.createElement('div');
+            saveButtonDiv.className = 'save-matchup-button';
+            saveButtonDiv.style.cssText = 'text-align: center; padding: 15px; background: #f8f9fa; border-top: 1px solid #dee2e6;';
+            saveButtonDiv.innerHTML = `
+                <button onclick="saveMatchupLineup(${weekNumber}, ${matchupIndex})" 
+                        style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: 600;">
+                    💾 Save ${teamNames} Lineup
+                </button>
+                <p style="margin: 10px 0 0 0; font-size: 0.85rem; color: #666;">
+                    Save all player selections for this matchup to the database
+                </p>
+            `;
+            
+            // Append the save button to the scorecard
+            scorecard.appendChild(saveButtonDiv);
+            
+            console.log(`✅ ADDING SAVE BUTTONS: Added save button for matchup ${matchupIndex}`);
+        });
+        
+    } catch (error) {
+        console.error('❌ Error adding save buttons:', error);
+    }
+}
 
 // Save a single lineup change to the weeklyLineups database
 async function saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayerId) {
