@@ -1911,6 +1911,15 @@ window.handleWeeklyScoringPlayerSelection = function(dropdown) {
         const position = dropdown.dataset.position;
         
         console.log(`🎯 WEEKLY SCORING: Player selected: "${selectedPlayer}" for ${teamName} Match ${matchNumber} Position ${position}`);
+        console.log(`🎯 WEEKLY SCORING: dropdown.value type: ${typeof selectedPlayer}, length: ${selectedPlayer.length}`);
+        
+        // Log what the dropdown looks like
+        const selectedOption = dropdown.options[dropdown.selectedIndex];
+        console.log(`🎯 WEEKLY SCORING: Selected option text: "${selectedOption.textContent}", value: "${selectedOption.value}"`);
+        
+        // Log all current dropdown values BEFORE refresh
+        console.log(`🎯 WEEKLY SCORING: Current dropdown.value BEFORE operations: "${dropdown.value}"`);
+        console.log(`🎯 WEEKLY SCORING: Current dropdown.selectedIndex BEFORE operations: ${dropdown.selectedIndex}`);
         
         // Update score cells with selected player name
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
