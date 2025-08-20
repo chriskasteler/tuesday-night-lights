@@ -1449,8 +1449,8 @@ window.loadWeeklyScoring = async function() {
         // Load existing data
         await loadExistingWeeklyScoringData(selectedWeek);
         
-        // Load existing lineups from weeklyLineups collection
-        await loadExistingLineupsFromDatabase(selectedWeek);
+        // Load existing lineups from weeklyLineups collection (temporarily disabled to prevent loop)
+        // await loadExistingLineupsFromDatabase(selectedWeek);
         
         console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
         
@@ -1918,12 +1918,11 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         // Update score cells with selected player name
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
         
-        // Refresh all dropdowns to enforce smart selection (remove selected players from other dropdowns)
-        // Use setTimeout to ensure the browser has finished updating the dropdown value first
-        console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
-        setTimeout(() => {
-            refreshWeeklyScoringPlayerDropdowns();
-        }, 10); // Small delay to let browser finish the selection
+        // Refresh all dropdowns to enforce smart selection (temporarily disabled to prevent loop)
+        // console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
+        // setTimeout(() => {
+        //     refreshWeeklyScoringPlayerDropdowns();
+        // }, 10);
         
         // Save lineup change to database
         await saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
