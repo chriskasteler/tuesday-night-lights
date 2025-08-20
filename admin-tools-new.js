@@ -2256,7 +2256,7 @@ function selectScore(score) {
 }
 
 // Open stroke selector for a player on a specific hole
-function openStrokeSelector(player, hole) {
+window.openStrokeSelector = function openStrokeSelector(player, hole) {
     // Create stroke selector modal
     const modal = document.createElement('div');
     modal.id = 'stroke-selector-modal';
@@ -2322,7 +2322,7 @@ function openStrokeSelector(player, hole) {
 }
 
 // Set stroke for a player on a specific hole
-function setStroke(player, hole, strokeType) {
+window.setStroke = function setStroke(player, hole, strokeType) {
     try {
         console.log(`Setting stroke for ${player} on hole ${hole}: ${strokeType}`);
         
@@ -2369,7 +2369,7 @@ function setStroke(player, hole, strokeType) {
 }
 
 // Close stroke selector modal
-function closeStrokeSelector() {
+window.closeStrokeSelector = function closeStrokeSelector() {
     const modal = document.getElementById('stroke-selector-modal');
     if (modal) {
         modal.remove();
@@ -2988,9 +2988,13 @@ function updateTeamScores() {
                             let teamPlayerCells = [];
                             
                             // Determine which team this is based on label text and position
-                            if (labelText.includes('Team 1') || labelText.includes('Whack Shack')) {
+                            // Check if this is Team 1's row (first team in the matchup)
+                            const teamRows = scorecardElement.querySelectorAll('.team-score-row');
+                            const isFirstTeam = teamRows[0] && teamRows[0].contains(cell);
+                            
+                            if (isFirstTeam) {
                                 teamPlayerCells = [playerCells[0], playerCells[1]]; // First 2 players
-                            } else if (labelText.includes('Team 2') || labelText.includes('Bump & Run')) {
+                            } else {
                                 teamPlayerCells = [playerCells[2], playerCells[3]]; // Last 2 players  
                             }
                             
