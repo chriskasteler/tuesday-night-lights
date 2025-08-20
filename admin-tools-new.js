@@ -1461,6 +1461,7 @@ window.loadWeeklyScoring = async function() {
         setTimeout(async () => {
             await loadScoresFromDatabase(selectedWeek);
             refreshStrokeIndicators();
+            setupStrokeButtonListeners(); // Add stroke button event listeners
         }, 500);
         
         console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
@@ -1785,7 +1786,7 @@ function generateStrokeCells(playerName) {
                 data-player="${playerName}"
                 data-hole="${hole}"
                 style="padding: 5px; border: 1px solid #ddd; text-align: center; font-size: 0.8rem;">
-                <button onclick="openStrokeSelector('${playerName.replace(/'/g, "\\'")}', ${hole})"
+                <button class="stroke-add-btn" data-player="${playerName}" data-hole="${hole}"
                         style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
                     Add
                 </button>
@@ -2124,6 +2125,37 @@ function getPlayerNameById(playerId) {
     
     const player = window.allPlayers.find(p => p.id === playerId);
     return player ? player.name : null;
+}
+
+// Setup event listeners for stroke buttons
+function setupStrokeButtonListeners() {
+    // Remove any existing listeners first
+    const existingButtons = document.querySelectorAll('.stroke-add-btn');
+    existingButtons.forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+    });
+    
+    // Add new event listeners
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('stroke-add-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Get the stroke cell that contains this button
+            const strokeCell = e.target.closest('.stroke-cell');
+            if (!strokeCell) return;
+            
+            // Use actualPlayerId if available, otherwise fall back to data-player
+            const playerId = strokeCell.dataset.actualPlayerId || strokeCell.dataset.player;
+            const hole = strokeCell.dataset.hole;
+            
+            console.log(`🏌️ Stroke button clicked via event listener - using player ID: ${playerId}, hole: ${hole}`);
+            openStrokeSelector(playerId, hole);
+        }
+    });
+    
+    console.log('✅ Stroke button listeners setup complete');
 }
 
 // Get all currently selected player IDs for Weekly Scoring dropdowns
