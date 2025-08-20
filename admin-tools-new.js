@@ -2177,8 +2177,10 @@ function getPlayerOptionsForTeamName(teamName, excludePlayerIds = []) {
 
 // Weekly Scoring version of refreshAllPlayerDropdowns
 function refreshWeeklyScoringPlayerDropdowns() {
+    console.log('🔄 refreshWeeklyScoringPlayerDropdowns() called');
     const selectedPlayerIds = getSelectedPlayerIdsForWeeklyScoring();
     const allSelects = document.querySelectorAll('#weekly-scoring-content .player-dropdown');
+    console.log(`🔄 Found ${allSelects.length} dropdowns for refresh`);
     
     allSelects.forEach((select) => {
         const teamName = select.dataset.team;
