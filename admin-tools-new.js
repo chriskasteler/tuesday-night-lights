@@ -1823,6 +1823,9 @@ async function loadAdminWeekScores() {
         ).join('')}
     `;
     
+    // Load saved scores from database
+    await loadScoresFromDatabase(selectedWeek);
+    
     // Reapply styling to existing scores if scorecard is loaded
     if (window.currentWeekScorecard && window.currentWeekScorecard.weekNumber == selectedWeek) {
         setTimeout(() => {
@@ -3145,6 +3148,12 @@ function makeDesktopEditable(cell) {
         
         // Update team totals (for all formats)
         updateTeamTotals();
+        
+        // Calculate match play status (1up, 2dn, etc.)
+        calculateMatchStatus();
+        
+        // Auto-save scores to database
+        saveScoresToDatabase(weekNumber);
     }
     
     input.addEventListener('blur', saveValue);
@@ -5319,4 +5328,88 @@ async function updateScorecardTemplateForSchedule(week, matchIndex, matchupData)
         console.error('❌ SCHEDULE SCORECARD: Error updating schedule scorecard:', error);
         throw error;
     }
+}
+
+// Save all current scores to database
+async function saveScoresToDatabase(weekNumber) {
+    try {
+        if (!weekNumber) return;
+        
+        // Prepare scores data for database
+        const scoresData = {
+            weekNumber: parseInt(weekNumber),
+            playerScores: currentPlayerScores || {},
+            playerStrokes: currentPlayerStrokes || {},
+            lastUpdated: new Date().toISOString(),
+            updatedBy: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email || 'unknown') : 'unknown'
+        };
+        
+        // Save to nested database structure
+        const scoresPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scores';
+        await db.collection(scoresPath).doc(`week-${weekNumber}`).set(scoresData, { merge: true });
+        
+        console.log(`Scores saved for Week ${weekNumber}`);
+        
+    } catch (error) {
+        console.error('Error saving scores to database:', error);
+    }
+}
+
+// Load saved scores from database
+async function loadScoresFromDatabase(weekNumber) {
+    try {
+        if (!weekNumber) return;
+        
+        const scoresPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scores';
+        const scoresDoc = await db.collection(scoresPath).doc(`week-${weekNumber}`).get();
+        
+        if (scoresDoc.exists) {
+            const scoresData = scoresDoc.data();
+            
+            // Restore scores to memory
+            currentPlayerScores = scoresData.playerScores || {};
+            currentPlayerStrokes = scoresData.playerStrokes || {};
+            
+            // Update the UI with loaded scores
+            restoreScoresInUI();
+            
+            console.log(`Scores loaded for Week ${weekNumber}`);
+        }
+        
+    } catch (error) {
+        console.error('Error loading scores from database:', error);
+    }
+}
+
+// Restore scores in the UI after loading from database
+function restoreScoresInUI() {
+    // Update all score cells
+    Object.keys(currentPlayerScores).forEach(player => {
+        Object.keys(currentPlayerScores[player]).forEach(hole => {
+            const score = currentPlayerScores[player][hole];
+            const cell = document.querySelector(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
+            if (cell) {
+                cell.textContent = score;
+                applyScoreTypeStyle(cell, score);
+            }
+        });
+    });
+    
+    // Update all stroke cells
+    Object.keys(currentPlayerStrokes).forEach(player => {
+        Object.keys(currentPlayerStrokes[player]).forEach(hole => {
+            const strokeType = currentPlayerStrokes[player][hole];
+            const cell = document.querySelector(`td.stroke-cell[data-player="${player}"][data-hole="${hole}"]`);
+            if (cell) {
+                cell.textContent = strokeType === 'full' ? '1' : strokeType === 'half' ? '½' : '';
+                cell.className = `stroke-cell ${strokeType}-stroke`;
+            }
+        });
+    });
+    
+    // Recalculate all totals and team scores
+    recalculateAllTotals();
+    updateTeamScores();
+    updateTeamTotals();
+    calculateMatchStatus();
 }
