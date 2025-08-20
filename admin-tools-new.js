@@ -1947,13 +1947,20 @@ function updateScoreCellsPlayerName(dropdown, playerName) {
 // Get all currently selected player names for Weekly Scoring dropdowns
 function getSelectedPlayerNames() {
     const selectedNames = [];
-    const dropdowns = document.querySelectorAll('.player-dropdown');
+    // Look for Weekly Scoring dropdowns specifically
+    const dropdowns = document.querySelectorAll('#weekly-scoring-section select[data-player-position]');
     
-    dropdowns.forEach(dropdown => {
-        if (dropdown.value && dropdown.value.trim() !== '') {
+    console.log(`🔍 Found ${dropdowns.length} player dropdowns in Weekly Scoring`);
+    
+    dropdowns.forEach((dropdown, index) => {
+        console.log(`   Dropdown ${index}: value="${dropdown.value}", data-player-position="${dropdown.getAttribute('data-player-position')}"`);
+        if (dropdown.value && dropdown.value !== "Select Player..." && dropdown.value.trim() !== '') {
             selectedNames.push(dropdown.value);
+            console.log(`   ✅ Added "${dropdown.value}" to selected list`);
         }
     });
+    
+    console.log(`📋 Final selected players: [${selectedNames.map(name => `"${name}"`).join(', ')}]`);
     
     return selectedNames;
 }
