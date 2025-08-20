@@ -6705,14 +6705,21 @@ async function loadScoresFromDatabase(weekNumber) {
         if (scoresDoc.exists) {
             const scoresData = scoresDoc.data();
             
+            console.log('📊 RAW SCORES DATA:', scoresData);
+            
             // Restore scores to memory
             currentPlayerScores = scoresData.playerScores || {};
             currentPlayerStrokes = scoresData.playerStrokes || {};
             
+            console.log('📊 LOADED PLAYER SCORES:', currentPlayerScores);
+            console.log('📊 LOADED PLAYER STROKES:', currentPlayerStrokes);
+            
             // Update the UI with loaded scores
             restoreScoresInUI();
             
-            console.log(`Scores loaded for Week ${weekNumber}`);
+            console.log(`✅ Scores loaded for Week ${weekNumber}`);
+        } else {
+            console.log(`❌ No scores document found for week-${weekNumber}`);
         }
         
     } catch (error) {
@@ -6722,14 +6729,26 @@ async function loadScoresFromDatabase(weekNumber) {
 
 // Restore scores in the UI after loading from database
 function restoreScoresInUI() {
+    console.log('🔄 RESTORE SCORES: Starting UI restoration...');
+    
+    // Check if there are any score cells on the page
+    const allScoreCells = document.querySelectorAll('td.score-cell');
+    console.log(`🔄 RESTORE SCORES: Found ${allScoreCells.length} score cells on page`);
+    
     // Update all score cells
     Object.keys(currentPlayerScores).forEach(player => {
         Object.keys(currentPlayerScores[player]).forEach(hole => {
             const score = currentPlayerScores[player][hole];
-            const cell = document.querySelector(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
+            const selector = `td.score-cell[data-player="${player}"][data-hole="${hole}"]`;
+            const cell = document.querySelector(selector);
+            console.log(`🔄 RESTORE SCORES: Looking for ${player} hole ${hole} with selector: ${selector}`);
+            console.log(`🔄 RESTORE SCORES: Found cell:`, cell);
             if (cell) {
                 cell.textContent = score;
                 applyScoreTypeStyle(cell, score);
+                console.log(`✅ RESTORE SCORES: Set ${player} hole ${hole} = ${score}`);
+            } else {
+                console.log(`❌ RESTORE SCORES: Could not find cell for ${player} hole ${hole}`);
             }
         });
     });
