@@ -1546,7 +1546,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                                 data-match="${matchNumber}" 
                                 data-team="${team1Name}" 
                                 data-position="1"
-                                onchange="handlePlayerSelection(this)"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                 style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
                             <option value="">Select Player 1...</option>
                         </select>
@@ -1569,7 +1569,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                                 data-match="${matchNumber}" 
                                 data-team="${team1Name}" 
                                 data-position="2"
-                                onchange="handlePlayerSelection(this)"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                 style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
                             <option value="">Select Player 2...</option>
                         </select>
@@ -1613,7 +1613,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                                 data-match="${matchNumber}" 
                                 data-team="${team2Name}" 
                                 data-position="1"
-                                onchange="handlePlayerSelection(this)"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                 style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
                             <option value="">Select Player 1...</option>
                         </select>
@@ -1636,7 +1636,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                                 data-match="${matchNumber}" 
                                 data-team="${team2Name}" 
                                 data-position="2"
-                                onchange="handlePlayerSelection(this)"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                 style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
                             <option value="">Select Player 2...</option>
                         </select>
@@ -1900,8 +1900,8 @@ function populatePlayerDropdown(dropdown, teamName) {
     }
 }
 
-// Handle player selection and update other dropdowns
-window.handlePlayerSelection = function(dropdown) {
+// Handle player selection for Weekly Scoring dropdowns (unique function name)
+window.handleWeeklyScoringPlayerSelection = function(dropdown) {
     try {
         const selectedPlayer = dropdown.value;
         const weekNumber = dropdown.dataset.week;
@@ -1910,20 +1910,20 @@ window.handlePlayerSelection = function(dropdown) {
         const teamName = dropdown.dataset.team;
         const position = dropdown.dataset.position;
         
-        console.log(`🎯 Player selected: "${selectedPlayer}" for ${teamName} Match ${matchNumber} Position ${position}`);
+        console.log(`🎯 WEEKLY SCORING: Player selected: "${selectedPlayer}" for ${teamName} Match ${matchNumber} Position ${position}`);
         
         // Update score cells with selected player name
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
         
         // Refresh all dropdowns to enforce smart selection (remove selected players from other dropdowns)
-        console.log('🔄 Triggering smart selection refresh...');
+        console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
         refreshAllPlayerDropdowns();
         
         // Save lineup change to database
         // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
         
     } catch (error) {
-        console.error('Error handling player selection:', error);
+        console.error('Error handling weekly scoring player selection:', error);
     }
 };
 
