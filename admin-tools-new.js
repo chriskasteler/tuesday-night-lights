@@ -1908,7 +1908,14 @@ window.handlePlayerSelection = function(dropdown) {
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
         
         // Refresh all dropdowns to remove/add players based on selections
-        refreshPlayerDropdowns();
+        // Use setTimeout to avoid conflicts with dropdown event handling
+        setTimeout(() => {
+            try {
+                refreshPlayerDropdowns();
+            } catch (refreshError) {
+                console.error('Error refreshing dropdowns:', refreshError);
+            }
+        }, 10);
         
         // Save lineup change to database
         // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
@@ -1952,6 +1959,12 @@ function refreshPlayerDropdowns() {
         dropdowns.forEach(dropdown => {
             const currentValue = dropdown.value;
             const teamName = dropdown.dataset.team;
+            
+            // Skip if dropdown doesn't have a team (invalid state)
+            if (!teamName) {
+                console.warn('Dropdown missing team data:', dropdown);
+                return;
+            }
             
             // Repopulate dropdown
             populatePlayerDropdown(dropdown, teamName);
