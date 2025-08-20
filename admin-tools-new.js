@@ -1074,19 +1074,298 @@ function updateScheduleSection() {
 }
 
 // Update standings section with current team names
-function updateStandingsSection() {
+async function updateStandingsSection() {
+    try {
+        await calculateAndUpdateStandings();
+    } catch (error) {
+        console.error('Error updating standings:', error);
+        // Fallback to just updating team names
+        const standingsTable = document.querySelector('#standings-section .standings-table tbody');
+        if (!standingsTable) return;
+        
+        const rows = standingsTable.querySelectorAll('tr');
+        rows.forEach((row, index) => {
+            if (index < currentTeams.length) {
+                const teamCell = row.querySelector('td:nth-child(2)'); // Team name is in 2nd column
+                if (teamCell) {
+                    teamCell.textContent = currentTeams[index].teamName;
+                }
+            }
+        });
+    }
+}
+
+// Calculate and update complete standings based on match results
+async function calculateAndUpdateStandings() {
+    try {
+        console.log('🏆 STANDINGS: Calculating standings from match results...');
+        
+        // Initialize team stats
+        const teamStats = {};
+        
+        // Initialize all teams
+        currentTeams.forEach(team => {
+            teamStats[team.teamName] = {
+                totalPoints: 0,
+                matchesPlayed: 0,
+                wins: 0,
+                losses: 0,
+                ties: 0,
+                teamId: team.teamId
+            };
+        });
+        
+        // Get all completed week scorecards to calculate points and records
+        const weekScorecardsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
+        const weekScorecardsSnapshot = await db.collection(weekScorecardsPath).get();
+        
+        // Process each week's results
+        for (const weekDoc of weekScorecardsSnapshot.docs) {
+            const weekData = weekDoc.data();
+            const weekNumber = weekData.weekNumber;
+            
+            console.log(`🏆 STANDINGS: Processing week ${weekNumber} results...`);
+            
+            // Process each matchup in the week
+            for (let matchupIndex = 0; matchupIndex < 3; matchupIndex++) { // 3 matchups per week
+                const matchupLineupKey = `matchup${matchupIndex}Lineup`;
+                const matchupLineup = weekData[matchupLineupKey];
+                
+                if (matchupLineup && matchupLineup.team1Name && matchupLineup.team2Name) {
+                    // Get team names
+                    const team1Name = getAdminTeamName(matchupLineup.team1);
+                    const team2Name = getAdminTeamName(matchupLineup.team2);
+                    
+                    // Calculate points earned for this matchup
+                    const matchupPoints = await calculateMatchupPoints(weekNumber, matchupIndex, team1Name, team2Name);
+                    
+                    if (matchupPoints) {
+                        // Add points to totals
+                        teamStats[team1Name].totalPoints += matchupPoints.team1Points;
+                        teamStats[team2Name].totalPoints += matchupPoints.team2Points;
+                        
+                        // Update match record
+                        teamStats[team1Name].matchesPlayed++;
+                        teamStats[team2Name].matchesPlayed++;
+                        
+                        // Determine matchup winner based on total points
+                        if (matchupPoints.team1Points > matchupPoints.team2Points) {
+                            // Team 1 wins
+                            teamStats[team1Name].wins++;
+                            teamStats[team2Name].losses++;
+                        } else if (matchupPoints.team2Points > matchupPoints.team1Points) {
+                            // Team 2 wins
+                            teamStats[team2Name].wins++;
+                            teamStats[team1Name].losses++;
+                        } else {
+                            // Tie
+                            teamStats[team1Name].ties++;
+                            teamStats[team2Name].ties++;
+                        }
+                        
+                        console.log(`🏆 STANDINGS: ${team1Name} vs ${team2Name} - Points: ${matchupPoints.team1Points}-${matchupPoints.team2Points}`);
+                    }
+                }
+            }
+        }
+        
+        // Update the standings table
+        updateStandingsTable(teamStats);
+        
+    } catch (error) {
+        console.error('❌ STANDINGS: Error calculating standings:', error);
+        throw error;
+    }
+}
+
+// Calculate points earned for a specific matchup by simulating match status calculation
+async function calculateMatchupPoints(weekNumber, matchupIndex, team1Name, team2Name) {
+    try {
+        // Load scores and strokes for this week
+        const scoresDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scores').doc(`week-${weekNumber}`).get();
+        
+        if (!scoresDoc.exists) {
+            console.log(`🏆 STANDINGS: No scores found for week ${weekNumber}`);
+            return null;
+        }
+        
+        const scoresData = scoresDoc.data();
+        const playerScores = scoresData.playerScores || {};
+        const playerStrokes = scoresData.playerStrokes || {};
+        
+        // Get lineup data to identify players for this matchup
+        const weekScorecardsDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards').doc(`week-${weekNumber}`).get();
+        
+        if (!weekScorecardsDoc.exists) {
+            console.log(`🏆 STANDINGS: No week scorecard found for week ${weekNumber}`);
+            return null;
+        }
+        
+        const weekScorecardsData = weekScorecardsDoc.data();
+        const matchupLineup = weekScorecardsData[`matchup${matchupIndex}Lineup`];
+        
+        if (!matchupLineup) {
+            console.log(`🏆 STANDINGS: No lineup found for matchup ${matchupIndex} in week ${weekNumber}`);
+            return null;
+        }
+        
+        let team1Points = 0;
+        let team2Points = 0;
+        
+        // Calculate points for both matches in this matchup
+        for (let matchNum = 1; matchNum <= 2; matchNum++) {
+            const matchData = matchupLineup[`match${matchNum}`];
+            if (!matchData) continue;
+            
+            const team1Players = matchData.team1Players || [];
+            const team2Players = matchData.team2Players || [];
+            
+            if (team1Players.length < 2 || team2Players.length < 2) continue;
+            
+            // Calculate match status for this individual match
+            const matchResult = calculateIndividualMatchResult(
+                team1Players, team2Players, playerScores, playerStrokes
+            );
+            
+            // Award points based on match result
+            if (matchResult === 'team1_wins') {
+                team1Points += 2;
+            } else if (matchResult === 'team2_wins') {
+                team2Points += 2;
+            } else if (matchResult === 'tie') {
+                team1Points += 1;
+                team2Points += 1;
+            }
+            // If match is incomplete, no points awarded
+        }
+        
+        console.log(`🏆 STANDINGS: Week ${weekNumber}, Matchup ${matchupIndex}: ${team1Name} ${team1Points} - ${team2Points} ${team2Name}`);
+        
+        return {
+            team1Points,
+            team2Points
+        };
+        
+    } catch (error) {
+        console.error(`❌ STANDINGS: Error calculating matchup points for week ${weekNumber}, matchup ${matchupIndex}:`, error);
+        return null;
+    }
+}
+
+// Calculate result for an individual match between two teams
+function calculateIndividualMatchResult(team1Players, team2Players, playerScores, playerStrokes) {
+    let matchStatus = 0; // Positive = team1 ahead, negative = team2 ahead
+    let matchOver = false;
+    const totalHoles = 9;
+    
+    for (let hole = 1; hole <= totalHoles; hole++) {
+        if (matchOver) break;
+        
+        // Get best ball scores for each team on this hole
+        const team1BestNet = getBestNetScore(team1Players, hole, playerScores, playerStrokes);
+        const team2BestNet = getBestNetScore(team2Players, hole, playerScores, playerStrokes);
+        
+        // Only calculate if both teams have valid scores
+        if (team1BestNet !== null && team2BestNet !== null) {
+            const holesRemaining = totalHoles - hole;
+            
+            if (team1BestNet < team2BestNet) {
+                matchStatus += 1; // Team 1 wins hole
+            } else if (team2BestNet < team1BestNet) {
+                matchStatus -= 1; // Team 2 wins hole
+            }
+            // Tied hole doesn't change status
+            
+            // Check if match is over (can't be caught up)
+            if (Math.abs(matchStatus) > holesRemaining) {
+                matchOver = true;
+            }
+        }
+    }
+    
+    // Determine final result
+    if (matchOver || hole > totalHoles) {
+        if (matchStatus > 0) {
+            return 'team1_wins';
+        } else if (matchStatus < 0) {
+            return 'team2_wins';
+        } else {
+            return 'tie';
+        }
+    }
+    
+    // Match incomplete
+    return 'incomplete';
+}
+
+// Get best net score for a team on a specific hole
+function getBestNetScore(players, hole, playerScores, playerStrokes) {
+    let bestNet = null;
+    
+    players.forEach(player => {
+        const playerName = player.name;
+        if (!playerName || !playerScores[playerName] || !playerScores[playerName][hole]) {
+            return; // No score for this player on this hole
+        }
+        
+        const grossScore = parseInt(playerScores[playerName][hole]);
+        if (isNaN(grossScore) || grossScore <= 0) return;
+        
+        // Calculate stroke value
+        let strokeValue = 0;
+        if (playerStrokes[playerName] && playerStrokes[playerName][hole]) {
+            const strokeType = playerStrokes[playerName][hole];
+            if (strokeType === 'full') strokeValue = 1;
+            else if (strokeType === 'half') strokeValue = 0.5;
+        }
+        
+        const netScore = grossScore - strokeValue;
+        
+        if (bestNet === null || netScore < bestNet) {
+            bestNet = netScore;
+        }
+    });
+    
+    return bestNet;
+}
+
+// Update the standings table with calculated stats
+function updateStandingsTable(teamStats) {
     const standingsTable = document.querySelector('#standings-section .standings-table tbody');
     if (!standingsTable) return;
     
+    // Convert to array and sort by total points (descending), then by wins
+    const sortedTeams = Object.entries(teamStats).sort((a, b) => {
+        const [, statsA] = a;
+        const [, statsB] = b;
+        
+        // Sort by total points first (descending)
+        if (statsB.totalPoints !== statsA.totalPoints) {
+            return statsB.totalPoints - statsA.totalPoints;
+        }
+        
+        // If tied on points, sort by wins (descending)
+        return statsB.wins - statsA.wins;
+    });
+    
+    // Update table rows
     const rows = standingsTable.querySelectorAll('tr');
-    rows.forEach((row, index) => {
-        if (index < currentTeams.length) {
-            const teamCell = row.querySelector('td:nth-child(2)'); // Team name is in 2nd column
-            if (teamCell) {
-                teamCell.textContent = currentTeams[index].teamName;
+    sortedTeams.forEach(([teamName, stats], index) => {
+        if (index < rows.length) {
+            const row = rows[index];
+            const cells = row.querySelectorAll('td');
+            
+            if (cells.length >= 5) {
+                cells[0].textContent = index + 1; // Rank
+                cells[1].textContent = teamName; // Team name
+                cells[2].textContent = stats.totalPoints; // Total points
+                cells[3].textContent = stats.matchesPlayed; // Matches played
+                cells[4].textContent = `${stats.wins}-${stats.losses}-${stats.ties}`; // Record
             }
         }
     });
+    
+    console.log('🏆 STANDINGS: Updated standings table with calculated results');
 }
 
 // Show status message
@@ -3259,7 +3538,7 @@ function updatePlayerTotal(player) {
 }
 
 // Desktop editing functionality
-function makeDesktopEditable(cell) {
+async function makeDesktopEditable(cell) {
     // Check if a scorecard has been selected for this week
     const weekNumber = cell.dataset.week;
     if (!window.currentWeekScorecard || window.currentWeekScorecard.weekNumber != weekNumber) {
@@ -3325,7 +3604,16 @@ function makeDesktopEditable(cell) {
         }, 100);
         
         // Auto-save scores to database
-        saveScoresToDatabase(weekNumber);
+        await saveScoresToDatabase(weekNumber);
+        
+        // Update standings after scores are saved
+        setTimeout(async () => {
+            try {
+                await updateStandingsSection();
+            } catch (error) {
+                console.error('Error updating standings after score save:', error);
+            }
+        }, 500);
     }
     
     input.addEventListener('blur', saveValue);
