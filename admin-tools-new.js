@@ -1693,6 +1693,10 @@ async function populateAllPlayerDropdowns() {
         console.log('🔄 Force loading team and player data...');
         await loadPlayersAndTeams();
         
+        // Also load admin teams mapping for getAdminTeamName function
+        console.log('🔄 Loading admin teams mapping...');
+        await loadAdminTeamsData();
+        
         // Check what we actually loaded
         console.log('📊 Data check after loading:');
         console.log('- currentTeams:', window.currentTeams ? window.currentTeams.length : 'not loaded');
