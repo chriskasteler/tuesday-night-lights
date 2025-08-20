@@ -1917,7 +1917,7 @@ window.handleWeeklyScoringPlayerSelection = function(dropdown) {
         
         // Refresh all dropdowns to enforce smart selection (remove selected players from other dropdowns)
         console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
-        refreshAllPlayerDropdowns();
+        refreshWeeklyScoringPlayerDropdowns();
         
         // Save lineup change to database
         // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
@@ -1992,11 +1992,11 @@ function getPlayerOptionsForTeamName(teamName, excludeNames = []) {
     return options;
 }
 
-// EXACT COPY of working refreshAllPlayerDropdowns but for Weekly Scoring
-function refreshAllPlayerDropdowns() {
-    console.log('🚀 STARTING refreshAllPlayerDropdowns...');
+// Weekly Scoring version of refreshAllPlayerDropdowns
+function refreshWeeklyScoringPlayerDropdowns() {
+    console.log('🚀 STARTING refreshWeeklyScoringPlayerDropdowns...');
     const selectedPlayerNames = getSelectedPlayerNames();
-    const allSelects = document.querySelectorAll('.player-dropdown');
+    const allSelects = document.querySelectorAll('#weekly-scoring-section .player-dropdown');
     
     console.log('📋 Selected players:', selectedPlayerNames);
     console.log('📋 Found dropdowns:', allSelects.length);
@@ -2035,7 +2035,7 @@ function refreshAllPlayerDropdowns() {
         }
     });
     
-    console.log('🏁 FINISHED refreshAllPlayerDropdowns');
+    console.log('🏁 FINISHED refreshWeeklyScoringPlayerDropdowns');
 }
 
 // Edit player name functionality
