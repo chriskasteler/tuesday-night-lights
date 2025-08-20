@@ -400,17 +400,16 @@ function showAdminSubSection(subSectionName) {
         } else {
             console.error('❌ ADMIN SUB-SECTION: loadScorecards function not found! Type:', typeof loadScorecards);
         }
-    } else if (subSectionName === 'set-lineups') {
-        console.log('🎯 ADMIN SUB-SECTION: set-lineups selected');
-        console.log('🎯 ADMIN SUB-SECTION: Checking for initializeSetLineups...', typeof initializeSetLineups);
-        console.log('🎯 ADMIN SUB-SECTION: Checking window.initializeSetLineups...', typeof window.initializeSetLineups);
+    } else if (subSectionName === 'weekly-scoring') {
+        console.log('🎯 ADMIN SUB-SECTION: weekly-scoring selected');
+        console.log('🎯 ADMIN SUB-SECTION: Checking for loadWeeklyScoring...', typeof window.loadWeeklyScoring);
         
-        // Initialize set lineups when switching to this section
-        if (typeof window.initializeSetLineups === 'function') {
-            console.log('🎯 ADMIN SUB-SECTION: initializeSetLineups function found, calling...');
-            window.initializeSetLineups();
+        // Initialize weekly scoring when switching to this section
+        if (typeof window.loadWeeklyScoring === 'function') {
+            console.log('🎯 ADMIN SUB-SECTION: loadWeeklyScoring function found');
+            // Don't auto-call loadWeeklyScoring here - let user select a week first
         } else {
-            console.error('❌ ADMIN SUB-SECTION: initializeSetLineups function not found! Type:', typeof window.initializeSetLineups);
+            console.error('❌ ADMIN SUB-SECTION: loadWeeklyScoring function not found! Type:', typeof window.loadWeeklyScoring);
         }
     }
     
