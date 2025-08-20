@@ -1680,8 +1680,15 @@ async function populateAllPlayerDropdowns() {
         const dropdowns = document.querySelectorAll('.player-dropdown');
         
         // Load team data if not already loaded
-        if (!window.allTeamsData) {
+        if (!window.allTeamsData && !window.adminAllTeamsData) {
+            console.log('Loading team and player data...');
             await loadPlayersAndTeams();
+        }
+        
+        // Also ensure we have admin team mapping
+        if (!window.adminAllTeamsData && typeof loadTeamsData === 'function') {
+            console.log('Loading admin team data...');
+            await loadTeamsData();
         }
         
         // Populate each dropdown
@@ -1702,21 +1709,50 @@ function populatePlayerDropdown(dropdown, teamName) {
         // Clear existing options except the first placeholder
         dropdown.innerHTML = '<option value="">Select Player...</option>';
         
-        // Get team data
-        const teamData = window.allTeamsData ? window.allTeamsData[teamName] : null;
+        // Get team data - check both window.allTeamsData and window.adminAllTeamsData
+        let teamData = null;
         
-        if (!teamData || !teamData.players) {
+        // First try window.allTeamsData (from loadPlayersAndTeams)
+        if (window.allTeamsData && window.allTeamsData[teamName]) {
+            teamData = window.allTeamsData[teamName];
+        }
+        // Then try window.adminAllTeamsData  
+        else if (window.adminAllTeamsData) {
+            // adminAllTeamsData might use different keys, check all teams
+            for (const [key, data] of Object.entries(window.adminAllTeamsData)) {
+                if (key === teamName || (data && data.name === teamName)) {
+                    teamData = data;
+                    break;
+                }
+            }
+        }
+        
+        if (!teamData) {
             console.warn(`No player data found for team: ${teamName}`);
+            console.log('Available teams in allTeamsData:', window.allTeamsData ? Object.keys(window.allTeamsData) : 'not loaded');
+            console.log('Available teams in adminAllTeamsData:', window.adminAllTeamsData ? Object.keys(window.adminAllTeamsData) : 'not loaded');
+            return;
+        }
+        
+        // Get players array - could be teamData.players or teamData.participants
+        const players = teamData.players || teamData.participants || [];
+        
+        if (players.length === 0) {
+            console.warn(`No players found for team: ${teamName}`);
             return;
         }
         
         // Add player options
-        teamData.players.forEach(player => {
+        players.forEach(player => {
             const option = document.createElement('option');
-            option.value = player.name;
-            option.textContent = player.name;
+            // Handle different player data structures
+            const playerName = player.name || player.firstName + ' ' + player.lastName || player;
+            option.value = playerName;
+            option.textContent = playerName;
             dropdown.appendChild(option);
         });
+        
+        console.log(`✅ Populated dropdown for ${teamName} with ${players.length} players`);
         
     } catch (error) {
         console.error(`Error populating dropdown for team ${teamName}:`, error);
