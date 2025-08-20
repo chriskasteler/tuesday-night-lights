@@ -1587,16 +1587,16 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;" 
                         data-team="${team1Name}" data-match="${matchNumber}" data-position="1">
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <select class="player-dropdown" 
-                                    data-week="${weekNumber}" 
-                                    data-matchup="${matchupIndex}" 
-                                    data-match="${matchNumber}" 
-                                    data-team="${team1Name}" 
-                                    data-position="1"
-                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team1Name}" 
+                                data-position="1"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                     style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                                <option value="">Select Player 1...</option>
-                            </select>
+                            <option value="">Select Player 1...</option>
+                        </select>
                             <button class="remove-player-btn" 
                                     onclick="removePlayerFromLineup(this)"
                                     style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
@@ -1617,16 +1617,16 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;"
                         data-team="${team1Name}" data-match="${matchNumber}" data-position="2">
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <select class="player-dropdown" 
-                                    data-week="${weekNumber}" 
-                                    data-matchup="${matchupIndex}" 
-                                    data-match="${matchNumber}" 
-                                    data-team="${team1Name}" 
-                                    data-position="2"
-                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team1Name}" 
+                                data-position="2"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                     style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                                <option value="">Select Player 2...</option>
-                            </select>
+                            <option value="">Select Player 2...</option>
+                        </select>
                             <button class="remove-player-btn" 
                                     onclick="removePlayerFromLineup(this)"
                                     style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
@@ -1659,7 +1659,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="team-best-ball-total-cell" data-team="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #d4edda;">-</td>
                     <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;"></td>
                 </tr>
-
+                
                 <!-- Team 1 Score Row -->
                 <tr class="team-score-row" data-team="1">
                     <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; font-weight: 600;">Match Status</td>
@@ -1684,16 +1684,16 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
                         data-team="${team2Name}" data-match="${matchNumber}" data-position="1">
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <select class="player-dropdown" 
-                                    data-week="${weekNumber}" 
-                                    data-matchup="${matchupIndex}" 
-                                    data-match="${matchNumber}" 
-                                    data-team="${team2Name}" 
-                                    data-position="1"
-                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team2Name}" 
+                                data-position="1"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                     style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                                <option value="">Select Player 1...</option>
-                            </select>
+                            <option value="">Select Player 1...</option>
+                        </select>
                             <button class="remove-player-btn" 
                                     onclick="removePlayerFromLineup(this)"
                                     style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
@@ -1714,16 +1714,16 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
                         data-team="${team2Name}" data-match="${matchNumber}" data-position="2">
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <select class="player-dropdown" 
-                                    data-week="${weekNumber}" 
-                                    data-matchup="${matchupIndex}" 
-                                    data-match="${matchNumber}" 
-                                    data-team="${team2Name}" 
-                                    data-position="2"
-                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team2Name}" 
+                                data-position="2"
+                                onchange="handleWeeklyScoringPlayerSelection(this)"
                                     style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                                <option value="">Select Player 2...</option>
-                            </select>
+                            <option value="">Select Player 2...</option>
+                        </select>
                             <button class="remove-player-btn" 
                                     onclick="removePlayerFromLineup(this)"
                                     style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
@@ -1756,7 +1756,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="team-best-ball-total-cell" data-team="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
                     <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #fff3cd;"></td>
                 </tr>
-
+                
                 <!-- Team 2 Score Row -->
                 <tr class="team-score-row" data-team="2">
                     <td style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; font-weight: 600;">Match Status</td>
@@ -2177,7 +2177,7 @@ function refreshWeeklyScoringPlayerDropdowns() {
                 console.log(`   🔍 Option exists: ${optionExists}`);
                 
                 if (optionExists) {
-                    select.value = currentValue;
+                select.value = currentValue;
                     console.log(`   🔙 Restored selection: "${currentValue}" -> dropdown.value is now: "${select.value}"`);
                 } else {
                     // If option doesn't exist, add it manually and select it
@@ -5311,64 +5311,64 @@ function applyScoreTypeStyle(cell, score) {
     // Apply styling based on score vs par
     if (scoreDiff === -1) {
         // Birdie: Red text with red circle
-        cell.innerHTML = `<span style="
-            color: red; 
-            border: 2px solid red; 
-            border-radius: 50%; 
-            width: 24px; 
-            height: 24px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
+            cell.innerHTML = `<span style="
+                color: red; 
+                border: 2px solid red; 
+                border-radius: 50%; 
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
             font-weight: bold;
-            line-height: 1;
-        ">${score}</span>`;
+                line-height: 1;
+            ">${score}</span>`;
     } else if (scoreDiff === 0) {
         // Par: Black text (no styling)
         cell.textContent = score;
     } else if (scoreDiff === 1) {
         // Bogey: Black text with black square
-        cell.innerHTML = `<span style="
+            cell.innerHTML = `<span style="
             color: black; 
             border: 2px solid black; 
             border-radius: 0; 
-            width: 24px; 
-            height: 24px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
             font-weight: bold;
-            line-height: 1;
-        ">${score}</span>`;
+                line-height: 1;
+            ">${score}</span>`;
     } else if (scoreDiff >= 2) {
         // Double bogey or worse: Black text with double black square
-        cell.innerHTML = `<span style="
-            color: black; 
-            border: 2px solid black; 
-            border-radius: 0; 
+            cell.innerHTML = `<span style="
+                color: black; 
+                border: 2px solid black; 
+                border-radius: 0; 
             box-shadow: 0 0 0 2px white, 0 0 0 4px black;
-            width: 24px; 
-            height: 24px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
             font-weight: bold;
-            line-height: 1;
-        ">${score}</span>`;
+                line-height: 1;
+            ">${score}</span>`;
     } else {
         // Eagle or better: Red text with red circle (same as birdie for simplicity)
-        cell.innerHTML = `<span style="
+            cell.innerHTML = `<span style="
             color: red; 
             border: 2px solid red; 
             border-radius: 50%; 
-            width: 24px; 
-            height: 24px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
+                width: 24px; 
+                height: 24px; 
+                display: inline-flex; 
+                align-items: center; 
+                justify-content: center;
             font-weight: bold;
-            line-height: 1;
-        ">${score}</span>`;
+                line-height: 1;
+            ">${score}</span>`;
     }
 }
 
@@ -7445,7 +7445,7 @@ function refreshStrokeIndicators() {
     }
 }
 
-// Update best ball net scores for each team
+// Update best ball net scores for each team - simple approach reading DOM cells
 function updateBestBallScores() {
     try {
         // Find all best ball cells
@@ -7457,15 +7457,19 @@ function updateBestBallScores() {
             
             if (!team || !hole) return;
             
-            // Find the players for this team in this match - look in the table section
+            // Find the table this cell belongs to
+            const table = cell.closest('table');
+            if (!table) return;
+            
+            // Find the players for this team in this match
             let teamPlayerRows;
             if (team === "1") {
                 // For team 1, get the first 2 player rows (before the spacer)
-                teamPlayerRows = cell.closest('table').querySelectorAll(`tr.player-row`);
+                teamPlayerRows = table.querySelectorAll(`tr.player-row`);
                 teamPlayerRows = Array.from(teamPlayerRows).slice(0, 2); // First 2 players
             } else {
                 // For team 2, get the last 2 player rows (after the spacer)
-                teamPlayerRows = cell.closest('table').querySelectorAll(`tr.player-row`);
+                teamPlayerRows = table.querySelectorAll(`tr.player-row`);
                 teamPlayerRows = Array.from(teamPlayerRows).slice(-2); // Last 2 players
             }
             
@@ -7473,44 +7477,36 @@ function updateBestBallScores() {
             let hasAnyScore = false;
             
             teamPlayerRows.forEach(row => {
-                // Get the generic player name from the score cells (this is what's used to store scores)
-                const scoreCell = row.querySelector('.score-cell');
-                if (!scoreCell) {
-                    console.log(`No score cell found for team ${team} hole ${hole}`);
-                    return;
-                }
+                // Find the score cell for this hole in this player's row
+                const scoreCell = row.querySelector(`.score-cell[data-hole="${hole}"]`);
+                if (!scoreCell) return;
                 
-                const playerName = scoreCell.dataset.player;  // Generic name like "Whack Shack Player 1"
-                console.log(`Checking player: ${playerName} for team ${team} hole ${hole}`);
-                
-                // Get gross score for this player and hole
-                const grossScore = currentPlayerScores[playerName] && currentPlayerScores[playerName][hole];
-                if (!grossScore) {
-                    console.log(`No gross score for ${playerName} hole ${hole}`);
-                    return;
+                // Get the gross score from the cell content
+                const grossScoreText = scoreCell.textContent.trim();
+                if (!grossScoreText || grossScoreText === '-' || isNaN(grossScoreText)) {
+                    return; // No valid score
                 }
                 
                 hasAnyScore = true;
-                console.log(`Found gross score ${grossScore} for ${playerName} hole ${hole}`);
+                let grossScore = parseInt(grossScoreText);
                 
                 // Calculate net score (gross - strokes)
-                let netScore = parseInt(grossScore);
-                const playerStrokes = currentPlayerStrokes[playerName] && currentPlayerStrokes[playerName][hole];
+                let netScore = grossScore;
                 
-                if (playerStrokes === 'full') {
-                    netScore -= 1;  // Full stroke reduces score by 1
-                    console.log(`Applied full stroke: ${grossScore} -> ${netScore}`);
-                } else if (playerStrokes === 'half') {
-                    netScore -= 0.5;  // Half stroke reduces score by 0.5
-                    console.log(`Applied half stroke: ${grossScore} -> ${netScore}`);
+                // Check for stroke indicator on this cell
+                const strokeIndicator = scoreCell.querySelector('.stroke-indicator');
+                if (strokeIndicator) {
+                    const strokeText = strokeIndicator.textContent.trim();
+                    if (strokeText === '●' || strokeText === '1') {
+                        netScore -= 1;  // Full stroke
+                    } else if (strokeText === '½') {
+                        netScore -= 0.5;  // Half stroke
+                    }
                 }
-                
-                console.log(`Net score for ${playerName}: ${netScore}`);
                 
                 // Keep the best (lowest) net score
                 if (bestNetScore === null || netScore < bestNetScore) {
                     bestNetScore = netScore;
-                    console.log(`New best net score: ${bestNetScore}`);
                 }
             });
             
