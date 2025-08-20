@@ -1916,8 +1916,11 @@ window.handleWeeklyScoringPlayerSelection = function(dropdown) {
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
         
         // Refresh all dropdowns to enforce smart selection (remove selected players from other dropdowns)
+        // Use setTimeout to ensure the browser has finished updating the dropdown value first
         console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
-        refreshWeeklyScoringPlayerDropdowns();
+        setTimeout(() => {
+            refreshWeeklyScoringPlayerDropdowns();
+        }, 10); // Small delay to let browser finish the selection
         
         // Save lineup change to database
         // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
