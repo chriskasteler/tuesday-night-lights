@@ -1526,20 +1526,36 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
             <tbody>
                 <!-- Team 1 Players -->
                 <tr class="player-row" data-team="1" data-player="1">
-                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; cursor: pointer;" 
-                        data-team="${team1Name}" data-match="${matchNumber}" data-position="1"
-                        onclick="editPlayerName(this)">
-                        ${team1Name} Player 1
+                    <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;" 
+                        data-team="${team1Name}" data-match="${matchNumber}" data-position="1">
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team1Name}" 
+                                data-position="1"
+                                onchange="handlePlayerSelection(this)"
+                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                            <option value="">Select Player 1...</option>
+                        </select>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team1Name} Player 1`, 1)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
                 </tr>
                 <tr class="player-row" data-team="1" data-player="2">
-                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; cursor: pointer;"
-                        data-team="${team1Name}" data-match="${matchNumber}" data-position="2"
-                        onclick="editPlayerName(this)">
-                        ${team1Name} Player 2
+                    <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;"
+                        data-team="${team1Name}" data-match="${matchNumber}" data-position="2">
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team1Name}" 
+                                data-position="2"
+                                onchange="handlePlayerSelection(this)"
+                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                            <option value="">Select Player 2...</option>
+                        </select>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team1Name} Player 2`, 2)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
@@ -1567,20 +1583,36 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 
                 <!-- Team 2 Players -->
                 <tr class="player-row" data-team="2" data-player="1">
-                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; cursor: pointer;"
-                        data-team="${team2Name}" data-match="${matchNumber}" data-position="1"
-                        onclick="editPlayerName(this)">
-                        ${team2Name} Player 1
+                    <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
+                        data-team="${team2Name}" data-match="${matchNumber}" data-position="1">
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team2Name}" 
+                                data-position="1"
+                                onchange="handlePlayerSelection(this)"
+                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                            <option value="">Select Player 1...</option>
+                        </select>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team2Name} Player 1`, 3)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
                 </tr>
                 <tr class="player-row" data-team="2" data-player="2">
-                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; cursor: pointer;"
-                        data-team="${team2Name}" data-match="${matchNumber}" data-position="2"  
-                        onclick="editPlayerName(this)">
-                        ${team2Name} Player 2
+                    <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
+                        data-team="${team2Name}" data-match="${matchNumber}" data-position="2">
+                        <select class="player-dropdown" 
+                                data-week="${weekNumber}" 
+                                data-matchup="${matchupIndex}" 
+                                data-match="${matchNumber}" 
+                                data-team="${team2Name}" 
+                                data-position="2"
+                                onchange="handlePlayerSelection(this)"
+                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                            <option value="">Select Player 2...</option>
+                        </select>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team2Name} Player 2`, 4)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
@@ -1631,10 +1663,146 @@ function generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, playe
 // Load existing weekly scoring data
 async function loadExistingWeeklyScoringData(weekNumber) {
     try {
-        // This will be implemented to load existing lineup and score data
+        // Populate player dropdowns for each team
+        await populateAllPlayerDropdowns();
+        
+        // Load existing lineup and score data
         console.log(`Loading existing data for Week ${weekNumber}`);
     } catch (error) {
         console.error('Error loading existing weekly scoring data:', error);
+    }
+}
+
+// Populate all player dropdowns with team rosters
+async function populateAllPlayerDropdowns() {
+    try {
+        // Get all player dropdowns
+        const dropdowns = document.querySelectorAll('.player-dropdown');
+        
+        // Load team data if not already loaded
+        if (!window.allTeamsData) {
+            await loadPlayersAndTeams();
+        }
+        
+        // Populate each dropdown
+        dropdowns.forEach(dropdown => {
+            const teamName = dropdown.dataset.team;
+            populatePlayerDropdown(dropdown, teamName);
+        });
+        
+        console.log(`✅ Populated ${dropdowns.length} player dropdowns`);
+    } catch (error) {
+        console.error('Error populating player dropdowns:', error);
+    }
+}
+
+// Populate a single player dropdown with team roster
+function populatePlayerDropdown(dropdown, teamName) {
+    try {
+        // Clear existing options except the first placeholder
+        dropdown.innerHTML = '<option value="">Select Player...</option>';
+        
+        // Get team data
+        const teamData = window.allTeamsData ? window.allTeamsData[teamName] : null;
+        
+        if (!teamData || !teamData.players) {
+            console.warn(`No player data found for team: ${teamName}`);
+            return;
+        }
+        
+        // Add player options
+        teamData.players.forEach(player => {
+            const option = document.createElement('option');
+            option.value = player.name;
+            option.textContent = player.name;
+            dropdown.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error(`Error populating dropdown for team ${teamName}:`, error);
+    }
+}
+
+// Handle player selection and update other dropdowns
+window.handlePlayerSelection = function(dropdown) {
+    try {
+        const selectedPlayer = dropdown.value;
+        const weekNumber = dropdown.dataset.week;
+        const matchupIndex = dropdown.dataset.matchup;
+        const matchNumber = dropdown.dataset.match;
+        const teamName = dropdown.dataset.team;
+        const position = dropdown.dataset.position;
+        
+        console.log(`Player selected: ${selectedPlayer} for ${teamName} Match ${matchNumber} Position ${position}`);
+        
+        // Update score cells with selected player name
+        updateScoreCellsPlayerName(dropdown, selectedPlayer);
+        
+        // Refresh all dropdowns to remove/add players based on selections
+        refreshPlayerDropdowns();
+        
+        // Save lineup change to database
+        // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
+        
+    } catch (error) {
+        console.error('Error handling player selection:', error);
+    }
+};
+
+// Update score cell data attributes with selected player name
+function updateScoreCellsPlayerName(dropdown, playerName) {
+    const row = dropdown.closest('tr');
+    const scoreCells = row.querySelectorAll('.score-cell');
+    
+    scoreCells.forEach(cell => {
+        if (playerName) {
+            cell.dataset.player = playerName;
+        } else {
+            // Reset to generic name if no player selected
+            const teamName = dropdown.dataset.team;
+            const position = dropdown.dataset.position;
+            cell.dataset.player = `${teamName} Player ${position}`;
+        }
+    });
+}
+
+// Refresh all player dropdowns to enforce smart selection
+function refreshPlayerDropdowns() {
+    try {
+        // Get all currently selected players
+        const selectedPlayers = new Set();
+        const dropdowns = document.querySelectorAll('.player-dropdown');
+        
+        dropdowns.forEach(dropdown => {
+            if (dropdown.value) {
+                selectedPlayers.add(dropdown.value);
+            }
+        });
+        
+        // Update each dropdown to disable selected players
+        dropdowns.forEach(dropdown => {
+            const currentValue = dropdown.value;
+            const teamName = dropdown.dataset.team;
+            
+            // Repopulate dropdown
+            populatePlayerDropdown(dropdown, teamName);
+            
+            // Restore current selection
+            if (currentValue) {
+                dropdown.value = currentValue;
+            }
+            
+            // Disable options that are selected elsewhere
+            Array.from(dropdown.options).forEach(option => {
+                if (option.value && option.value !== currentValue && selectedPlayers.has(option.value)) {
+                    option.disabled = true;
+                    option.textContent = `${option.value} (Already Selected)`;
+                }
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error refreshing player dropdowns:', error);
     }
 }
 
