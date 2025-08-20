@@ -1944,59 +1944,61 @@ function updateScoreCellsPlayerName(dropdown, playerName) {
     });
 }
 
-// Refresh all player dropdowns to enforce smart selection
+// Refresh all player dropdowns to enforce smart selection (COPIED FROM WORKING MANAGE TEAMS)
 function refreshPlayerDropdowns() {
     try {
-        // Get all currently selected players
-        const selectedPlayers = new Set();
+        // Get all currently selected players (names, not IDs like in Manage Teams)
+        const selectedPlayerNames = [];
         const dropdowns = document.querySelectorAll('.player-dropdown');
         
-        console.log(`🔍 Found ${dropdowns.length} player dropdowns to refresh`);
-        
-        dropdowns.forEach((dropdown, index) => {
+        dropdowns.forEach(dropdown => {
             if (dropdown.value && dropdown.value.trim() !== '') {
-                selectedPlayers.add(dropdown.value);
-                console.log(`   Dropdown ${index}: "${dropdown.value}" (Team: ${dropdown.dataset.team})`);
+                selectedPlayerNames.push(dropdown.value);
             }
         });
         
-        console.log('📋 Currently selected players:', Array.from(selectedPlayers));
+        console.log('📋 Currently selected players:', selectedPlayerNames);
         
-        // Update each dropdown to disable selected players
+        // Update each dropdown by regenerating options (excluding selected players)
         dropdowns.forEach((dropdown, index) => {
-            const currentValue = dropdown.value;
             const teamName = dropdown.dataset.team;
+            const currentValue = dropdown.value;
             
-            // Skip if dropdown doesn't have a team (invalid state)
             if (!teamName) {
-                console.warn(`⚠️ Dropdown ${index} missing team data:`, dropdown);
+                console.warn(`⚠️ Dropdown ${index} missing team data`);
                 return;
             }
             
-            console.log(`🔄 Updating dropdown ${index} for team ${teamName} (current: "${currentValue}")`);
+            // Get team players
+            const teamPlayers = window.teamPlayersMap?.[teamName] || [];
+            if (teamPlayers.length === 0) {
+                console.warn(`No players found for team: ${teamName}`);
+                return;
+            }
             
-            let hiddenCount = 0;
-            let shownCount = 0;
+            // Exclude all selected players except the current selection in this dropdown
+            const excludeNames = selectedPlayerNames.filter(name => name !== currentValue);
             
-            // Don't repopulate - just update the existing options
-            Array.from(dropdown.options).forEach(option => {
-                if (option.value && option.value !== currentValue && selectedPlayers.has(option.value)) {
-                    option.disabled = true;
-                    option.style.display = 'none'; // Hide instead of just disable
-                    hiddenCount++;
-                    console.log(`   ❌ Hiding "${option.value}" (already selected elsewhere)`);
-                } else if (option.value) {
-                    option.disabled = false;
-                    option.style.display = 'block';
-                    shownCount++;
-                    // Restore original text if it was modified
-                    if (option.textContent.includes('(Already Selected)')) {
-                        option.textContent = option.value;
-                    }
+            console.log(`🔄 Updating dropdown ${index} for ${teamName} (current: "${currentValue}", excluding: [${excludeNames.join(', ')}])`);
+            
+            // Regenerate dropdown options (like Manage Teams does)
+            let newHTML = '<option value="">Select Player...</option>';
+            teamPlayers.forEach(player => {
+                const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
+                if (!excludeNames.includes(playerName)) {
+                    newHTML += `<option value="${playerName}">${playerName}</option>`;
                 }
             });
             
-            console.log(`   ✅ Dropdown ${index}: ${shownCount} options shown, ${hiddenCount} options hidden`);
+            // Update dropdown HTML
+            dropdown.innerHTML = newHTML;
+            
+            // Restore current selection if it's still valid
+            if (currentValue && currentValue !== '') {
+                dropdown.value = currentValue;
+            }
+            
+            console.log(`   ✅ Dropdown ${index}: regenerated with ${dropdown.options.length - 1} available players`);
         });
         
         console.log('🎯 Smart selection refresh completed!');
