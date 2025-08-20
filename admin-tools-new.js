@@ -2954,7 +2954,6 @@ function updateTeamScores() {
     try {
         // Find all team score cells that need calculation (Best Ball format)
         const teamScoreCells = document.querySelectorAll('td.team-score-cell:not(.score-cell)');
-        console.log('Team score cells found:', teamScoreCells.length);
         
         teamScoreCells.forEach(cell => {
             const hole = cell.dataset?.hole;
@@ -2968,10 +2967,8 @@ function updateTeamScores() {
                     // Find the team from the row
                     const teamRow = cell.closest('tr');
                     const teamLabel = teamRow.querySelector('.team-score-label');
-                    console.log('Team label found:', teamLabel);
                     if (teamLabel) {
                         const labelText = teamLabel.textContent;
-                        console.log('Team label text:', labelText);
                         
                         // Determine match number from context
                         const scorecard = cell.closest('.admin-scorecard');
@@ -2993,13 +2990,9 @@ function updateTeamScores() {
                             // Determine which team this is based on label text and position
                             if (labelText.includes('Team 1') || labelText.includes('Whack Shack')) {
                                 teamPlayerCells = [playerCells[0], playerCells[1]]; // First 2 players
-                                console.log('Team 1/Whack Shack - using first 2 players');
                             } else if (labelText.includes('Team 2') || labelText.includes('Bump & Run')) {
                                 teamPlayerCells = [playerCells[2], playerCells[3]]; // Last 2 players  
-                                console.log('Team 2/Bump & Run - using last 2 players');
                             }
-                            
-                            console.log('Team player cells:', teamPlayerCells);
                             
                             // Get actual player names and scores
                             let bestNetScore = null;
