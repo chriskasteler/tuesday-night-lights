@@ -3037,9 +3037,6 @@ function updateTeamScores() {
     
         // Update team totals
         updateTeamTotals();
-        
-        // Calculate match status based on team scores
-        calculateMatchStatus();
     } catch (error) {
         console.error('❌ Error updating team scores:', error);
     }
