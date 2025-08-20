@@ -1673,22 +1673,12 @@ function getAdminTeamName(scheduleTeamName) {
 // Get actual player names from lineup data for Enter Scores
 function getAdminPlayerNames(weekNumber, groupIndex, matchNum, matchup) {
     try {
-        console.log('🎯 PLAYER NAMES: Looking for player names:', {
-            weekNumber, 
-            groupIndex, 
-            matchNum, 
-            team1: matchup.team1, 
-            team2: matchup.team2,
-            hasWeekScorecard: !!window.currentWeekScorecard,
-            lineupKey: `matchup${groupIndex}Lineup`
-        });
+
         
         // Check if we have week scorecard data with lineup information
         if (window.currentWeekScorecard && window.currentWeekScorecard[`matchup${groupIndex}Lineup`]) {
             const matchupLineup = window.currentWeekScorecard[`matchup${groupIndex}Lineup`];
-            console.log('🎯 PLAYER NAMES: Found matchup lineup:', matchupLineup);
             const matchData = matchupLineup[`match${matchNum}`];
-            console.log('🎯 PLAYER NAMES: Match data for match', matchNum, ':', matchData);
             
             if (matchData) {
                 return {
@@ -1698,9 +1688,6 @@ function getAdminPlayerNames(weekNumber, groupIndex, matchNum, matchup) {
                     team2Player2: matchData.team2Players && matchData.team2Players[1] ? matchData.team2Players[1].name : null
                 };
             }
-        } else {
-            console.log('🎯 PLAYER NAMES: No lineup data found. Available keys in currentWeekScorecard:', 
-                window.currentWeekScorecard ? Object.keys(window.currentWeekScorecard) : 'No currentWeekScorecard');
         }
         
         // Fallback to generic names if no lineup data available
@@ -5112,8 +5099,7 @@ window.saveMatchupLineup = async function(matchIndex, team1Key, team2Key) {
             return;
         }
         
-        console.log(`🎯 SAVE MATCHUP: Saving matchup ${matchIndex} for week ${selectedWeek}`);
-        console.log(`🎯 SAVE MATCHUP: Teams: ${team1Key} vs ${team2Key}`);
+
         
         // Get the lineup data for this specific matchup
         const matchupData = getMatchupLineupData(matchIndex, team1Key, team2Key);
@@ -5145,7 +5131,7 @@ window.saveMatchupLineup = async function(matchIndex, team1Key, team2Key) {
             button.disabled = false;
         }, 2000);
         
-        console.log(`✅ SAVE MATCHUP: Successfully saved matchup ${matchIndex}`);
+
         
     } catch (error) {
         console.error('❌ SAVE MATCHUP: Error saving matchup:', error);
@@ -5250,10 +5236,10 @@ async function saveMatchupToDatabase(week, matchIndex, matchupData) {
         
         if (existingDoc.exists) {
             await docRef.update(updateData);
-            console.log(`🎯 SAVE MATCHUP: Updated existing week ${week} document`);
+
         } else {
             await docRef.set(updateData);
-            console.log(`🎯 SAVE MATCHUP: Created new week ${week} document`);
+
         }
         
     } catch (error) {
