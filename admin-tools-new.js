@@ -1914,15 +1914,6 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         const position = dropdown.dataset.position;
         
         console.log(`🎯 WEEKLY SCORING: Player selected: "${selectedPlayer}" for ${teamName} Match ${matchNumber} Position ${position}`);
-        console.log(`🎯 WEEKLY SCORING: dropdown.value type: ${typeof selectedPlayer}, length: ${selectedPlayer.length}`);
-        
-        // Log what the dropdown looks like
-        const selectedOption = dropdown.options[dropdown.selectedIndex];
-        console.log(`🎯 WEEKLY SCORING: Selected option text: "${selectedOption.textContent}", value: "${selectedOption.value}"`);
-        
-        // Log all current dropdown values BEFORE refresh
-        console.log(`🎯 WEEKLY SCORING: Current dropdown.value BEFORE operations: "${dropdown.value}"`);
-        console.log(`🎯 WEEKLY SCORING: Current dropdown.selectedIndex BEFORE operations: ${dropdown.selectedIndex}`);
         
         // Update score cells with selected player name
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
@@ -6934,10 +6925,10 @@ async function loadPlayersIntoDropdowns(weekNumber, matchupIndex, matchNumber, t
             }
         });
         
-        // Refresh dropdowns to update the smart selection
-        setTimeout(() => {
-            refreshWeeklyScoringPlayerDropdowns();
-        }, 100);
+        // Refresh dropdowns to update the smart selection (commented out to prevent loop)
+        // setTimeout(() => {
+        //     refreshWeeklyScoringPlayerDropdowns();
+        // }, 100);
         
     } catch (error) {
         console.error('❌ Error loading players into dropdowns:', error);
