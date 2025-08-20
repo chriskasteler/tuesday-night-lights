@@ -1241,6 +1241,19 @@ async function calculateMatchupPoints(weekNumber, matchupIndex, team1Name, team2
         
         console.log(`🏆 STANDINGS: Week ${weekNumber}, Matchup ${matchupIndex}: ${team1Name} ${team1Points} - ${team2Points} ${team2Name}`);
         
+        // Debug: Check what data we're actually finding
+        if (team1Points === 0 && team2Points === 0) {
+            console.log(`🏆 DEBUG: No points found - checking data:`, {
+                weekNumber,
+                matchupIndex,
+                hasScoresData: !!scoresData,
+                hasWeekScorecardsData: !!weekScorecardsData,
+                hasMatchupLineup: !!matchupLineup,
+                playerScoresKeys: Object.keys(playerScores),
+                playerStrokesKeys: Object.keys(playerStrokes)
+            });
+        }
+        
         return {
             team1Points,
             team2Points
