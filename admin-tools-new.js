@@ -1950,10 +1950,12 @@ function refreshPlayerDropdowns() {
         const dropdowns = document.querySelectorAll('.player-dropdown');
         
         dropdowns.forEach(dropdown => {
-            if (dropdown.value) {
+            if (dropdown.value && dropdown.value.trim() !== '') {
                 selectedPlayers.add(dropdown.value);
             }
         });
+        
+        console.log('Currently selected players:', Array.from(selectedPlayers));
         
         // Update each dropdown to disable selected players
         dropdowns.forEach(dropdown => {
@@ -1966,19 +1968,18 @@ function refreshPlayerDropdowns() {
                 return;
             }
             
-            // Repopulate dropdown
-            populatePlayerDropdown(dropdown, teamName);
-            
-            // Restore current selection
-            if (currentValue) {
-                dropdown.value = currentValue;
-            }
-            
-            // Disable options that are selected elsewhere
+            // Don't repopulate - just update the existing options
             Array.from(dropdown.options).forEach(option => {
                 if (option.value && option.value !== currentValue && selectedPlayers.has(option.value)) {
                     option.disabled = true;
-                    option.textContent = `${option.value} (Already Selected)`;
+                    option.style.display = 'none'; // Hide instead of just disable
+                } else if (option.value) {
+                    option.disabled = false;
+                    option.style.display = 'block';
+                    // Restore original text if it was modified
+                    if (option.textContent.includes('(Already Selected)')) {
+                        option.textContent = option.value;
+                    }
                 }
             });
         });
