@@ -6899,9 +6899,7 @@ async function loadPlayersIntoDropdowns(weekNumber, matchupIndex, matchNumber, t
         console.log(`🎯 LOADING PLAYERS: Week ${weekNumber}, Matchup ${matchupIndex}, Match ${matchNumber}, Team ${teamSide}, Players:`, playersArray);
         
         // Find the dropdowns for this specific match and team
-        const dropdowns = document.querySelectorAll(`
-            .player-dropdown[data-week="${weekNumber}"][data-matchup="${matchupIndex}"][data-match="${matchNumber}"]
-        `);
+        const dropdowns = document.querySelectorAll(`.player-dropdown[data-week="${weekNumber}"][data-matchup="${matchupIndex}"][data-match="${matchNumber}"]`);
         
         // Filter dropdowns by team (team1 or team2)
         const teamDropdowns = Array.from(dropdowns).filter(dropdown => {
