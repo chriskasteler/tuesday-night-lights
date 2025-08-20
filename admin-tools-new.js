@@ -3669,6 +3669,7 @@ function selectScore(score) {
 
 // Open stroke selector for a player on a specific hole
 window.openStrokeSelector = function openStrokeSelector(player, hole) {
+    console.log(`🏌️ openStrokeSelector called with player: "${player}", hole: ${hole}`);
     // Create stroke selector modal
     const modal = document.createElement('div');
     modal.id = 'stroke-selector-modal';
