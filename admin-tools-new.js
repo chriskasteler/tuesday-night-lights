@@ -2023,10 +2023,8 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         // Show/hide remove button based on selection
         toggleRemoveButton(dropdown);
         
-        // Refresh all dropdowns to enforce smart selection (reduced console spam)
-        setTimeout(() => {
-            refreshWeeklyScoringPlayerDropdowns();
-        }, 100);
+        // Refresh all dropdowns to enforce smart selection
+        refreshWeeklyScoringPlayerDropdowns();
         
         // Save lineup change to database
         await saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
@@ -2119,23 +2117,21 @@ function getPlayerNameById(playerId) {
     return player ? player.name : null;
 }
 
-// Get all currently selected player IDs for Weekly Scoring dropdowns (EXACT same logic as Manage Teams)
+// Get all currently selected player IDs for Weekly Scoring dropdowns
 function getSelectedPlayerIdsForWeeklyScoring() {
     const selectedIds = [];
-    // Look for Weekly Scoring dropdowns specifically - they have class="player-dropdown" and data-position attribute
     const dropdowns = document.querySelectorAll('#weekly-scoring-content select.player-dropdown[data-position]');
     
-    console.log(`🔍 Found ${dropdowns.length} player dropdowns in Weekly Scoring`);
-    
-    dropdowns.forEach((dropdown, index) => {
-        console.log(`   Dropdown ${index}: value="${dropdown.value}", data-position="${dropdown.getAttribute('data-position')}"`);
+    dropdowns.forEach((dropdown) => {
         if (dropdown.value && dropdown.value !== "" && dropdown.value.trim() !== '') {
-            selectedIds.push(dropdown.value);  // Now collecting player IDs, not names
-            console.log(`   ✅ Added player ID "${dropdown.value}" to selected list`);
+            selectedIds.push(dropdown.value);  // Collect player IDs
         }
     });
     
-    console.log(`📋 Final selected player IDs: [${selectedIds.map(id => `"${id}"`).join(', ')}]`);
+    // Temporary debug to see what's happening
+    if (selectedIds.length > 0) {
+        console.log(`🔍 Selected player IDs: ${selectedIds.join(', ')}`);
+    }
     
     return selectedIds;
 }
