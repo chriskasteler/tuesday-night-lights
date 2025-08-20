@@ -2226,6 +2226,29 @@ window.editScoreCell = function(cell) {
     input.min = '1';
     input.max = '12';
     
+    // Hide number input arrows/spinners
+    input.style.cssText += `
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+    `;
+    
+    // Add styles to hide spinners for all browsers
+    const style = document.createElement('style');
+    style.textContent = `
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    `;
+    if (!document.head.querySelector('style[data-hide-spinners]')) {
+        style.setAttribute('data-hide-spinners', 'true');
+        document.head.appendChild(style);
+    }
+    
     // Replace cell content with input
     cell.innerHTML = '';
     cell.appendChild(input);
