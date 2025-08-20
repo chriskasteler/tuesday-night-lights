@@ -695,8 +695,7 @@
                     <button class="admin-sub-btn" onclick="showAdminSubSection('manage-requests')" data-section="manage-requests">Manage Requests</button>
                     <button class="admin-sub-btn" onclick="showAdminSubSection('signup-control')" data-section="signup-control">Signup Control</button>
                     <button class="admin-sub-btn" onclick="showAdminSubSection('scorecard-setup')" data-section="scorecard-setup">Scorecard Setup</button>
-                    <button class="admin-sub-btn" onclick="showAdminSubSection('set-lineups')" data-section="set-lineups">Set Lineups</button>
-                    <button class="admin-sub-btn" onclick="showAdminSubSection('enter-scores')" data-section="enter-scores">Enter Scores</button>
+                    <button class="admin-sub-btn" onclick="showAdminSubSection('weekly-scoring')" data-section="weekly-scoring">Weekly Scoring</button>
                     <button class="admin-sub-btn" onclick="showAdminSubSection('league-setup')" data-section="league-setup">League Setup</button>
                 </div>
                     
@@ -820,17 +819,18 @@
                     </div>
                     
                     <!-- Set Lineups Sub-Section -->
-                    <div id="admin-set-lineups" class="admin-sub-section" style="display: none;">
-                        <h3>Set Lineups</h3>
+                    <!-- Weekly Scoring Sub-Section -->
+                    <div id="admin-weekly-scoring" class="admin-sub-section" style="display: none;">
+                        <h3>Weekly Scoring</h3>
                         <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 0.9rem;">
-                            Manage team lineups for each week
+                            Set lineups and enter scores for each week in one unified interface
                         </p>
                         
-                        <div class="set-lineups-section">
+                        <div class="weekly-scoring-section">
                             <!-- Week Selector -->
                             <div class="week-selector-container" style="margin-bottom: 30px; text-align: center;">
-                                <label for="lineup-week-select" style="font-weight: 600; margin-right: 15px; color: #2d4a2d;">Select Week:</label>
-                                <select id="lineup-week-select" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; background: white;">
+                                <label for="weekly-scoring-week-select" style="font-weight: 600; margin-right: 15px; color: #2d4a2d;">Select Week:</label>
+                                <select id="weekly-scoring-week-select" onchange="loadWeeklyScoring()" style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; background: white;">
                                     <option value="">Choose a week...</option>
                                     <option value="1">Week 1 - August 19 • Four-Ball (Best Ball)</option>
                                     <option value="2">Week 2 - August 26 • Alternate Shot</option>
@@ -840,39 +840,21 @@
                                 </select>
                             </div>
                             
-                            <!-- Lineups Content -->
-                            <div id="lineups-content">
-                                <p style="text-align: center; color: #999; padding: 40px; font-style: italic;">
-                                    Select a week above to view and manage lineups
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Enter Scores Sub-Section -->
-                    <div id="admin-enter-scores" class="admin-sub-section" style="display: none;">
-                        <h3>Enter Scores</h3>
-                        <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 0.9rem;">
-                            Enter match results and update team standings
-                        </p>
-                        
-                        <div class="admin-scoring-section">
-                            <div class="scoring-controls">
-                                <div class="week-selector">
-                                    <label for="admin-week-select">Select Week:</label>
-                                    <select id="admin-week-select" onchange="loadAdminWeekScores()">
-                                        <option value="">Choose a week...</option>
-                                        <option value="1">Week 1</option>
-                                        <option value="2">Week 2</option>
-                                        <option value="3">Week 3</option>
-                                        <option value="4">Week 4</option>
-                                        <option value="5">Week 5</option>
-                                    </select>
-                                </div>
+                            <!-- Instructions -->
+                            <div id="weekly-scoring-instructions" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none;">
+                                <h4 style="margin: 0 0 10px 0; color: #2d4a2d;">How to Use Weekly Scoring:</h4>
+                                <ol style="margin: 0; color: #666;">
+                                    <li><strong>Set Lineups:</strong> Click on player names to edit and set the lineup for each match</li>
+                                    <li><strong>Enter Scores:</strong> Click on score cells to enter scores and strokes for each player</li>
+                                    <li><strong>Automatic Calculation:</strong> Points earned and team standings update automatically</li>
+                                </ol>
                             </div>
                             
-                            <div id="admin-scorecards-container" style="margin-top: 20px;">
-                                <p style="color: #666; text-align: center; padding: 20px;">Select a week to view and enter match scores</p>
+                            <!-- Weekly Scoring Content -->
+                            <div id="weekly-scoring-content">
+                                <p style="text-align: center; color: #999; padding: 40px; font-style: italic;">
+                                    Select a week above to manage lineups and enter scores
+                                </p>
                             </div>
                         </div>
                     </div>

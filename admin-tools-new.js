@@ -1384,6 +1384,345 @@ function updateStandingsTable(teamStats) {
     console.log('🏆 STANDINGS: Updated standings table with calculated results');
 }
 
+// ===== WEEKLY SCORING SYSTEM =====
+
+// Load weekly scoring interface for selected week
+window.loadWeeklyScoring = async function() {
+    const weekSelect = document.getElementById('weekly-scoring-week-select');
+    const contentDiv = document.getElementById('weekly-scoring-content');
+    const instructionsDiv = document.getElementById('weekly-scoring-instructions');
+    
+    const selectedWeek = weekSelect.value;
+    
+    if (!selectedWeek) {
+        contentDiv.innerHTML = `
+            <p style="text-align: center; color: #999; padding: 40px; font-style: italic;">
+                Select a week above to manage lineups and enter scores
+            </p>
+        `;
+        instructionsDiv.style.display = 'none';
+        return;
+    }
+    
+    try {
+        // Show loading
+        contentDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div class="loading-spinner" style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #2d4a2d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <p style="margin-top: 15px; color: #666;">Loading Week ${selectedWeek} scoring interface...</p>
+            </div>
+        `;
+        
+        // Show instructions
+        instructionsDiv.style.display = 'block';
+        
+        // Load schedule data for this week
+        const scheduleData = await getWeekScheduleData(selectedWeek);
+        
+        if (!scheduleData || scheduleData.length === 0) {
+            contentDiv.innerHTML = `
+                <div style="text-align: center; padding: 40px; background: #fff3cd; border-radius: 8px;">
+                    <h4 style="color: #856404; margin-bottom: 10px;">No Schedule Found</h4>
+                    <p style="color: #856404; margin: 0;">No matchups found for Week ${selectedWeek}. Please check the schedule configuration.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Generate unified scoring interface
+        const scoringHTML = await generateWeeklyScoringInterface(selectedWeek, scheduleData);
+        contentDiv.innerHTML = scoringHTML;
+        
+        // Load existing data
+        await loadExistingWeeklyScoringData(selectedWeek);
+        
+        console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
+        
+    } catch (error) {
+        console.error('Error loading weekly scoring:', error);
+        contentDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px; background: #f8d7da; border-radius: 8px;">
+                <h4 style="color: #721c24; margin-bottom: 10px;">Error Loading Week</h4>
+                <p style="color: #721c24; margin: 0;">Failed to load Week ${selectedWeek} data. Please try again.</p>
+            </div>
+        `;
+    }
+};
+
+// Generate the unified scoring interface for a week
+async function generateWeeklyScoringInterface(weekNumber, scheduleData) {
+    let html = `
+        <div class="weekly-scoring-container">
+            <div class="week-header" style="text-align: center; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h3 style="margin: 0; color: #2d4a2d;">Week ${weekNumber} Scoring</h3>
+                <p style="margin: 5px 0 0 0; color: #666;">Click player names to set lineups • Click score cells to enter scores</p>
+            </div>
+    `;
+    
+    // Generate unified scorecards for each matchup
+    for (let matchupIndex = 0; matchupIndex < scheduleData.length; matchupIndex++) {
+        const matchup = scheduleData[matchupIndex];
+        const scorecardHTML = await generateUnifiedScorecard(weekNumber, matchupIndex, matchup);
+        html += scorecardHTML;
+    }
+    
+    html += `</div>`;
+    return html;
+}
+
+// Generate a unified scorecard that combines lineup setting and score entry
+async function generateUnifiedScorecard(weekNumber, matchupIndex, matchup) {
+    const team1Name = getAdminTeamName(matchup.team1);
+    const team2Name = getAdminTeamName(matchup.team2);
+    
+    return `
+        <div class="unified-scorecard" data-week="${weekNumber}" data-matchup="${matchupIndex}" style="margin-bottom: 40px; border: 2px solid #2d4a2d; border-radius: 8px; overflow: hidden; background: white;">
+            <!-- Matchup Header -->
+            <div class="matchup-header" style="background: #2d4a2d; color: white; padding: 15px; text-align: center;">
+                <h3 style="margin: 0; font-size: 1.2rem;">${team1Name} vs ${team2Name}</h3>
+                <p style="margin: 5px 0 0 0; opacity: 0.9;">Best Ball Format</p>
+            </div>
+            
+            <!-- Match 1 -->
+            <div class="match-section" data-match="1">
+                <div class="match-header" style="background: #4a5d4a; color: white; padding: 10px 15px;">
+                    <h4 style="margin: 0;">Match 1</h4>
+                </div>
+                ${await generateUnifiedMatchTable(weekNumber, matchupIndex, 1, team1Name, team2Name)}
+            </div>
+            
+            <!-- Match 2 -->
+            <div class="match-section" data-match="2">
+                <div class="match-header" style="background: #4a5d4a; color: white; padding: 10px 15px;">
+                    <h4 style="margin: 0;">Match 2</h4>
+                </div>
+                ${await generateUnifiedMatchTable(weekNumber, matchupIndex, 2, team1Name, team2Name)}
+            </div>
+        </div>
+    `;
+}
+
+// Generate unified match table with editable player names and score cells
+async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, team1Name, team2Name) {
+    return `
+        <table class="unified-match-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f9fa;">
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Player</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">1</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">2</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">3</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">4</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">5</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">6</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">7</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">8</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">9</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Total</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Points Earned</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Team 1 Players -->
+                <tr class="player-row" data-team="1" data-player="1">
+                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; cursor: pointer;" 
+                        data-team="${team1Name}" data-match="${matchNumber}" data-position="1"
+                        onclick="editPlayerName(this)">
+                        ${team1Name} Player 1
+                    </td>
+                    ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team1Name} Player 1`, 1)}
+                    <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
+                </tr>
+                <tr class="player-row" data-team="1" data-player="2">
+                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; cursor: pointer;"
+                        data-team="${team1Name}" data-match="${matchNumber}" data-position="2"
+                        onclick="editPlayerName(this)">
+                        ${team1Name} Player 2
+                    </td>
+                    ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team1Name} Player 2`, 2)}
+                    <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
+                </tr>
+                
+                <!-- Team 1 Score Row -->
+                <tr class="team-score-row" data-team="1">
+                    <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; font-weight: 600;">${team1Name} Team Score</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                    <td class="team-points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                </tr>
+                
+                <!-- Spacer Row -->
+                <tr style="height: 10px;"><td colspan="12" style="border: none; background: #f8f9fa;"></td></tr>
+                
+                <!-- Team 2 Players -->
+                <tr class="player-row" data-team="2" data-player="1">
+                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; cursor: pointer;"
+                        data-team="${team2Name}" data-match="${matchNumber}" data-position="1"
+                        onclick="editPlayerName(this)">
+                        ${team2Name} Player 1
+                    </td>
+                    ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team2Name} Player 1`, 3)}
+                    <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
+                </tr>
+                <tr class="player-row" data-team="2" data-player="2">
+                    <td class="player-name-cell editable" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; cursor: pointer;"
+                        data-team="${team2Name}" data-match="${matchNumber}" data-position="2"  
+                        onclick="editPlayerName(this)">
+                        ${team2Name} Player 2
+                    </td>
+                    ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team2Name} Player 2`, 4)}
+                    <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
+                </tr>
+                
+                <!-- Team 2 Score Row -->
+                <tr class="team-score-row" data-team="2">
+                    <td style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; font-weight: 600;">${team2Name} Team Score</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                    <td class="team-points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
+
+// Generate editable score cells for a player
+function generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, playerName, playerIndex) {
+    let cells = '';
+    for (let hole = 1; hole <= 9; hole++) {
+        cells += `
+            <td class="score-cell editable" 
+                data-week="${weekNumber}"
+                data-matchup="${matchupIndex}"
+                data-match="${matchNumber}"
+                data-player="${playerName}"
+                data-hole="${hole}"
+                data-player-index="${playerIndex}"
+                style="padding: 10px; border: 1px solid #ddd; text-align: center; cursor: pointer; min-width: 40px;"
+                onclick="editScoreCell(this)">
+                -
+            </td>
+        `;
+    }
+    return cells;
+}
+
+// Load existing weekly scoring data
+async function loadExistingWeeklyScoringData(weekNumber) {
+    try {
+        // This will be implemented to load existing lineup and score data
+        console.log(`Loading existing data for Week ${weekNumber}`);
+    } catch (error) {
+        console.error('Error loading existing weekly scoring data:', error);
+    }
+}
+
+// Edit player name functionality
+window.editPlayerName = function(cell) {
+    const currentName = cell.textContent.trim();
+    const team = cell.dataset.team;
+    const match = cell.dataset.match;
+    const position = cell.dataset.position;
+    
+    // Create input field
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentName;
+    input.style.width = '100%';
+    input.style.border = 'none';
+    input.style.background = 'transparent';
+    input.style.outline = 'none';
+    input.style.padding = '5px';
+    
+    // Replace cell content with input
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus();
+    input.select();
+    
+    // Save on blur or enter
+    const savePlayerName = () => {
+        const newName = input.value.trim();
+        if (newName && newName !== currentName) {
+            cell.textContent = newName;
+            // TODO: Save to database
+            console.log(`Player name updated: ${currentName} → ${newName}`);
+        } else {
+            cell.textContent = currentName;
+        }
+    };
+    
+    input.addEventListener('blur', savePlayerName);
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            input.blur();
+        }
+    });
+};
+
+// Edit score cell functionality  
+window.editScoreCell = function(cell) {
+    const currentScore = cell.textContent.trim();
+    
+    // Create input field
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.value = currentScore === '-' ? '' : currentScore;
+    input.style.width = '100%';
+    input.style.border = 'none';
+    input.style.background = 'transparent';
+    input.style.outline = 'none';
+    input.style.padding = '5px';
+    input.style.textAlign = 'center';
+    input.min = '1';
+    input.max = '12';
+    
+    // Replace cell content with input
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus();
+    input.select();
+    
+    // Save on blur or enter
+    const saveScore = () => {
+        const newScore = input.value.trim();
+        if (newScore && newScore !== currentScore) {
+            cell.textContent = newScore;
+            // TODO: Save to database and trigger calculations
+            console.log(`Score updated: ${cell.dataset.player} hole ${cell.dataset.hole}: ${newScore}`);
+        } else {
+            cell.textContent = currentScore;
+        }
+    };
+    
+    input.addEventListener('blur', saveScore);
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            input.blur();
+        }
+    });
+};
+
 // Show status message
 function showStatusMessage(message, type = 'success') {
     const statusElement = document.getElementById('manage-status-message');
