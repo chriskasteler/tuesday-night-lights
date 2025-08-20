@@ -7473,14 +7473,14 @@ function updateBestBallScores() {
             let hasAnyScore = false;
             
             teamPlayerRows.forEach(row => {
-                // Get the player name from the dropdown
-                const dropdown = row.querySelector('.player-dropdown');
-                if (!dropdown || !dropdown.value) {
-                    console.log(`No dropdown or value for team ${team} hole ${hole}`);
+                // Get the generic player name from the score cells (this is what's used to store scores)
+                const scoreCell = row.querySelector('.score-cell');
+                if (!scoreCell) {
+                    console.log(`No score cell found for team ${team} hole ${hole}`);
                     return;
                 }
                 
-                const playerName = dropdown.value;
+                const playerName = scoreCell.dataset.player;  // Generic name like "Whack Shack Player 1"
                 console.log(`Checking player: ${playerName} for team ${team} hole ${hole}`);
                 
                 // Get gross score for this player and hole
