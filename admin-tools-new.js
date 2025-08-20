@@ -1958,7 +1958,7 @@ function getPlayerNameById(playerId) {
 function getSelectedPlayerIdsForWeeklyScoring() {
     const selectedIds = [];
     // Look for Weekly Scoring dropdowns specifically - they have class="player-dropdown" and data-position attribute
-    const dropdowns = document.querySelectorAll('#weekly-scoring-section select.player-dropdown[data-position]');
+    const dropdowns = document.querySelectorAll('#weekly-scoring-content select.player-dropdown[data-position]');
     
     console.log(`🔍 Found ${dropdowns.length} player dropdowns in Weekly Scoring`);
     
@@ -2027,7 +2027,7 @@ function getPlayerOptionsForTeamName(teamName, excludePlayerIds = []) {
 function refreshWeeklyScoringPlayerDropdowns() {
     console.log('🚀 STARTING refreshWeeklyScoringPlayerDropdowns...');
     const selectedPlayerIds = getSelectedPlayerIdsForWeeklyScoring();  // Use IDs like Manage Teams!
-    const allSelects = document.querySelectorAll('#weekly-scoring-section .player-dropdown');
+    const allSelects = document.querySelectorAll('#weekly-scoring-content .player-dropdown');
     
     console.log('📋 Selected player IDs:', selectedPlayerIds);
     console.log('📋 Found dropdowns:', allSelects.length);
