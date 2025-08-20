@@ -2258,6 +2258,18 @@ window.editScoreCell = function(cell) {
         }
     };
     
+    // Auto-advance on number input
+    input.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value && value.length >= 1 && !isNaN(value)) {
+            // Small delay to allow the user to see the number they typed
+            setTimeout(async () => {
+                await saveScore();
+                moveToNextScoreCell(cell);
+            }, 100);
+        }
+    });
+    
     input.addEventListener('blur', saveScore);
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -2265,6 +2277,57 @@ window.editScoreCell = function(cell) {
         }
     });
 };
+
+// Move to the next score cell for quick data entry
+function moveToNextScoreCell(currentCell) {
+    try {
+        const currentPlayer = currentCell.dataset.player;
+        const currentHole = parseInt(currentCell.dataset.hole);
+        const currentWeek = currentCell.dataset.week;
+        const currentMatchup = currentCell.dataset.matchup;
+        const currentMatch = currentCell.dataset.match;
+        
+        // Try to find the next hole for the same player first
+        if (currentHole < 9) {
+            const nextHole = currentHole + 1;
+            const nextCell = document.querySelector(
+                `td.score-cell[data-player="${currentPlayer}"][data-hole="${nextHole}"][data-week="${currentWeek}"][data-matchup="${currentMatchup}"][data-match="${currentMatch}"]`
+            );
+            
+            if (nextCell) {
+                nextCell.click();
+                return;
+            }
+        }
+        
+        // If we're at hole 9, try to find the first hole of the next player in the same match
+        const allCellsInMatch = document.querySelectorAll(
+            `td.score-cell[data-week="${currentWeek}"][data-matchup="${currentMatchup}"][data-match="${currentMatch}"]`
+        );
+        
+        let foundCurrent = false;
+        let nextPlayerFirstHole = null;
+        
+        for (let cell of allCellsInMatch) {
+            if (cell === currentCell) {
+                foundCurrent = true;
+                continue;
+            }
+            
+            if (foundCurrent && cell.dataset.hole === "1") {
+                nextPlayerFirstHole = cell;
+                break;
+            }
+        }
+        
+        if (nextPlayerFirstHole) {
+            nextPlayerFirstHole.click();
+        }
+        
+    } catch (error) {
+        console.error('Error moving to next score cell:', error);
+    }
+}
 
 // Show status message
 function showStatusMessage(message, type = 'success') {
