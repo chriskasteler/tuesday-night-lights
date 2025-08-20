@@ -1680,15 +1680,14 @@ async function populateAllPlayerDropdowns() {
         const dropdowns = document.querySelectorAll('.player-dropdown');
         
         // Load team data if not already loaded
-        if (!window.allTeamsData && !window.adminAllTeamsData) {
+        if (!window.currentTeams || !window.allPlayers) {
             console.log('Loading team and player data...');
             await loadPlayersAndTeams();
         }
         
-        // Also ensure we have admin team mapping
-        if (!window.adminAllTeamsData && typeof loadTeamsData === 'function') {
-            console.log('Loading admin team data...');
-            await loadTeamsData();
+        // Build team-to-players mapping if not already done
+        if (!window.teamPlayersMap) {
+            buildTeamPlayersMap();
         }
         
         // Populate each dropdown
@@ -1703,56 +1702,66 @@ async function populateAllPlayerDropdowns() {
     }
 }
 
+// Build a mapping of team names to their players
+function buildTeamPlayersMap() {
+    try {
+        window.teamPlayersMap = {};
+        
+        // Check if we have the data loaded
+        if (!window.currentTeams || !window.allPlayers) {
+            console.warn('Cannot build team players map - missing currentTeams or allPlayers');
+            return;
+        }
+        
+        // For each team, find its players
+        window.currentTeams.forEach(team => {
+            const teamName = team.teamName;
+            const teamPlayers = window.allPlayers.filter(player => 
+                player.teamId === team.teamId || player.teamId === team.id
+            );
+            
+            window.teamPlayersMap[teamName] = teamPlayers;
+            console.log(`✅ Mapped ${teamPlayers.length} players to team: ${teamName}`);
+        });
+        
+        console.log('Team players map built:', Object.keys(window.teamPlayersMap));
+    } catch (error) {
+        console.error('Error building team players map:', error);
+    }
+}
+
 // Populate a single player dropdown with team roster
 function populatePlayerDropdown(dropdown, teamName) {
     try {
         // Clear existing options except the first placeholder
         dropdown.innerHTML = '<option value="">Select Player...</option>';
         
-        // Get team data - check both window.allTeamsData and window.adminAllTeamsData
-        let teamData = null;
+        // Get team players from our mapping
+        const teamPlayers = window.teamPlayersMap ? window.teamPlayersMap[teamName] : null;
         
-        // First try window.allTeamsData (from loadPlayersAndTeams)
-        if (window.allTeamsData && window.allTeamsData[teamName]) {
-            teamData = window.allTeamsData[teamName];
-        }
-        // Then try window.adminAllTeamsData  
-        else if (window.adminAllTeamsData) {
-            // adminAllTeamsData might use different keys, check all teams
-            for (const [key, data] of Object.entries(window.adminAllTeamsData)) {
-                if (key === teamName || (data && data.name === teamName)) {
-                    teamData = data;
-                    break;
-                }
-            }
-        }
-        
-        if (!teamData) {
+        if (!teamPlayers) {
             console.warn(`No player data found for team: ${teamName}`);
-            console.log('Available teams in allTeamsData:', window.allTeamsData ? Object.keys(window.allTeamsData) : 'not loaded');
-            console.log('Available teams in adminAllTeamsData:', window.adminAllTeamsData ? Object.keys(window.adminAllTeamsData) : 'not loaded');
+            console.log('Available teams in teamPlayersMap:', window.teamPlayersMap ? Object.keys(window.teamPlayersMap) : 'not built');
+            console.log('Available teams in currentTeams:', window.currentTeams ? window.currentTeams.map(t => t.teamName) : 'not loaded');
             return;
         }
         
-        // Get players array - could be teamData.players or teamData.participants
-        const players = teamData.players || teamData.participants || [];
-        
-        if (players.length === 0) {
+        if (teamPlayers.length === 0) {
             console.warn(`No players found for team: ${teamName}`);
             return;
         }
         
         // Add player options
-        players.forEach(player => {
+        teamPlayers.forEach(player => {
             const option = document.createElement('option');
-            // Handle different player data structures
-            const playerName = player.name || player.firstName + ' ' + player.lastName || player;
+            // Use the player's name property
+            const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
             option.value = playerName;
             option.textContent = playerName;
             dropdown.appendChild(option);
         });
         
-        console.log(`✅ Populated dropdown for ${teamName} with ${players.length} players`);
+        console.log(`✅ Populated dropdown for ${teamName} with ${teamPlayers.length} players`);
         
     } catch (error) {
         console.error(`Error populating dropdown for team ${teamName}:`, error);
