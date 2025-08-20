@@ -1917,7 +1917,7 @@ window.handlePlayerSelection = function(dropdown) {
         
         // Refresh all dropdowns to enforce smart selection (remove selected players from other dropdowns)
         console.log('🔄 Triggering smart selection refresh...');
-        refreshPlayerDropdowns();
+        refreshAllPlayerDropdowns();
         
         // Save lineup change to database
         // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
@@ -1944,68 +1944,64 @@ function updateScoreCellsPlayerName(dropdown, playerName) {
     });
 }
 
-// Refresh all player dropdowns to enforce smart selection (COPIED FROM WORKING MANAGE TEAMS)
-function refreshPlayerDropdowns() {
-    try {
-        // Get all currently selected players (names, not IDs like in Manage Teams)
-        const selectedPlayerNames = [];
-        const dropdowns = document.querySelectorAll('.player-dropdown');
+// Get all currently selected player names for Weekly Scoring dropdowns
+function getSelectedPlayerNames() {
+    const selectedNames = [];
+    const dropdowns = document.querySelectorAll('.player-dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        if (dropdown.value && dropdown.value.trim() !== '') {
+            selectedNames.push(dropdown.value);
+        }
+    });
+    
+    return selectedNames;
+}
+
+// Generate player options for a team (excluding selected players) - for Weekly Scoring
+function getPlayerOptionsForTeamName(teamName, excludeNames = []) {
+    let options = '<option value="">Select Player...</option>';
+    
+    const teamPlayers = window.teamPlayersMap?.[teamName] || [];
+    
+    teamPlayers.forEach(player => {
+        const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
+        if (playerName && !excludeNames.includes(playerName)) {
+            options += `<option value="${playerName}">${playerName}</option>`;
+        }
+    });
+    
+    return options;
+}
+
+// EXACT COPY of working refreshAllPlayerDropdowns but for Weekly Scoring
+function refreshAllPlayerDropdowns() {
+    const selectedPlayerNames = getSelectedPlayerNames();
+    const allSelects = document.querySelectorAll('.player-dropdown');
+    
+    console.log('📋 Selected players:', selectedPlayerNames);
+    
+    allSelects.forEach(select => {
+        const teamName = select.dataset.team;
+        const currentValue = select.value;
         
-        dropdowns.forEach(dropdown => {
-            if (dropdown.value && dropdown.value.trim() !== '') {
-                selectedPlayerNames.push(dropdown.value);
-            }
-        });
-        
-        console.log('📋 Currently selected players:', selectedPlayerNames);
-        
-        // Update each dropdown by regenerating options (excluding selected players)
-        dropdowns.forEach((dropdown, index) => {
-            const teamName = dropdown.dataset.team;
-            const currentValue = dropdown.value;
-            
-            if (!teamName) {
-                console.warn(`⚠️ Dropdown ${index} missing team data`);
-                return;
-            }
-            
-            // Get team players
-            const teamPlayers = window.teamPlayersMap?.[teamName] || [];
-            if (teamPlayers.length === 0) {
-                console.warn(`No players found for team: ${teamName}`);
-                return;
-            }
-            
+        if (teamName) {
             // Exclude all selected players except the current selection in this dropdown
             const excludeNames = selectedPlayerNames.filter(name => name !== currentValue);
             
-            console.log(`🔄 Updating dropdown ${index} for ${teamName} (current: "${currentValue}", excluding: [${excludeNames.join(', ')}])`);
+            console.log(`🔄 Refreshing dropdown for ${teamName} (current: "${currentValue}")`);
             
-            // Regenerate dropdown options (like Manage Teams does)
-            let newHTML = '<option value="">Select Player...</option>';
-            teamPlayers.forEach(player => {
-                const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
-                if (!excludeNames.includes(playerName)) {
-                    newHTML += `<option value="${playerName}">${playerName}</option>`;
-                }
-            });
+            // Update the dropdown options
+            select.innerHTML = getPlayerOptionsForTeamName(teamName, excludeNames);
             
-            // Update dropdown HTML
-            dropdown.innerHTML = newHTML;
-            
-            // Restore current selection if it's still valid
+            // Restore the current selection (if it's still valid)
             if (currentValue && currentValue !== '') {
-                dropdown.value = currentValue;
+                select.value = currentValue;
             }
             
-            console.log(`   ✅ Dropdown ${index}: regenerated with ${dropdown.options.length - 1} available players`);
-        });
-        
-        console.log('🎯 Smart selection refresh completed!');
-        
-    } catch (error) {
-        console.error('❌ Error refreshing player dropdowns:', error);
-    }
+            console.log(`   ✅ ${teamName}: ${select.options.length - 1} available players`);
+        }
+    });
 }
 
 // Edit player name functionality
