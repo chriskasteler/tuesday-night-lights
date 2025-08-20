@@ -2299,6 +2299,35 @@ window.editScoreCell = function(cell) {
             input.blur();
         }
     });
+    
+    // Handle delete/backspace to clear scores
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            // If input is empty or about to be empty, clear the score
+            if (input.value === '' || input.value.length === 1) {
+                setTimeout(async () => {
+                    cell.textContent = '-';
+                    
+                    // Remove from memory
+                    const player = cell.dataset.player;
+                    const hole = cell.dataset.hole;
+                    const week = cell.dataset.week;
+                    
+                    if (currentPlayerScores[player] && currentPlayerScores[player][hole]) {
+                        delete currentPlayerScores[player][hole];
+                    }
+                    
+                    // Save to database
+                    await saveScoresToDatabase(week);
+                    
+                    console.log(`Score cleared: ${player} hole ${hole}`);
+                    
+                    // Move focus back to the cell for continued editing
+                    cell.click();
+                }, 50);
+            }
+        }
+    });
 };
 
 // Move to the next score cell for quick data entry
