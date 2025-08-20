@@ -7466,15 +7466,23 @@ function updateBestBallScores() {
             teamPlayerRows.forEach(row => {
                 // Get the player name from the dropdown
                 const dropdown = row.querySelector('.player-dropdown');
-                if (!dropdown || !dropdown.value) return;
+                if (!dropdown || !dropdown.value) {
+                    console.log(`No dropdown or value for team ${team} hole ${hole}`);
+                    return;
+                }
                 
                 const playerName = dropdown.value;
+                console.log(`Checking player: ${playerName} for team ${team} hole ${hole}`);
                 
                 // Get gross score for this player and hole
                 const grossScore = currentPlayerScores[playerName] && currentPlayerScores[playerName][hole];
-                if (!grossScore) return;
+                if (!grossScore) {
+                    console.log(`No gross score for ${playerName} hole ${hole}`);
+                    return;
+                }
                 
                 hasAnyScore = true;
+                console.log(`Found gross score ${grossScore} for ${playerName} hole ${hole}`);
                 
                 // Calculate net score (gross - strokes)
                 let netScore = parseInt(grossScore);
@@ -7482,13 +7490,18 @@ function updateBestBallScores() {
                 
                 if (playerStrokes === 'full') {
                     netScore -= 1;  // Full stroke reduces score by 1
+                    console.log(`Applied full stroke: ${grossScore} -> ${netScore}`);
                 } else if (playerStrokes === 'half') {
                     netScore -= 0.5;  // Half stroke reduces score by 0.5
+                    console.log(`Applied half stroke: ${grossScore} -> ${netScore}`);
                 }
+                
+                console.log(`Net score for ${playerName}: ${netScore}`);
                 
                 // Keep the best (lowest) net score
                 if (bestNetScore === null || netScore < bestNetScore) {
                     bestNetScore = netScore;
+                    console.log(`New best net score: ${bestNetScore}`);
                 }
             });
             
