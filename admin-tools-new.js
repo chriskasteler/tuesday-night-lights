@@ -3000,38 +3000,37 @@ function updateTeamScores() {
                             }
                             
                             console.log('Team player cells:', teamPlayerCells);
-                                
-                                // Get actual player names and scores
-                                let bestNetScore = null;
-                                teamPlayerCells.forEach(playerCell => {
-                                    if (playerCell) {
-                                        const playerName = playerCell.dataset.player;
-                                        const score = currentPlayerScores[playerName] && currentPlayerScores[playerName][holeNumber];
+                            
+                            // Get actual player names and scores
+                            let bestNetScore = null;
+                            teamPlayerCells.forEach(playerCell => {
+                                if (playerCell) {
+                                    const playerName = playerCell.dataset.player;
+                                    const score = currentPlayerScores[playerName] && currentPlayerScores[playerName][holeNumber];
+                                    
+                                    if (score) {
+                                        // Get stroke info for net score calculation
+                                        const strokeType = currentPlayerStrokes[playerName] && currentPlayerStrokes[playerName][holeNumber];
+                                        let strokeValue = 0;
+                                        if (strokeType === 'full') strokeValue = 1;
+                                        else if (strokeType === 'half') strokeValue = 0.5;
                                         
-                                        if (score) {
-                                            // Get stroke info for net score calculation
-                                            const strokeType = currentPlayerStrokes[playerName] && currentPlayerStrokes[playerName][holeNumber];
-                                            let strokeValue = 0;
-                                            if (strokeType === 'full') strokeValue = 1;
-                                            else if (strokeType === 'half') strokeValue = 0.5;
-                                            
-                                            const netScore = parseInt(score) - strokeValue;
-                                            if (bestNetScore === null || netScore < bestNetScore) {
-                                                bestNetScore = netScore;
-                                            }
+                                        const netScore = parseInt(score) - strokeValue;
+                                        if (bestNetScore === null || netScore < bestNetScore) {
+                                            bestNetScore = netScore;
                                         }
                                     }
-                                });
-                                
-                                if (bestNetScore !== null) {
-                                    cell.textContent = Math.round(bestNetScore * 2) / 2; // Handle half strokes properly
-                                    cell.style.fontWeight = '600';
-                                    cell.style.color = '#2d4a2d';
-                                } else {
-                                    cell.textContent = '-';
-                                    cell.style.fontWeight = '600';
-                                    cell.style.color = '#666';
                                 }
+                            });
+                            
+                            if (bestNetScore !== null) {
+                                cell.textContent = Math.round(bestNetScore * 2) / 2; // Handle half strokes properly
+                                cell.style.fontWeight = '600';
+                                cell.style.color = '#2d4a2d';
+                            } else {
+                                cell.textContent = '-';
+                                cell.style.fontWeight = '600';
+                                cell.style.color = '#666';
                             }
                         }
                     }

@@ -128,9 +128,9 @@ async function loadTeamData(teamId) {
                 // Method 3: Search by teamId field with number value
                 console.log('🔍 Method 3: Searching by teamId field (number)...');
                 teamsSnapshot = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/teams').where('teamId', '==', teamIdNum).get();
-                
-                if (!teamsSnapshot.empty) {
-                    teamDoc = teamsSnapshot.docs[0];
+            
+            if (!teamsSnapshot.empty) {
+                teamDoc = teamsSnapshot.docs[0];
                     console.log('✅ Found team by teamId field (number):', teamDoc.data());
                 } else {
                     console.log('❌ Team not found with any method');
@@ -419,4 +419,4 @@ function showTeamError(message) {
     setTimeout(() => {
         messageDiv.remove();
     }, 4000);
-}
+} 
