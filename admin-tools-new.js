@@ -2722,9 +2722,13 @@ function calculateBestBallTeamScore(team, hole, matchNum, groupIndex) {
     const playerA = `${team}-${matchNum === 1 ? 'A' : 'C'}`;
     const playerB = `${team}-${matchNum === 1 ? 'B' : 'D'}`;
     
+    console.log(`Looking for players: ${playerA}, ${playerB} for hole ${hole}`);
+    
     // Get gross scores for both players
     const scoreA = currentPlayerScores[playerA] && currentPlayerScores[playerA][hole];
     const scoreB = currentPlayerScores[playerB] && currentPlayerScores[playerB][hole];
+    
+    console.log(`Scores found: ${playerA}=${scoreA}, ${playerB}=${scoreB}`);
     
     if (!scoreA && !scoreB) return null; // No scores entered yet
     
@@ -2956,6 +2960,9 @@ function calculateMatchStatus() {
 // Update team score cells for best ball format
 function updateTeamScores() {
     try {
+        console.log('Updating team scores...');
+        console.log('Current player scores:', currentPlayerScores);
+        
         // Find all team score cells that need calculation (Best Ball format)
         const teamScoreCells = document.querySelectorAll('td.team-score-cell:not(.score-cell)');
         
