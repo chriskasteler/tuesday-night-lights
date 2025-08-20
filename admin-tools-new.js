@@ -1960,17 +1960,28 @@ function getSelectedPlayerNames() {
 
 // Generate player options for a team (excluding selected players) - for Weekly Scoring
 function getPlayerOptionsForTeamName(teamName, excludeNames = []) {
+    console.log(`🔧 getPlayerOptionsForTeamName: team="${teamName}", excludeNames=[${excludeNames.join(', ')}]`);
+    
     let options = '<option value="">Select Player...</option>';
     
     const teamPlayers = window.teamPlayersMap?.[teamName] || [];
+    console.log(`   📋 Team ${teamName} has ${teamPlayers.length} players`);
     
     teamPlayers.forEach(player => {
         const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
-        if (playerName && !excludeNames.includes(playerName)) {
+        const isExcluded = excludeNames.includes(playerName);
+        
+        console.log(`   🔍 Player "${playerName}": excluded=${isExcluded}`);
+        
+        if (playerName && !isExcluded) {
             options += `<option value="${playerName}">${playerName}</option>`;
+            console.log(`   ✅ Added "${playerName}" to options`);
+        } else if (isExcluded) {
+            console.log(`   ❌ Excluded "${playerName}" from options`);
         }
     });
     
+    console.log(`   📄 Final options HTML length: ${options.length}`);
     return options;
 }
 
