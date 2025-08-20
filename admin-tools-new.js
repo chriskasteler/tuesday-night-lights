@@ -1901,7 +1901,7 @@ function populatePlayerDropdown(dropdown, teamName) {
 }
 
 // Handle player selection for Weekly Scoring dropdowns (unique function name)
-window.handleWeeklyScoringPlayerSelection = function(dropdown) {
+function handleWeeklyScoringPlayerSelection(dropdown) {
     try {
         const selectedPlayer = dropdown.value;
         const weekNumber = dropdown.dataset.week;
