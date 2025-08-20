@@ -2954,6 +2954,7 @@ function updateTeamScores() {
     try {
         // Find all team score cells that need calculation (Best Ball format)
         const teamScoreCells = document.querySelectorAll('td.team-score-cell:not(.score-cell)');
+        console.log('Team score cells found:', teamScoreCells.length);
         
         teamScoreCells.forEach(cell => {
             const hole = cell.dataset?.hole;
@@ -2967,8 +2968,10 @@ function updateTeamScores() {
                     // Find the team from the row
                     const teamRow = cell.closest('tr');
                     const teamLabel = teamRow.querySelector('.team-score-label');
+                    console.log('Team label found:', teamLabel);
                     if (teamLabel) {
                         const labelText = teamLabel.textContent;
+                        console.log('Team label text:', labelText);
                         const teamMatch = labelText.match(/(Team \d+)/);
                         if (teamMatch) {
                             const team = teamMatch[1];
