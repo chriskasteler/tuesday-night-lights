@@ -2964,6 +2964,41 @@ function calculateMatchStatus() {
                     }
                 }
             }
+            
+            // Update final status cells with current match result
+            const team1FinalStatusCell = team1StatusRow?.querySelector('.match-status-final');
+            const team2FinalStatusCell = team2StatusRow?.querySelector('.match-status-final');
+            
+            if (team1FinalStatusCell && team2FinalStatusCell) {
+                if (matchOver) {
+                    // Match is over, show final result
+                    const holesUp = Math.abs(matchStatus);
+                    const finalStatus = `${holesUp}&${totalHoles - matchOverHole - 1}`;
+                    
+                    if (matchStatus > 0) {
+                        // Team 1 wins
+                        team1FinalStatusCell.textContent = finalStatus;
+                        team2FinalStatusCell.textContent = '';
+                    } else {
+                        // Team 2 wins
+                        team2FinalStatusCell.textContent = finalStatus;
+                        team1FinalStatusCell.textContent = '';
+                    }
+                } else {
+                    // Match still active, show current status
+                    if (matchStatus > 0) {
+                        team1FinalStatusCell.textContent = `${matchStatus}up`;
+                        team2FinalStatusCell.textContent = `${matchStatus}dn`;
+                    } else if (matchStatus < 0) {
+                        team2FinalStatusCell.textContent = `${Math.abs(matchStatus)}up`;
+                        team1FinalStatusCell.textContent = `${Math.abs(matchStatus)}dn`;
+                    } else {
+                        // All square
+                        team1FinalStatusCell.textContent = 'AS';
+                        team2FinalStatusCell.textContent = 'AS';
+                    }
+                }
+            }
         }
     } catch (error) {
         console.error('❌ Error calculating match status:', error);
