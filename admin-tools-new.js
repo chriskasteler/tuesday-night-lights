@@ -2985,9 +2985,9 @@ function updateTeamScores() {
                             }
                             
                             // Find actual player names from the scorecard for this team/match
-                            const scorecard = cell.closest('.admin-scorecard');
-                            if (scorecard) {
-                                const playerCells = scorecard.querySelectorAll(`td.score-cell[data-hole="${holeNumber}"]`);
+                            const scorecardElement = cell.closest('.admin-scorecard');
+                            if (scorecardElement) {
+                                const playerCells = scorecardElement.querySelectorAll(`td.score-cell[data-hole="${holeNumber}"]`);
                                 let teamPlayerCells = [];
                                 
                                 // Find the player cells for this team (first 2 or last 2 rows)
