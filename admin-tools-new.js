@@ -1888,7 +1888,7 @@ function populatePlayerDropdown(dropdown, teamName) {
             const option = document.createElement('option');
             // Use the player's name property
             const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
-            option.value = playerName;
+            option.value = player.id || playerName;  // Use player ID as value, fallback to name
             option.textContent = playerName;
             dropdown.appendChild(option);
         });
