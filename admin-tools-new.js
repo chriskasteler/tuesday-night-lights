@@ -1927,14 +1927,16 @@ window.handleWeeklyScoringPlayerSelection = function(dropdown) {
     }
 };
 
-// Update score cell data attributes with selected player name
-function updateScoreCellsPlayerName(dropdown, playerName) {
+// Update score cell data attributes with selected player name (convert ID to name)
+function updateScoreCellsPlayerName(dropdown, selectedValue) {
     const row = dropdown.closest('tr');
     const scoreCells = row.querySelectorAll('.score-cell');
     
     scoreCells.forEach(cell => {
-        if (playerName) {
-            cell.dataset.player = playerName;
+        if (selectedValue) {
+            // Now selectedValue is player ID, need to get player name
+            const playerName = getPlayerNameById(selectedValue);
+            cell.dataset.player = playerName || selectedValue;  // Fallback to ID if name not found
         } else {
             // Reset to generic name if no player selected
             const teamName = dropdown.dataset.team;
@@ -1944,7 +1946,36 @@ function updateScoreCellsPlayerName(dropdown, playerName) {
     });
 }
 
-// Get all currently selected player names for Weekly Scoring dropdowns
+// Helper function to get player name by ID
+function getPlayerNameById(playerId) {
+    if (!window.allPlayers) return null;
+    
+    const player = window.allPlayers.find(p => p.id === playerId);
+    return player ? player.name : null;
+}
+
+// Get all currently selected player IDs for Weekly Scoring dropdowns (EXACT same logic as Manage Teams)
+function getSelectedPlayerIdsForWeeklyScoring() {
+    const selectedIds = [];
+    // Look for Weekly Scoring dropdowns specifically - they have class="player-dropdown" and data-position attribute
+    const dropdowns = document.querySelectorAll('#weekly-scoring-section select.player-dropdown[data-position]');
+    
+    console.log(`🔍 Found ${dropdowns.length} player dropdowns in Weekly Scoring`);
+    
+    dropdowns.forEach((dropdown, index) => {
+        console.log(`   Dropdown ${index}: value="${dropdown.value}", data-position="${dropdown.getAttribute('data-position')}"`);
+        if (dropdown.value && dropdown.value !== "" && dropdown.value.trim() !== '') {
+            selectedIds.push(dropdown.value);  // Now collecting player IDs, not names
+            console.log(`   ✅ Added player ID "${dropdown.value}" to selected list`);
+        }
+    });
+    
+    console.log(`📋 Final selected player IDs: [${selectedIds.map(id => `"${id}"`).join(', ')}]`);
+    
+    return selectedIds;
+}
+
+// LEGACY: Keep for backwards compatibility but not used anymore
 function getSelectedPlayerNames() {
     const selectedNames = [];
     // Look for Weekly Scoring dropdowns specifically - they have class="player-dropdown" and data-position attribute
@@ -1966,8 +1997,8 @@ function getSelectedPlayerNames() {
 }
 
 // Generate player options for a team (excluding selected players) - for Weekly Scoring
-function getPlayerOptionsForTeamName(teamName, excludeNames = []) {
-    console.log(`🔧 getPlayerOptionsForTeamName: team="${teamName}", excludeNames=[${excludeNames.join(', ')}]`);
+function getPlayerOptionsForTeamName(teamName, excludePlayerIds = []) {
+    console.log(`🔧 getPlayerOptionsForTeamName: team="${teamName}", excludePlayerIds=[${excludePlayerIds.join(', ')}]`);
     
     let options = '<option value="">Select Player...</option>';
     
@@ -1976,15 +2007,15 @@ function getPlayerOptionsForTeamName(teamName, excludeNames = []) {
     
     teamPlayers.forEach(player => {
         const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
-        const isExcluded = excludeNames.includes(playerName);
+        const isExcluded = excludePlayerIds.includes(player.id);  // Exclude by ID not name!
         
-        console.log(`   🔍 Player "${playerName}": excluded=${isExcluded}`);
+        console.log(`   🔍 Player "${playerName}" (ID: ${player.id}): excluded=${isExcluded}`);
         
         if (playerName && !isExcluded) {
-            options += `<option value="${playerName}">${playerName}</option>`;
-            console.log(`   ✅ Added "${playerName}" to options`);
+            options += `<option value="${player.id}">${playerName}</option>`;  // Use player ID as value!
+            console.log(`   ✅ Added "${playerName}" (ID: ${player.id}) to options`);
         } else if (isExcluded) {
-            console.log(`   ❌ Excluded "${playerName}" from options`);
+            console.log(`   ❌ Excluded "${playerName}" (ID: ${player.id}) from options`);
         }
     });
     
@@ -1995,10 +2026,10 @@ function getPlayerOptionsForTeamName(teamName, excludeNames = []) {
 // Weekly Scoring version of refreshAllPlayerDropdowns
 function refreshWeeklyScoringPlayerDropdowns() {
     console.log('🚀 STARTING refreshWeeklyScoringPlayerDropdowns...');
-    const selectedPlayerNames = getSelectedPlayerNames();
+    const selectedPlayerIds = getSelectedPlayerIdsForWeeklyScoring();  // Use IDs like Manage Teams!
     const allSelects = document.querySelectorAll('#weekly-scoring-section .player-dropdown');
     
-    console.log('📋 Selected players:', selectedPlayerNames);
+    console.log('📋 Selected player IDs:', selectedPlayerIds);
     console.log('📋 Found dropdowns:', allSelects.length);
     
     allSelects.forEach((select, index) => {
@@ -2008,13 +2039,13 @@ function refreshWeeklyScoringPlayerDropdowns() {
         console.log(`🔄 Processing dropdown ${index}: team="${teamName}", current="${currentValue}"`);
         
         if (teamName) {
-            // Exclude all selected players except the current selection in this dropdown
-            const excludeNames = selectedPlayerNames.filter(name => name !== currentValue);
+            // Exclude all selected player IDs except the current selection in this dropdown
+            const excludeIds = selectedPlayerIds.filter(id => id !== currentValue);
             
-            console.log(`   📝 Excluding players: [${excludeNames.join(', ')}]`);
+            console.log(`   📝 Excluding player IDs: [${excludeIds.join(', ')}]`);
             
-            // Update the dropdown options
-            const newHTML = getPlayerOptionsForTeamName(teamName, excludeNames);
+            // Update the dropdown options using ID exclusion
+            const newHTML = getPlayerOptionsForTeamName(teamName, excludeIds);
             console.log(`   🔧 Generated HTML length: ${newHTML.length}`);
             
             select.innerHTML = newHTML;
