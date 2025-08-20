@@ -1582,6 +1582,22 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 </tr>
             </thead>
             <tbody>
+                <!-- Team 1 Best Ball (Net) -->
+                <tr class="team-best-ball-row" data-team="1" style="background: #e8f5e8;">
+                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600; background: #d4edda;">${team1Name} Best Ball</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="3" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="4" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="5" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="6" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="7" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="8" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="1" data-hole="9" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-total-cell" data-team="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #d4edda;">-</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e8f5e8;"></td>
+                </tr>
+
                 <!-- Team 1 Players -->
                 <tr class="player-row" data-team="1" data-player="1">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;" 
@@ -1663,6 +1679,22 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 <!-- Spacer Row -->
                 <tr style="height: 10px;"><td colspan="12" style="border: none; background: #f8f9fa;"></td></tr>
                 
+                <!-- Team 2 Best Ball (Net) -->
+                <tr class="team-best-ball-row" data-team="2" style="background: #fff3cd;">
+                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600; background: #fff3cd;">${team2Name} Best Ball</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="3" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="4" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="5" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="6" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="7" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="8" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-cell" data-team="2" data-hole="9" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="team-best-ball-total-cell" data-team="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd;">-</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #fff3cd;"></td>
+                </tr>
+
                 <!-- Team 2 Players -->
                 <tr class="player-row" data-team="2" data-player="1">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
@@ -2307,6 +2339,9 @@ window.editScoreCell = function(cell) {
             // Update player total
             updatePlayerTotal(player);
             
+            // Update best ball net scores
+            updateBestBallScores();
+            
             // Update team scores for best ball
             updateTeamScores();
             
@@ -2363,6 +2398,9 @@ window.editScoreCell = function(cell) {
                     
                     // Update player total
                     updatePlayerTotal(player);
+                    
+                    // Update best ball net scores
+                    updateBestBallScores();
                     
                     // Update team scores for best ball
                     updateTeamScores();
@@ -7404,6 +7442,102 @@ function refreshStrokeIndicators() {
         
     } catch (error) {
         console.error('Error refreshing stroke indicators:', error);
+    }
+}
+
+// Update best ball net scores for each team
+function updateBestBallScores() {
+    try {
+        // Find all best ball cells
+        const bestBallCells = document.querySelectorAll('.team-best-ball-cell');
+        
+        bestBallCells.forEach(cell => {
+            const team = cell.dataset.team;
+            const hole = cell.dataset.hole;
+            
+            if (!team || !hole) return;
+            
+            // Find the players for this team in this match
+            const teamPlayerRows = cell.closest('table').querySelectorAll(`tr.player-row[data-team="${team}"]`);
+            
+            let bestNetScore = null;
+            let hasAnyScore = false;
+            
+            teamPlayerRows.forEach(row => {
+                // Get the player name from the dropdown
+                const dropdown = row.querySelector('.player-dropdown');
+                if (!dropdown || !dropdown.value) return;
+                
+                const playerName = dropdown.value;
+                
+                // Get gross score for this player and hole
+                const grossScore = currentPlayerScores[playerName] && currentPlayerScores[playerName][hole];
+                if (!grossScore) return;
+                
+                hasAnyScore = true;
+                
+                // Calculate net score (gross - strokes)
+                let netScore = parseInt(grossScore);
+                const playerStrokes = currentPlayerStrokes[playerName] && currentPlayerStrokes[playerName][hole];
+                
+                if (playerStrokes === 'full') {
+                    netScore -= 1;  // Full stroke reduces score by 1
+                } else if (playerStrokes === 'half') {
+                    netScore -= 0.5;  // Half stroke reduces score by 0.5
+                }
+                
+                // Keep the best (lowest) net score
+                if (bestNetScore === null || netScore < bestNetScore) {
+                    bestNetScore = netScore;
+                }
+            });
+            
+            // Update the cell
+            if (hasAnyScore && bestNetScore !== null) {
+                // Format the score (show .5 for half strokes)
+                const displayScore = bestNetScore % 1 === 0 ? bestNetScore.toString() : bestNetScore.toFixed(1);
+                cell.textContent = displayScore;
+            } else {
+                cell.textContent = '-';
+            }
+        });
+        
+        // Update best ball totals
+        updateBestBallTotals();
+        
+    } catch (error) {
+        console.error('Error updating best ball scores:', error);
+    }
+}
+
+// Update best ball totals
+function updateBestBallTotals() {
+    try {
+        const totalCells = document.querySelectorAll('.team-best-ball-total-cell');
+        
+        totalCells.forEach(cell => {
+            const team = cell.dataset.team;
+            if (!team) return;
+            
+            // Find all best ball cells for this team
+            const bestBallCells = cell.closest('table').querySelectorAll(`.team-best-ball-cell[data-team="${team}"]`);
+            
+            let total = 0;
+            let hasScores = false;
+            
+            bestBallCells.forEach(scoreCell => {
+                const score = scoreCell.textContent.trim();
+                if (score && score !== '-') {
+                    total += parseFloat(score);
+                    hasScores = true;
+                }
+            });
+            
+            cell.textContent = hasScores ? total.toString() : '-';
+        });
+        
+    } catch (error) {
+        console.error('Error updating best ball totals:', error);
     }
 }
 
