@@ -2024,11 +2024,11 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         // Show/hide remove button based on selection
         toggleRemoveButton(dropdown);
         
-        // Refresh all dropdowns to enforce smart selection (temporarily disabled to prevent loop)
-        // console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
-        // setTimeout(() => {
-        //     refreshWeeklyScoringPlayerDropdowns();
-        // }, 10);
+        // Refresh all dropdowns to enforce smart selection
+        console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
+        setTimeout(() => {
+            refreshWeeklyScoringPlayerDropdowns();
+        }, 100);
         
         // Save lineup change to database
         await saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
