@@ -1455,6 +1455,9 @@ window.loadWeeklyScoring = async function() {
         // Add save buttons to each matchup
         addSaveButtonsToMatchups(selectedWeek);
         
+        // Load scorecard data and update interface
+        await loadScorecardForWeek(selectedWeek);
+        
         // Add a small delay to ensure UI is fully rendered before loading scores
         setTimeout(async () => {
             await loadScoresFromDatabase(selectedWeek);
@@ -1478,9 +1481,19 @@ window.loadWeeklyScoring = async function() {
 async function generateWeeklyScoringInterface(weekNumber, scheduleData) {
     let html = `
         <div class="weekly-scoring-container">
-            <div class="week-header" style="text-align: center; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+            <div class="week-header" style="text-align: center; margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
                 <h3 style="margin: 0; color: #2d4a2d;">Week ${weekNumber} Scoring</h3>
                 <p style="margin: 5px 0 0 0; color: #666;">Click player names to set lineups • Click score cells to enter scores</p>
+            </div>
+            
+            <div class="scorecard-selection" style="margin-bottom: 30px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
+                <div id="scorecard-status-${weekNumber}" style="display: flex; align-items: center; gap: 10px;">
+                    <button id="select-scorecard-btn-${weekNumber}" 
+                            onclick="openScorecardSelector(${weekNumber})" 
+                            style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                        Please Select Scorecard
+                    </button>
+                </div>
             </div>
     `;
     
@@ -1547,6 +1560,21 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">9</th>
                     <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Total</th>
                     <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Points Earned</th>
+                </tr>
+                <!-- Par Row -->
+                <tr class="par-row" style="background: #e9ecef;">
+                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600; background: #d4edda;">Par</td>
+                    <td class="par-cell" data-hole="1" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="2" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="3" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="4" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="5" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="6" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="7" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="8" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-cell" data-hole="9" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
+                    <td class="par-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #d4edda;">-</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #e9ecef;"></td>
                 </tr>
             </thead>
             <tbody>
@@ -7357,3 +7385,174 @@ function refreshStrokeIndicators() {
         console.error('Error refreshing stroke indicators:', error);
     }
 }
+
+// Load scorecard for a specific week and update the interface
+async function loadScorecardForWeek(weekNumber) {
+    try {
+        const weekScorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
+        const weekScorecardDoc = await db.collection(weekScorecardPath).doc(`week-${weekNumber}`).get();
+        
+        const statusDiv = document.getElementById(`scorecard-status-${weekNumber}`);
+        const selectBtn = document.getElementById(`select-scorecard-btn-${weekNumber}`);
+        
+        if (weekScorecardDoc.exists) {
+            const scorecardData = weekScorecardDoc.data();
+            
+            // Update button to show selected scorecard
+            selectBtn.style.background = '#28a745';
+            selectBtn.innerHTML = `✓ ${scorecardData.scorecardName}`;
+            
+            // Add edit button
+            statusDiv.innerHTML = `
+                <button onclick="openScorecardSelector(${weekNumber})" 
+                        style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    ✓ ${scorecardData.scorecardName}
+                </button>
+                <span style="font-size: 0.85rem; color: #666;">
+                    ${scorecardData.scorecardName} loaded • 
+                    <button onclick="openScorecardSelector(${weekNumber})" 
+                            style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline; font-size: 0.85rem;">
+                        edit
+                    </button>
+                </span>
+            `;
+            
+            // Update par values in all tables
+            updateParValues(scorecardData.parValues, scorecardData.total);
+            
+        } else {
+            // No scorecard selected - keep red button
+            console.log(`No scorecard assigned to Week ${weekNumber}`);
+        }
+        
+    } catch (error) {
+        console.error('Error loading scorecard for week:', error);
+    }
+}
+
+// Update par values in all par cells
+function updateParValues(parValues, total) {
+    // Update individual hole par values
+    for (let hole = 1; hole <= 9; hole++) {
+        const parCells = document.querySelectorAll(`.par-cell[data-hole="${hole}"]`);
+        const parValue = parValues && parValues[hole] ? parValues[hole] : '-';
+        parCells.forEach(cell => {
+            cell.textContent = parValue;
+        });
+    }
+    
+    // Update total par
+    const totalParCells = document.querySelectorAll('.par-total-cell');
+    totalParCells.forEach(cell => {
+        cell.textContent = total || '-';
+    });
+}
+
+// Open scorecard selector (reuse existing function from admin-tools-new.js)
+window.openScorecardSelector = async function(weekNumber) {
+    try {
+        // Create modal backdrop
+        const modal = document.createElement('div');
+        modal.id = 'scorecard-selector-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        `;
+        
+        // Load scorecards
+        const scorecardsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+        const scorecardsSnapshot = await db.collection(scorecardsPath).orderBy('createdAt', 'desc').get();
+        
+        let scorecardsHTML = '';
+        if (scorecardsSnapshot.empty) {
+            scorecardsHTML = '<p style="color: #666; text-align: center;">No scorecards available. Please create one in Scorecard Setup.</p>';
+        } else {
+            scorecardsSnapshot.forEach(doc => {
+                const scorecard = doc.data();
+                scorecardsHTML += `
+                    <div class="scorecard-option" style="padding: 15px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; cursor: pointer; background: #f9f9f9;"
+                         onclick="selectScorecardForWeek('${doc.id}', '${scorecard.name}', ${weekNumber})">
+                        <h4 style="margin: 0 0 5px 0; color: #2d4a2d;">${scorecard.name}</h4>
+                        <p style="margin: 0; color: #666; font-size: 0.9rem;">Par ${scorecard.total} • Holes: ${Object.values(scorecard.parValues || {}).join(', ')}</p>
+                    </div>
+                `;
+            });
+        }
+        
+        modal.innerHTML = `
+            <div style="background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 80%; overflow-y: auto;">
+                <h3 style="margin: 0 0 20px 0; color: #2d4a2d;">Select Scorecard for Week ${weekNumber}</h3>
+                <div class="scorecard-list">
+                    ${scorecardsHTML}
+                </div>
+                <div style="margin-top: 20px; text-align: right;">
+                    <button onclick="closeScorecardSelector()" 
+                            style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+    } catch (error) {
+        console.error('Error opening scorecard selector:', error);
+        alert('Error loading scorecards. Please try again.');
+    }
+};
+
+// Select scorecard for week (reuse existing function with modifications)
+window.selectScorecardForWeek = async function(scorecardId, scorecardName, weekNumber) {
+    try {
+        // Get the scorecard data
+        const scorecardsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+        const scorecardDoc = await db.collection(scorecardsPath).doc(scorecardId).get();
+        if (!scorecardDoc.exists) {
+            alert('Scorecard not found.');
+            return;
+        }
+        
+        const scorecardData = scorecardDoc.data();
+        
+        // Save the week-scorecard association
+        const weekScorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
+        await db.collection(weekScorecardPath).doc(`week-${weekNumber}`).set({
+            weekNumber: weekNumber,
+            scorecardId: scorecardId,
+            scorecardName: scorecardName,
+            parValues: scorecardData.parValues,
+            total: scorecardData.total,
+            assignedAt: new Date(),
+            assignedBy: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email || 'unknown') : 'unknown'
+        });
+        
+        // Close modal
+        closeScorecardSelector();
+        
+        // Reload scorecard interface
+        await loadScorecardForWeek(weekNumber);
+        
+        console.log(`✅ Scorecard "${scorecardName}" assigned to Week ${weekNumber}`);
+        
+    } catch (error) {
+        console.error('Error selecting scorecard:', error);
+        alert('Error selecting scorecard. Please try again.');
+    }
+};
+
+// Close scorecard selector
+window.closeScorecardSelector = function() {
+    const modal = document.getElementById('scorecard-selector-modal');
+    if (modal) {
+        modal.remove();
+    }
+};
