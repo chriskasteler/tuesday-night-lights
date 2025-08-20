@@ -1518,16 +1518,7 @@ async function generateUnifiedScorecard(weekNumber, matchupIndex, matchup) {
                 ${await generateUnifiedMatchTable(weekNumber, matchupIndex, 2, team1Name, team2Name)}
             </div>
             
-            <!-- Save Matchup Button -->
-            <div style="text-align: center; padding: 15px; background: #f8f9fa; border-top: 1px solid #dee2e6;">
-                <button onclick="saveMatchupLineup(${weekNumber}, ${matchupIndex})" 
-                        style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: 600;">
-                    💾 Save ${team1Name} vs ${team2Name} Lineup
-                </button>
-                <p style="margin: 10px 0 0 0; font-size: 0.85rem; color: #666;">
-                    Save all player selections for this matchup to the database
-                </p>
-            </div>
+
         </div>
     `;
 }
@@ -6812,7 +6803,7 @@ function addSaveButtonsToMatchups(weekNumber) {
             saveButtonDiv.innerHTML = `
                 <button onclick="saveMatchupLineup(${weekNumber}, ${matchupIndex})" 
                         style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: 600;">
-                    💾 Save ${teamNames} Lineup
+                    Save ${teamNames} Lineup
                 </button>
                 <p style="margin: 10px 0 0 0; font-size: 0.85rem; color: #666;">
                     Save all player selections for this matchup to the database
