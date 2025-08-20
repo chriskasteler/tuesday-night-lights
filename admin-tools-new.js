@@ -1449,8 +1449,8 @@ window.loadWeeklyScoring = async function() {
         // Load existing data
         await loadExistingWeeklyScoringData(selectedWeek);
         
-        // Load existing lineups from weeklyLineups collection (temporarily disabled to prevent loop)
-        // await loadExistingLineupsFromDatabase(selectedWeek);
+        // Load existing lineups from weeklyLineups collection
+        await loadExistingLineupsFromDatabase(selectedWeek);
         
         console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
         
