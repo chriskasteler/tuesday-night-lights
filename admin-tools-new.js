@@ -1894,7 +1894,7 @@ function generateStrokeCells(player, matchNum, groupIndex, weekNumber) {
         cells += `<td class="stroke-cell" 
                      data-player="${player}" 
                      data-hole="${hole}"
-                     onclick="openStrokeSelector('${player}', ${hole})"
+                     onclick="openStrokeSelector('${player.replace(/'/g, "\\'")}', ${hole})"
                      style="padding: 4px; border: 1px solid #ddd; text-align: center; cursor: pointer; user-select: none; min-height: 24px; min-width: 36px; font-size: 11px; color: #666; background: #f8f9fa;"
                      title="Click to set stroke">add</td>`;
     }
