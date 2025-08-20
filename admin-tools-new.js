@@ -28,6 +28,9 @@ async function loadPlayersAndTeams() {
         participantsSnapshot.forEach((doc) => {
             allPlayers.push({ id: doc.id, ...doc.data() });
         });
+        
+        // Make globally available
+        window.allPlayers = allPlayers;
 
         // Clean up any duplicate teams first
         const duplicatesRemoved = await cleanupDuplicateTeams();
@@ -46,6 +49,9 @@ async function loadPlayersAndTeams() {
                 currentTeams.push({ id: doc.id, ...doc.data() });
             });
         }
+        
+        // Make globally available
+        window.currentTeams = currentTeams;
         
         console.log('Loaded teams:', currentTeams.map(t => `${t.teamName} (ID: ${t.id}, teamId: ${t.teamId})`));
 
@@ -68,6 +74,7 @@ async function loadPlayersAndTeams() {
 async function createDefaultTeams() {
     console.log('Creating default teams...');
     currentTeams = [];
+    window.currentTeams = currentTeams;
     
     for (let i = 1; i <= 6; i++) {
         const teamData = {
@@ -1676,27 +1683,38 @@ async function loadExistingWeeklyScoringData(weekNumber) {
 // Populate all player dropdowns with team rosters
 async function populateAllPlayerDropdowns() {
     try {
+        console.log('🔄 Starting player dropdown population...');
+        
         // Get all player dropdowns
         const dropdowns = document.querySelectorAll('.player-dropdown');
+        console.log(`Found ${dropdowns.length} player dropdowns to populate`);
         
-        // Load team data if not already loaded
-        if (!window.currentTeams || !window.allPlayers) {
-            console.log('Loading team and player data...');
-            await loadPlayersAndTeams();
+        // Force load team data
+        console.log('🔄 Force loading team and player data...');
+        await loadPlayersAndTeams();
+        
+        // Check what we actually loaded
+        console.log('📊 Data check after loading:');
+        console.log('- currentTeams:', window.currentTeams ? window.currentTeams.length : 'not loaded');
+        console.log('- allPlayers:', window.allPlayers ? window.allPlayers.length : 'not loaded');
+        
+        if (window.currentTeams) {
+            console.log('- Team names:', window.currentTeams.map(t => t.teamName));
         }
         
-        // Build team-to-players mapping if not already done
-        if (!window.teamPlayersMap) {
-            buildTeamPlayersMap();
-        }
+        // Build team-to-players mapping
+        console.log('🔄 Building team players map...');
+        buildTeamPlayersMap();
         
         // Populate each dropdown
+        console.log('🔄 Populating dropdowns...');
         dropdowns.forEach(dropdown => {
             const teamName = dropdown.dataset.team;
+            console.log(`Populating dropdown for team: ${teamName}`);
             populatePlayerDropdown(dropdown, teamName);
         });
         
-        console.log(`✅ Populated ${dropdowns.length} player dropdowns`);
+        console.log(`✅ Completed player dropdown population`);
     } catch (error) {
         console.error('Error populating player dropdowns:', error);
     }
