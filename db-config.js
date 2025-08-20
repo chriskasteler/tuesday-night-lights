@@ -21,6 +21,7 @@ const DB_CONFIG = {
             scorecards: `${base}/scorecards`,
             weekScorecards: `${base}/weekScorecards`,
             lineups: `${base}/lineups`,
+            weeklyLineups: `${base}/weeklyLineups`,
             settings: `${base}/settings`,
             requests: `${base}/requests`,
             

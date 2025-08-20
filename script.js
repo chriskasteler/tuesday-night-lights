@@ -1001,6 +1001,8 @@ function closeScorecard() {
 async function updateScorecardWithLineupData(matchId, team1, team2, actualTeam1, actualTeam2) {
     try {
         console.log('🎯 LINEUP DATA: Loading lineup data for scorecard', matchId);
+        console.log('🎯 LINEUP DATA: Team names - team1:', team1, 'team2:', team2);
+        console.log('🎯 LINEUP DATA: Actual team names - actualTeam1:', actualTeam1, 'actualTeam2:', actualTeam2);
         
         // Extract week and match index from matchId (e.g., "week1-match1" -> week=1, matchIndex=0)
         const weekMatch = matchId.match(/week(\d+)-match(\d+)/);
@@ -1014,8 +1016,13 @@ async function updateScorecardWithLineupData(matchId, team1, team2, actualTeam1,
         console.log(`🎯 LINEUP DATA: Parsed week=${week}, matchIndex=${matchIndex}`);
         
         // Load lineup data from weeklyLineups collection
-        const lineupDoc = await db.collection('clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups')
-            .doc(`week-${week}`).get();
+        const lineupPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups';
+        console.log('🎯 LINEUP DATA: Looking for lineup at path:', lineupPath);
+        console.log('🎯 LINEUP DATA: Looking for document:', `week-${week}`);
+        
+        const lineupDoc = await db.collection(lineupPath).doc(`week-${week}`).get();
+        
+        console.log('🎯 LINEUP DATA: Lineup document exists:', lineupDoc.exists);
         
         if (!lineupDoc.exists) {
             throw new Error(`No lineup data found for week ${week}`);
