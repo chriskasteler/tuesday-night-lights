@@ -1710,18 +1710,28 @@ function buildTeamPlayersMap() {
         // Check if we have the data loaded
         if (!window.currentTeams || !window.allPlayers) {
             console.warn('Cannot build team players map - missing currentTeams or allPlayers');
+            console.log('currentTeams:', window.currentTeams);
+            console.log('allPlayers:', window.allPlayers ? window.allPlayers.length : 'not loaded');
             return;
         }
         
-        // For each team, find its players
+        // For each team, find its players using the team.players array (which contains player IDs)
         window.currentTeams.forEach(team => {
             const teamName = team.teamName;
-            const teamPlayers = window.allPlayers.filter(player => 
-                player.teamId === team.teamId || player.teamId === team.id
-            );
+            
+            // team.players contains array of player IDs, find the actual player objects
+            const teamPlayers = [];
+            if (team.players && Array.isArray(team.players)) {
+                team.players.forEach(playerId => {
+                    const player = window.allPlayers.find(p => p.id === playerId);
+                    if (player) {
+                        teamPlayers.push(player);
+                    }
+                });
+            }
             
             window.teamPlayersMap[teamName] = teamPlayers;
-            console.log(`✅ Mapped ${teamPlayers.length} players to team: ${teamName}`);
+            console.log(`✅ Mapped ${teamPlayers.length} players to team: ${teamName}`, teamPlayers.map(p => p.name));
         });
         
         console.log('Team players map built:', Object.keys(window.teamPlayersMap));
