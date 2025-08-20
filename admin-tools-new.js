@@ -1480,8 +1480,8 @@ async function generateWeeklyScoringInterface(weekNumber, scheduleData) {
 
 // Generate a unified scorecard that combines lineup setting and score entry
 async function generateUnifiedScorecard(weekNumber, matchupIndex, matchup) {
-    const team1Name = getAdminTeamName(matchup.team1);
-    const team2Name = getAdminTeamName(matchup.team2);
+    const team1Name = getTeamNameById(matchup.team1);
+    const team2Name = getTeamNameById(matchup.team2);
     
     return `
         <div class="unified-scorecard" data-week="${weekNumber}" data-matchup="${matchupIndex}" style="margin-bottom: 40px; border: 2px solid #2d4a2d; border-radius: 8px; overflow: hidden; background: white;">
@@ -1728,6 +1728,22 @@ async function populateAllPlayerDropdowns() {
     }
 }
 
+// Get team name by teamId
+function getTeamNameById(teamId) {
+    if (!window.currentTeams) {
+        console.warn(`Cannot get team name for ID ${teamId} - currentTeams not loaded`);
+        return `Team ${teamId}`;
+    }
+    
+    const team = window.currentTeams.find(t => t.teamId === teamId || t.teamId === String(teamId));
+    if (team) {
+        return team.teamName;
+    }
+    
+    console.warn(`Team not found for ID ${teamId}`);
+    return `Team ${teamId}`;
+}
+
 // Build a mapping of team names to their players
 function buildTeamPlayersMap() {
     try {
@@ -1744,6 +1760,7 @@ function buildTeamPlayersMap() {
         // For each team, find its players using the team.players array (which contains player IDs)
         window.currentTeams.forEach(team => {
             const teamName = team.teamName;
+            const teamId = team.teamId;
             
             // team.players contains array of player IDs, find the actual player objects
             const teamPlayers = [];
@@ -1756,8 +1773,12 @@ function buildTeamPlayersMap() {
                 });
             }
             
+            // Map both by team name (for dropdown compatibility) and by team ID
             window.teamPlayersMap[teamName] = teamPlayers;
-            console.log(`✅ Mapped ${teamPlayers.length} players to team: ${teamName}`, teamPlayers.map(p => p.name));
+            window.teamPlayersMap[teamId] = teamPlayers;
+            window.teamPlayersMap[String(teamId)] = teamPlayers;
+            
+            console.log(`✅ Mapped ${teamPlayers.length} players to team: ${teamName} (ID: ${teamId})`, teamPlayers.map(p => p.name));
         });
         
         console.log('Team players map built:', Object.keys(window.teamPlayersMap));
@@ -5675,52 +5696,52 @@ function refreshAllPlayerDropdowns() {
     });
 }
 
-// Get schedule data for a specific week
+// Get schedule data for a specific week (using stable teamIds)
 function getWeekScheduleData(week) {
     const scheduleData = {
         '1': {
             date: 'August 19',
             format: 'Four-Ball (Best Ball)',
             matches: [
-                { team1: 'Whack Shack', team2: 'Cream Team' },
-                { team1: 'Bump & Run', team2: 'So Sushi Samurais' },
-                { team1: 'Aviary', team2: 'Be The Ball' }
+                { team1: 1, team2: 2 },  // Team 1 vs Team 2
+                { team1: 3, team2: 4 },  // Team 3 vs Team 4  
+                { team1: 5, team2: 6 }   // Team 5 vs Team 6
             ]
         },
         '2': {
             date: 'August 26',
             format: 'Alternate Shot',
             matches: [
-                { team1: 'Whack Shack', team2: 'Bump & Run' },
-                { team1: 'Cream Team', team2: 'Aviary' },
-                { team1: 'So Sushi Samurais', team2: 'Be The Ball' }
+                { team1: 1, team2: 3 },  // Team 1 vs Team 3
+                { team1: 2, team2: 5 },  // Team 2 vs Team 5
+                { team1: 4, team2: 6 }   // Team 4 vs Team 6
             ]
         },
         '3': {
             date: 'September 2',
             format: 'Scramble',
             matches: [
-                { team1: 'Whack Shack', team2: 'So Sushi Samurais' },
-                { team1: 'Cream Team', team2: 'Be The Ball' },
-                { team1: 'Bump & Run', team2: 'Aviary' }
+                { team1: 1, team2: 4 },  // Team 1 vs Team 4
+                { team1: 2, team2: 6 },  // Team 2 vs Team 6
+                { team1: 3, team2: 5 }   // Team 3 vs Team 5
             ]
         },
         '4': {
             date: 'September 9',
             format: 'High-Low',
             matches: [
-                { team1: 'Whack Shack', team2: 'Aviary' },
-                { team1: 'Cream Team', team2: 'Bump & Run' },
-                { team1: 'So Sushi Samurais', team2: 'Be The Ball' }
+                { team1: 1, team2: 5 },  // Team 1 vs Team 5
+                { team1: 2, team2: 3 },  // Team 2 vs Team 3
+                { team1: 4, team2: 6 }   // Team 4 vs Team 6
             ]
         },
         '5': {
             date: 'September 23',
             format: 'Modified Stableford',
             matches: [
-                { team1: 'Whack Shack', team2: 'Be The Ball' },
-                { team1: 'Cream Team', team2: 'So Sushi Samurais' },
-                { team1: 'Bump & Run', team2: 'Aviary' }
+                { team1: 1, team2: 6 },  // Team 1 vs Team 6
+                { team1: 2, team2: 4 },  // Team 2 vs Team 4
+                { team1: 3, team2: 5 }   // Team 3 vs Team 5
             ]
         }
     };
