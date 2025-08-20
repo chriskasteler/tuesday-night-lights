@@ -2072,6 +2072,7 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
     });
     
     // Also update stroke cells
+    console.log(`🏌️ Found ${strokeCells.length} stroke cells for player update`);
     strokeCells.forEach(cell => {
         if (selectedValue) {
             // Enable stroke cell and update data-player to actual player ID
@@ -2084,6 +2085,7 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
             if (button) {
                 const hole = cell.dataset.hole;
                 button.onclick = () => openStrokeSelector(selectedValue, hole);
+                console.log(`🏌️ Updated stroke button for hole ${hole} to use player ID: ${selectedValue}`);
             }
         } else {
             // Disable stroke cell and reset to generic name
