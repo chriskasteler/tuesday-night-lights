@@ -5226,94 +5226,87 @@ function applyScoreTypeStyle(cell, score) {
     cell.style.borderRadius = '';
     cell.style.backgroundColor = '';
     
-    if (score === '-') {
+    if (score === '-' || !score) {
         cell.textContent = '-';
         return;
     }
     
     const hole = cell.dataset.hole;
-    const weekNumber = cell.dataset.week;
-    const player = cell.dataset.player;
     
-    // Get par value for this hole
-    if (!window.currentWeekScorecard || window.currentWeekScorecard.weekNumber != weekNumber) {
-        cell.innerHTML = score;
-        return; // No scorecard loaded, can't determine score type
+    // Get par value for this hole from the par cell in the same table
+    const parCell = cell.closest('table').querySelector(`.par-cell[data-hole="${hole}"]`);
+    const par = parCell ? parseInt(parCell.textContent) : null;
+    
+    if (!par || isNaN(par)) {
+        // No par available, just show the score in black
+        cell.textContent = score;
+        return;
     }
     
-    const par = window.currentWeekScorecard.parValues[hole];
+    const scoreNum = parseInt(score);
+    const scoreDiff = scoreNum - par;
     
-    // Use gross score for styling (no stroke adjustments)
-    const scoreType = getScoreType(parseInt(score), parseInt(par));
-    
-    // Apply styling based on score type by wrapping score in a span
-    switch (scoreType) {
-        case 'eagle':
-            // Red text with double circle around number
-            cell.innerHTML = `<span style="
-                color: red; 
-                border: 2px solid red; 
-                border-radius: 50%; 
-                box-shadow: 0 0 0 2px white, 0 0 0 4px red;
-                width: 24px; 
-                height: 24px; 
-                display: inline-flex; 
-                align-items: center; 
-                justify-content: center;
-                line-height: 1;
-            ">${score}</span>`;
-            break;
-            
-        case 'birdie':
-            // Red text with single circle around number
-            cell.innerHTML = `<span style="
-                color: red; 
-                border: 2px solid red; 
-                border-radius: 50%; 
-                width: 24px; 
-                height: 24px; 
-                display: inline-flex; 
-                align-items: center; 
-                justify-content: center;
-                line-height: 1;
-            ">${score}</span>`;
-            break;
-            
-        case 'par':
-            // Just black text
-            cell.innerHTML = `<span style="color: black;">${score}</span>`;
-            break;
-            
-        case 'bogey':
-            // Black text with square around number
-            cell.innerHTML = `<span style="
-                color: black; 
-                border: 2px solid black; 
-                border-radius: 0; 
-                width: 24px; 
-                height: 24px; 
-                display: inline-flex; 
-                align-items: center; 
-                justify-content: center;
-                line-height: 1;
-            ">${score}</span>`;
-            break;
-            
-        case 'double':
-            // Black text with double square around number
-            cell.innerHTML = `<span style="
-                color: black; 
-                border: 2px solid black; 
-                border-radius: 0; 
-                box-shadow: 0 0 0 2px white, 0 0 0 4px black;
-                width: 24px; 
-                height: 24px; 
-                display: inline-flex; 
-                align-items: center; 
-                justify-content: center;
-                line-height: 1;
-            ">${score}</span>`;
-            break;
+    // Apply styling based on score vs par
+    if (scoreDiff === -1) {
+        // Birdie: Red text with red circle
+        cell.innerHTML = `<span style="
+            color: red; 
+            border: 2px solid red; 
+            border-radius: 50%; 
+            width: 24px; 
+            height: 24px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: bold;
+            line-height: 1;
+        ">${score}</span>`;
+    } else if (scoreDiff === 0) {
+        // Par: Black text (no styling)
+        cell.textContent = score;
+    } else if (scoreDiff === 1) {
+        // Bogey: Black text with black square
+        cell.innerHTML = `<span style="
+            color: black; 
+            border: 2px solid black; 
+            border-radius: 0; 
+            width: 24px; 
+            height: 24px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: bold;
+            line-height: 1;
+        ">${score}</span>`;
+    } else if (scoreDiff >= 2) {
+        // Double bogey or worse: Black text with double black square
+        cell.innerHTML = `<span style="
+            color: black; 
+            border: 2px solid black; 
+            border-radius: 0; 
+            box-shadow: 0 0 0 2px white, 0 0 0 4px black;
+            width: 24px; 
+            height: 24px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: bold;
+            line-height: 1;
+        ">${score}</span>`;
+    } else {
+        // Eagle or better: Red text with red circle (same as birdie for simplicity)
+        cell.innerHTML = `<span style="
+            color: red; 
+            border: 2px solid red; 
+            border-radius: 50%; 
+            width: 24px; 
+            height: 24px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: bold;
+            line-height: 1;
+        ">${score}</span>`;
     }
 }
 
