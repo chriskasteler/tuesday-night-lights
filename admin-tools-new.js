@@ -1455,6 +1455,9 @@ window.loadWeeklyScoring = async function() {
         // Add save buttons to each matchup
         addSaveButtonsToMatchups(selectedWeek);
         
+        // Refresh all stroke indicators to ensure they display correctly
+        refreshStrokeIndicators();
+        
         console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
         
     } catch (error) {
@@ -1739,7 +1742,7 @@ function generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, playe
                 data-player="${playerName}"
                 data-hole="${hole}"
                 data-player-index="${playerIndex}"
-                style="padding: 10px; border: 1px solid #ddd; text-align: center; cursor: pointer; min-width: 40px;"
+                style="padding: 10px; border: 1px solid #ddd; text-align: center; cursor: pointer; min-width: 40px; position: relative;"
                 onclick="editScoreCell(this)">
                 -
             </td>
@@ -7196,5 +7199,24 @@ async function removeLineupFromDatabase(weekNumber, matchupIndex, matchNumber, t
         
     } catch (error) {
         console.error('❌ Error removing lineup from database:', error);
+    }
+}
+
+// Refresh all stroke indicators on the page
+function refreshStrokeIndicators() {
+    try {
+        console.log('🔄 Refreshing all stroke indicators...');
+        
+        // Go through all players and holes that have strokes
+        for (const player in currentPlayerStrokes) {
+            for (const hole in currentPlayerStrokes[player]) {
+                updateScoreStrokeIndicator(player, hole);
+            }
+        }
+        
+        console.log('✅ Stroke indicators refreshed');
+        
+    } catch (error) {
+        console.error('❌ Error refreshing stroke indicators:', error);
     }
 }
