@@ -1670,6 +1670,43 @@ function getAdminTeamName(scheduleTeamName) {
     return adminAllTeamsData[scheduleTeamName] || scheduleTeamName;
 }
 
+// Get actual player names from lineup data for Enter Scores
+function getAdminPlayerNames(weekNumber, groupIndex, matchNum, matchup) {
+    try {
+        // Check if we have week scorecard data with lineup information
+        if (window.currentWeekScorecard && window.currentWeekScorecard[`matchup${groupIndex}Lineup`]) {
+            const matchupLineup = window.currentWeekScorecard[`matchup${groupIndex}Lineup`];
+            const matchData = matchupLineup[`match${matchNum}`];
+            
+            if (matchData) {
+                return {
+                    team1Player1: matchData.team1Players && matchData.team1Players[0] ? matchData.team1Players[0].name : null,
+                    team1Player2: matchData.team1Players && matchData.team1Players[1] ? matchData.team1Players[1].name : null,
+                    team2Player1: matchData.team2Players && matchData.team2Players[0] ? matchData.team2Players[0].name : null,
+                    team2Player2: matchData.team2Players && matchData.team2Players[1] ? matchData.team2Players[1].name : null
+                };
+            }
+        }
+        
+        // Fallback to generic names if no lineup data available
+        return {
+            team1Player1: null,
+            team1Player2: null,
+            team2Player1: null,
+            team2Player2: null
+        };
+        
+    } catch (error) {
+        console.error('Error getting player names:', error);
+        return {
+            team1Player1: null,
+            team1Player2: null,
+            team2Player1: null,
+            team2Player2: null
+        };
+    }
+}
+
 // Load scorecard data for selected week in admin
 async function loadAdminWeekScores() {
     const weekSelect = document.getElementById('admin-week-select');
@@ -1962,11 +1999,11 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
     // Get actual player names from lineup data, fallback to generic if not available
     const playerNames = getAdminPlayerNames(weekNumber, groupIndex, matchNum, matchup);
     
-    // Default Best Ball format
-    const team1Player1 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'A' : 'C'}`;
-    const team1Player2 = `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'B' : 'D'}`;
-    const team2Player1 = `${getAdminTeamName(matchup.team2)}-${matchNum === 1 ? 'A' : 'C'}`;
-    const team2Player2 = `${getAdminTeamName(matchup.team2)}-${matchNum === 1 ? 'B' : 'D'}`;
+    // Use actual player names if available, otherwise use generic format
+    const team1Player1 = playerNames.team1Player1 || `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'A' : 'C'}`;
+    const team1Player2 = playerNames.team1Player2 || `${getAdminTeamName(matchup.team1)}-${matchNum === 1 ? 'B' : 'D'}`;
+    const team2Player1 = playerNames.team2Player1 || `${getAdminTeamName(matchup.team2)}-${matchNum === 1 ? 'A' : 'C'}`;
+    const team2Player2 = playerNames.team2Player2 || `${getAdminTeamName(matchup.team2)}-${matchNum === 1 ? 'B' : 'D'}`;
 
     return `
         <div class="admin-scorecard" style="width: 100%; max-width: 100%; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
