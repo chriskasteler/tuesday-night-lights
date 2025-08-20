@@ -1715,8 +1715,16 @@ function generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, playe
 // Load existing weekly scoring data
 async function loadExistingWeeklyScoringData(weekNumber) {
     try {
-        // Populate player dropdowns for each team
-        await populateAllPlayerDropdowns();
+        // Only populate dropdowns if they haven't been populated yet
+        const dropdowns = document.querySelectorAll('.player-dropdown');
+        const hasEmptyDropdowns = Array.from(dropdowns).some(dropdown => dropdown.options.length <= 1);
+        
+        if (hasEmptyDropdowns) {
+            console.log('🔄 Populating empty player dropdowns...');
+            await populateAllPlayerDropdowns();
+        } else {
+            console.log('✅ Player dropdowns already populated, skipping repopulation');
+        }
         
         // Load existing lineup and score data
         console.log(`Loading existing data for Week ${weekNumber}`);
@@ -1902,20 +1910,14 @@ window.handlePlayerSelection = function(dropdown) {
         const teamName = dropdown.dataset.team;
         const position = dropdown.dataset.position;
         
-        console.log(`Player selected: ${selectedPlayer} for ${teamName} Match ${matchNumber} Position ${position}`);
+        console.log(`🎯 Player selected: "${selectedPlayer}" for ${teamName} Match ${matchNumber} Position ${position}`);
         
         // Update score cells with selected player name
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
         
-        // Refresh all dropdowns to remove/add players based on selections
-        // Use setTimeout to avoid conflicts with dropdown event handling
-        setTimeout(() => {
-            try {
-                refreshPlayerDropdowns();
-            } catch (refreshError) {
-                console.error('Error refreshing dropdowns:', refreshError);
-            }
-        }, 10);
+        // Refresh all dropdowns to enforce smart selection (remove selected players from other dropdowns)
+        console.log('🔄 Triggering smart selection refresh...');
+        refreshPlayerDropdowns();
         
         // Save lineup change to database
         // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
@@ -1949,43 +1951,58 @@ function refreshPlayerDropdowns() {
         const selectedPlayers = new Set();
         const dropdowns = document.querySelectorAll('.player-dropdown');
         
-        dropdowns.forEach(dropdown => {
+        console.log(`🔍 Found ${dropdowns.length} player dropdowns to refresh`);
+        
+        dropdowns.forEach((dropdown, index) => {
             if (dropdown.value && dropdown.value.trim() !== '') {
                 selectedPlayers.add(dropdown.value);
+                console.log(`   Dropdown ${index}: "${dropdown.value}" (Team: ${dropdown.dataset.team})`);
             }
         });
         
-        console.log('Currently selected players:', Array.from(selectedPlayers));
+        console.log('📋 Currently selected players:', Array.from(selectedPlayers));
         
         // Update each dropdown to disable selected players
-        dropdowns.forEach(dropdown => {
+        dropdowns.forEach((dropdown, index) => {
             const currentValue = dropdown.value;
             const teamName = dropdown.dataset.team;
             
             // Skip if dropdown doesn't have a team (invalid state)
             if (!teamName) {
-                console.warn('Dropdown missing team data:', dropdown);
+                console.warn(`⚠️ Dropdown ${index} missing team data:`, dropdown);
                 return;
             }
+            
+            console.log(`🔄 Updating dropdown ${index} for team ${teamName} (current: "${currentValue}")`);
+            
+            let hiddenCount = 0;
+            let shownCount = 0;
             
             // Don't repopulate - just update the existing options
             Array.from(dropdown.options).forEach(option => {
                 if (option.value && option.value !== currentValue && selectedPlayers.has(option.value)) {
                     option.disabled = true;
                     option.style.display = 'none'; // Hide instead of just disable
+                    hiddenCount++;
+                    console.log(`   ❌ Hiding "${option.value}" (already selected elsewhere)`);
                 } else if (option.value) {
                     option.disabled = false;
                     option.style.display = 'block';
+                    shownCount++;
                     // Restore original text if it was modified
                     if (option.textContent.includes('(Already Selected)')) {
                         option.textContent = option.value;
                     }
                 }
             });
+            
+            console.log(`   ✅ Dropdown ${index}: ${shownCount} options shown, ${hiddenCount} options hidden`);
         });
         
+        console.log('🎯 Smart selection refresh completed!');
+        
     } catch (error) {
-        console.error('Error refreshing player dropdowns:', error);
+        console.error('❌ Error refreshing player dropdowns:', error);
     }
 }
 
