@@ -1802,15 +1802,15 @@ function generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, playe
     let cells = '';
     for (let hole = 1; hole <= 9; hole++) {
         cells += `
-            <td class="score-cell editable" 
+            <td class="score-cell editable disabled" 
                 data-week="${weekNumber}"
                 data-matchup="${matchupIndex}"
                 data-match="${matchNumber}"
                 data-player="${playerName}"
                 data-hole="${hole}"
                 data-player-index="${playerIndex}"
-                style="padding: 10px; border: 1px solid #ddd; text-align: center; cursor: pointer; min-width: 40px; position: relative;"
-                onclick="editScoreCell(this)">
+                style="padding: 10px; border: 1px solid #ddd; text-align: center; cursor: not-allowed; min-width: 40px; position: relative; background-color: #f8f9fa; color: #6c757d;"
+                title="Select a player first to enable scoring">
                 -
             </td>
         `;
@@ -2018,8 +2018,8 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         
         console.log(`🎯 WEEKLY SCORING: Player selected: "${selectedPlayer}" for ${teamName} Match ${matchNumber} Position ${position}`);
         
-        // Update score cells with selected player name
-        updateScoreCellsPlayerName(dropdown, selectedPlayer);
+        // Update score cells with selected player ID and enable/disable them
+        updateScoreCellsForPlayerSelection(dropdown, selectedPlayer);
         
         // Show/hide remove button based on selection
         toggleRemoveButton(dropdown);
@@ -2038,21 +2038,77 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
     }
 };
 
-// Update score cell data attributes with selected player name (convert ID to name)
-function updateScoreCellsPlayerName(dropdown, selectedValue) {
+// Update score cells with player ID and enable/disable them based on selection
+function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
     const row = dropdown.closest('tr');
     const scoreCells = row.querySelectorAll('.score-cell');
+    const strokeCells = row.nextElementSibling?.querySelectorAll('.stroke-cell') || [];
     
     scoreCells.forEach(cell => {
         if (selectedValue) {
-            // Now selectedValue is player ID, need to get player name
-            const playerName = getPlayerNameById(selectedValue);
-            cell.dataset.player = playerName || selectedValue;  // Fallback to ID if name not found
+            // Player selected: enable cells and set data-player to actual player ID
+            cell.dataset.player = selectedValue;  // Store the actual player ID
+            cell.classList.remove('disabled');
+            cell.style.cursor = 'pointer';
+            cell.style.backgroundColor = 'white';
+            cell.style.color = 'black';
+            cell.title = 'Click to enter score';
+            cell.onclick = () => editScoreCell(cell);
+            
+            console.log(`✅ Enabled score cells for player ID: ${selectedValue}`);
         } else {
-            // Reset to generic name if no player selected
+            // No player selected: disable cells and reset to generic name
             const teamName = dropdown.dataset.team;
             const position = dropdown.dataset.position;
-            cell.dataset.player = `${teamName} Player ${position}`;
+            cell.dataset.player = `${teamName} Player ${position}`;  // Generic name for display
+            cell.classList.add('disabled');
+            cell.style.cursor = 'not-allowed';
+            cell.style.backgroundColor = '#f8f9fa';
+            cell.style.color = '#6c757d';
+            cell.title = 'Select a player first to enable scoring';
+            cell.onclick = null;
+            
+            // Clear any existing scores when player is removed
+            cell.textContent = '-';
+            
+            console.log(`❌ Disabled score cells for ${teamName} Player ${position}`);
+        }
+    });
+    
+    // Also update stroke cells
+    strokeCells.forEach(cell => {
+        if (selectedValue) {
+            // Enable stroke cell and update data-player to actual player ID
+            cell.dataset.player = selectedValue;  // Store the actual player ID
+            cell.style.opacity = '1';
+            cell.style.pointerEvents = 'auto';
+            
+            // Update the button onclick to use player ID
+            const button = cell.querySelector('button');
+            if (button) {
+                const hole = cell.dataset.hole;
+                button.onclick = () => openStrokeSelector(selectedValue, hole);
+            }
+        } else {
+            // Disable stroke cell and reset to generic name
+            const teamName = dropdown.dataset.team;
+            const position = dropdown.dataset.position;
+            cell.dataset.player = `${teamName} Player ${position}`;  // Generic name
+            cell.style.opacity = '0.5';
+            cell.style.pointerEvents = 'none';
+            
+            // Clear any existing stroke indicators
+            const indicator = cell.querySelector('.stroke-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+            
+            // Reset button onclick to generic name
+            const button = cell.querySelector('button');
+            if (button) {
+                const hole = cell.dataset.hole;
+                button.onclick = () => openStrokeSelector(`${teamName} Player ${position}`, hole);
+            }
         }
     });
 }
@@ -2275,6 +2331,11 @@ function addStrokeSelectorModal() {
 
 // Edit score cell functionality  
 window.editScoreCell = function(cell) {
+    // Check if cell is disabled
+    if (cell.classList.contains('disabled')) {
+        return; // Don't allow editing disabled cells
+    }
+    
     const currentScore = cell.textContent.trim();
     
     // Create input field
