@@ -3604,7 +3604,7 @@ async function makeDesktopEditable(cell) {
         }, 100);
         
         // Auto-save scores to database
-        await saveScoresToDatabase(weekNumber);
+        saveScoresToDatabase(weekNumber);
         
         // Update standings after scores are saved
         setTimeout(async () => {
