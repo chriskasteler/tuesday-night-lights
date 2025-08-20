@@ -28,7 +28,7 @@ async function loadPlayersAndTeams() {
         participantsSnapshot.forEach((doc) => {
             allPlayers.push({ id: doc.id, ...doc.data() });
         });
-        
+
         // Make globally available
         window.allPlayers = allPlayers;
 
@@ -1087,18 +1087,18 @@ async function updateStandingsSection() {
     } catch (error) {
         console.error('Error updating standings:', error);
         // Fallback to just updating team names
-        const standingsTable = document.querySelector('#standings-section .standings-table tbody');
-        if (!standingsTable) return;
-        
-        const rows = standingsTable.querySelectorAll('tr');
-        rows.forEach((row, index) => {
-            if (index < currentTeams.length) {
-                const teamCell = row.querySelector('td:nth-child(2)'); // Team name is in 2nd column
-                if (teamCell) {
-                    teamCell.textContent = currentTeams[index].teamName;
-                }
+    const standingsTable = document.querySelector('#standings-section .standings-table tbody');
+    if (!standingsTable) return;
+    
+    const rows = standingsTable.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        if (index < currentTeams.length) {
+            const teamCell = row.querySelector('td:nth-child(2)'); // Team name is in 2nd column
+            if (teamCell) {
+                teamCell.textContent = currentTeams[index].teamName;
             }
-        });
+        }
+    });
     }
 }
 
@@ -1441,6 +1441,11 @@ window.loadWeeklyScoring = async function() {
         const scoringHTML = await generateWeeklyScoringInterface(selectedWeek, scheduleData);
         contentDiv.innerHTML = scoringHTML;
         
+        // Add stroke selector modal if not already present
+        if (!document.getElementById('stroke-selector-modal')) {
+            addStrokeSelectorModal();
+        }
+        
         // Load existing data
         await loadExistingWeeklyScoringData(selectedWeek);
         
@@ -1550,6 +1555,11 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
                 </tr>
+                <tr class="strokes-row" data-team="1" data-player="1">
+                    <td style="padding: 5px 10px; border: 1px solid #ddd; background: #f0f8f0; font-size: 0.85rem; color: #666;">Strokes</td>
+                    ${generateStrokeCells(`${team1Name} Player 1`)}
+                    <td colspan="2" style="border: 1px solid #ddd;"></td>
+                </tr>
                 <tr class="player-row" data-team="1" data-player="2">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;"
                         data-team="${team1Name}" data-match="${matchNumber}" data-position="2">
@@ -1567,6 +1577,11 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team1Name} Player 2`, 2)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
+                </tr>
+                <tr class="strokes-row" data-team="1" data-player="2">
+                    <td style="padding: 5px 10px; border: 1px solid #ddd; background: #f0f8f0; font-size: 0.85rem; color: #666;">Strokes</td>
+                    ${generateStrokeCells(`${team1Name} Player 2`)}
+                    <td colspan="2" style="border: 1px solid #ddd;"></td>
                 </tr>
                 
                 <!-- Team 1 Score Row -->
@@ -1607,6 +1622,11 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
                 </tr>
+                <tr class="strokes-row" data-team="2" data-player="1">
+                    <td style="padding: 5px 10px; border: 1px solid #ddd; background: #fef8e0; font-size: 0.85rem; color: #666;">Strokes</td>
+                    ${generateStrokeCells(`${team2Name} Player 1`)}
+                    <td colspan="2" style="border: 1px solid #ddd;"></td>
+                </tr>
                 <tr class="player-row" data-team="2" data-player="2">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
                         data-team="${team2Name}" data-match="${matchNumber}" data-position="2">
@@ -1624,6 +1644,11 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team2Name} Player 2`, 4)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="points-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #f8f9fa;">-</td>
+                </tr>
+                <tr class="strokes-row" data-team="2" data-player="2">
+                    <td style="padding: 5px 10px; border: 1px solid #ddd; background: #fef8e0; font-size: 0.85rem; color: #666;">Strokes</td>
+                    ${generateStrokeCells(`${team2Name} Player 2`)}
+                    <td colspan="2" style="border: 1px solid #ddd;"></td>
                 </tr>
                 
                 <!-- Team 2 Score Row -->
@@ -1644,6 +1669,26 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
             </tbody>
         </table>
     `;
+}
+
+// Generate stroke cells for a player
+function generateStrokeCells(playerName) {
+    let cells = '';
+    for (let hole = 1; hole <= 9; hole++) {
+        cells += `
+            <td class="stroke-cell" 
+                data-player="${playerName}"
+                data-hole="${hole}"
+                style="padding: 5px; border: 1px solid #ddd; text-align: center; font-size: 0.8rem;">
+                <button onclick="openStrokeSelector('${playerName.replace(/'/g, "\\'")}', ${hole})"
+                        style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
+                    Add
+                </button>
+                <div class="stroke-display" style="margin-top: 2px; font-size: 0.75rem; color: #666;">-</div>
+            </td>
+        `;
+    }
+    return cells;
 }
 
 // Generate editable score cells for a player
@@ -1972,6 +2017,21 @@ window.editPlayerName = function(cell) {
         }
     });
 };
+
+// Add stroke selector modal to the page
+function addStrokeSelectorModal() {
+    const modalHTML = `
+        <div id="stroke-selector-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                <h3 style="margin: 0 0 15px 0; color: #2d4a2d;">Add Strokes</h3>
+                <div id="stroke-selector-content"></div>
+                <button onclick="closeStrokeSelector()" style="margin-top: 15px; padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
 
 // Edit score cell functionality  
 window.editScoreCell = function(cell) {
@@ -3952,18 +4012,18 @@ function updateTeamScores() {
                     const teamLabel = teamRow.querySelector('.team-score-label');
                     if (teamLabel) {
                         const labelText = teamLabel.textContent;
-                        
-                        // Determine match number from context
-                        const scorecard = cell.closest('.admin-scorecard');
-                        let matchNum = 1; // Default to match 1
-                        
-                        if (scorecard) {
-                            const matchTitle = scorecard.querySelector('.match-title');
-                            if (matchTitle) {
-                                matchNum = parseInt(matchTitle.textContent.replace('Match ', '')) || 1;
+                            
+                            // Determine match number from context
+                            const scorecard = cell.closest('.admin-scorecard');
+                            let matchNum = 1; // Default to match 1
+                            
+                            if (scorecard) {
+                                const matchTitle = scorecard.querySelector('.match-title');
+                                if (matchTitle) {
+                                    matchNum = parseInt(matchTitle.textContent.replace('Match ', '')) || 1;
+                                }
                             }
-                        }
-                        
+                            
                         // Find actual player names from the scorecard for this team/match
                         const scorecardElement = cell.closest('.admin-scorecard');
                         if (scorecardElement) {
