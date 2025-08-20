@@ -1514,6 +1514,17 @@ async function generateUnifiedScorecard(weekNumber, matchupIndex, matchup) {
                 </div>
                 ${await generateUnifiedMatchTable(weekNumber, matchupIndex, 2, team1Name, team2Name)}
             </div>
+            
+            <!-- Save Matchup Button -->
+            <div style="text-align: center; padding: 15px; background: #f8f9fa; border-top: 1px solid #dee2e6;">
+                <button onclick="saveMatchupLineup(${weekNumber}, ${matchupIndex})" 
+                        style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: 600;">
+                    💾 Save ${team1Name} vs ${team2Name} Lineup
+                </button>
+                <p style="margin: 10px 0 0 0; font-size: 0.85rem; color: #666;">
+                    Save all player selections for this matchup to the database
+                </p>
+            </div>
         </div>
     `;
 }
@@ -6717,6 +6728,57 @@ function restoreScoresInUI() {
 }
 
 // ===== LINEUP SAVING FUNCTIONALITY =====
+
+// Save entire matchup lineup to database (called by save button)
+async function saveMatchupLineup(weekNumber, matchupIndex) {
+    try {
+        console.log(`💾 SAVING MATCHUP: Week ${weekNumber}, Matchup ${matchupIndex}`);
+        
+        // Get all dropdowns for this matchup
+        const dropdowns = document.querySelectorAll(`.player-dropdown[data-week="${weekNumber}"][data-matchup="${matchupIndex}"]`);
+        
+        if (dropdowns.length === 0) {
+            alert('No player selections found for this matchup');
+            return;
+        }
+        
+        let savedCount = 0;
+        const promises = [];
+        
+        // Save each selected player
+        dropdowns.forEach(dropdown => {
+            if (dropdown.value) {
+                const matchNumber = dropdown.dataset.match;
+                const teamName = dropdown.dataset.team;
+                const position = dropdown.dataset.position;
+                
+                // Save this player selection
+                promises.push(
+                    saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, dropdown.value)
+                );
+                savedCount++;
+            }
+        });
+        
+        if (savedCount === 0) {
+            alert('No players selected in this matchup to save');
+            return;
+        }
+        
+        // Wait for all saves to complete
+        await Promise.all(promises);
+        
+        alert(`✅ Successfully saved lineup for ${savedCount} players in this matchup!`);
+        console.log(`✅ MATCHUP SAVED: Week ${weekNumber}, Matchup ${matchupIndex}, ${savedCount} players`);
+        
+    } catch (error) {
+        console.error('❌ Error saving matchup lineup:', error);
+        alert('Error saving matchup lineup. Please try again.');
+    }
+}
+
+// Make the function globally available
+window.saveMatchupLineup = saveMatchupLineup;
 
 // Save a single lineup change to the weeklyLineups database
 async function saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayerId) {
