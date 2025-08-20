@@ -1704,7 +1704,11 @@ async function populateAllPlayerDropdowns() {
         
         if (window.currentTeams) {
             console.log('- Team names:', window.currentTeams.map(t => t.teamName));
+            console.log('- Detailed teams:', window.currentTeams.map(t => ({id: t.id, teamId: t.teamId, teamName: t.teamName})));
         }
+        
+        // Show admin teams mapping
+        console.log('📊 Admin teams mapping:', adminAllTeamsData);
         
         // Build team-to-players mapping
         console.log('🔄 Building team players map...');
@@ -1772,9 +1776,10 @@ function populatePlayerDropdown(dropdown, teamName) {
         const teamPlayers = window.teamPlayersMap ? window.teamPlayersMap[teamName] : null;
         
         if (!teamPlayers) {
-            console.warn(`❌ No player data found for team: ${teamName}`);
+            console.warn(`❌ No player data found for team: "${teamName}"`);
             console.log('Available teams in teamPlayersMap:', window.teamPlayersMap ? Object.keys(window.teamPlayersMap) : 'not built');
             console.log('Available teams in currentTeams:', window.currentTeams ? window.currentTeams.map(t => t.teamName) : 'not loaded');
+            console.log('adminAllTeamsData keys:', Object.keys(adminAllTeamsData));
             
             // Show exact team name matching
             if (window.teamPlayersMap) {
@@ -1785,6 +1790,16 @@ function populatePlayerDropdown(dropdown, teamName) {
                 );
                 console.log(`Exact match for "${teamName}":`, exactMatch ? 'Found' : 'Not found');
                 console.log(`Similar team names:`, similarTeams);
+                
+                // Show character-by-character comparison for debugging
+                Object.keys(window.teamPlayersMap).forEach(dbTeamName => {
+                    if (dbTeamName.toLowerCase().includes('avi') || teamName.toLowerCase().includes('avi')) {
+                        console.log(`🔍 Comparing "${teamName}" (${teamName.length} chars) vs "${dbTeamName}" (${dbTeamName.length} chars)`);
+                        console.log(`- Team name chars:`, teamName.split(''));
+                        console.log(`- DB name chars:`, dbTeamName.split(''));
+                        console.log(`- Exact match:`, teamName === dbTeamName);
+                    }
+                });
             }
             return;
         }
