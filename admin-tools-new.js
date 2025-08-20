@@ -3284,8 +3284,10 @@ function makeDesktopEditable(cell) {
         // Calculate match play status (1up, 2dn, etc.)
         calculateMatchStatus();
         
-        // Update team points based on match status
-        updateTeamPoints();
+        // Update team points based on match status (with slight delay to ensure status is set)
+        setTimeout(() => {
+            updateTeamPoints();
+        }, 100);
         
         // Auto-save scores to database
         saveScoresToDatabase(weekNumber);
@@ -5546,5 +5548,9 @@ function restoreScoresInUI() {
     updateTeamScores();
     updateTeamTotals();
     calculateMatchStatus();
-    updateTeamPoints();
+    
+    // Update team points after a brief delay to ensure match status is calculated
+    setTimeout(() => {
+        updateTeamPoints();
+    }, 100);
 }
