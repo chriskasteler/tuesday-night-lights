@@ -2307,6 +2307,15 @@ window.editScoreCell = function(cell) {
             // Update player total
             updatePlayerTotal(player);
             
+            // Update team scores for best ball
+            updateTeamScores();
+            
+            // Update team totals (for all formats)
+            updateTeamTotals();
+            
+            // Calculate match play status (AS, 1up, 1dn, etc.)
+            calculateMatchStatus();
+            
             // Save to database
             await saveScoresToDatabase(week);
             
@@ -2354,6 +2363,15 @@ window.editScoreCell = function(cell) {
                     
                     // Update player total
                     updatePlayerTotal(player);
+                    
+                    // Update team scores for best ball
+                    updateTeamScores();
+                    
+                    // Update team totals (for all formats)
+                    updateTeamTotals();
+                    
+                    // Calculate match play status (AS, 1up, 1dn, etc.)
+                    calculateMatchStatus();
                     
                     // Save to database
                     await saveScoresToDatabase(week);
