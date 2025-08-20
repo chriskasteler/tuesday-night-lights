@@ -1662,7 +1662,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
 
                 <!-- Team 1 Score Row -->
                 <tr class="team-score-row" data-team="1">
-                    <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; font-weight: 600;">${team1Name} Team Score</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8; font-weight: 600;">Match Status</td>
                     <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
@@ -1759,7 +1759,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
 
                 <!-- Team 2 Score Row -->
                 <tr class="team-score-row" data-team="2">
-                    <td style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; font-weight: 600;">${team2Name} Team Score</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; background: #fff3cd; font-weight: 600;">Match Status</td>
                     <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                     <td class="team-score-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
