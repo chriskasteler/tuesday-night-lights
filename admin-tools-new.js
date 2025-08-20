@@ -1950,6 +1950,7 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">8</th>
                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">9</th>
                            <th class="total-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">Total</th>
+                           <th class="points-col" style="padding: 8px; background: #e8f5e8; border: 1px solid #ddd; text-align: center; font-weight: 600;">Points Earned</th>
                        </tr>
                    </thead>
                    <tbody>
@@ -1958,6 +1959,7 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
                            <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Name} Player 1 & Player 2</td>
                            ${generateTeamScoreCells(team1Id, matchNum, groupIndex, weekNumber)}
                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="team-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd; color: #856404;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -1974,6 +1976,7 @@ function renderAlternateShotScorecard(matchup, weekNumber, groupIndex, matchNum)
                            <td class="team-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Name} Player 1 & Player 2</td>
                            ${generateTeamScoreCells(team2Id, matchNum, groupIndex, weekNumber)}
                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="team-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd; color: #856404;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -2033,6 +2036,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">8</th>
                            <th style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">9</th>
                            <th class="total-col" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; text-align: center;">Total</th>
+                           <th class="points-col" style="padding: 8px; background: #e8f5e8; border: 1px solid #ddd; text-align: center; font-weight: 600;">Points Earned</th>
                        </tr>
                    </thead>
                    <tbody>
@@ -2041,6 +2045,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Player1}</td>
                            ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="player-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #f8f9fa; color: #666;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -2051,6 +2056,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Player2}</td>
                            ${generateScoreCells(team1Player2, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="player-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #f8f9fa; color: #666;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -2069,6 +2075,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="team-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd; color: #856404;">-</td>
                        </tr>
                        <tr class="match-status-row" style="background: #fff3cd;">
                            <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${getAdminTeamName(matchup.team1)} Status</td>
@@ -2080,6 +2087,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Player1}</td>
                            ${generateScoreCells(team2Player1, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="player-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #f8f9fa; color: #666;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -2090,6 +2098,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Player2}</td>
                            ${generateScoreCells(team2Player2, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="player-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; background: #f8f9fa; color: #666;">-</td>
                        </tr>
                        <tr class="stroke-row">
                            <td class="stroke-label" style="padding: 4px; border: 1px solid #ddd; font-size: 11px; color: #666; background: #f8f9fa; text-align: right;">stroke</td>
@@ -2108,6 +2117,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-score-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
                            <td class="team-total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
+                           <td class="team-points-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #fff3cd; color: #856404;">-</td>
                        </tr>
                        <tr class="match-status-row" style="background: #fff3cd;">
                            <td class="match-status-label" style="padding: 6px; border: 1px solid #ddd; font-weight: 600; font-size: 0.9rem;">${getAdminTeamName(matchup.team2)} Status</td>
@@ -2249,6 +2259,9 @@ function selectScore(score) {
     
     // Update team totals (for all formats)
     updateTeamTotals();
+    
+    // Update team points based on totals
+    updateTeamPoints();
     
     // Auto-advance to next hole
     setTimeout(() => {
@@ -2645,6 +2658,9 @@ function clearScore() {
     // Update team totals (for all formats)
     updateTeamTotals();
     
+    // Update team points based on totals
+    updateTeamPoints();
+    
     closeScorePad();
 }
 
@@ -2707,6 +2723,9 @@ function recalculateAllTotals() {
     
     // Update team totals (for all formats)
     updateTeamTotals();
+    
+    // Update team points based on totals
+    updateTeamPoints();
     
     // Update match status cells
     Object.keys(currentMatchStatus).forEach(matchKey => {
@@ -3044,6 +3063,83 @@ function updateTeamScores() {
     }
 }
 
+// Calculate and update team points based on match status
+function updateTeamPoints() {
+    try {
+        // Find all team points cells
+        const teamPointsCells = document.querySelectorAll('td.team-points-cell');
+        
+        teamPointsCells.forEach(cell => {
+            const teamRow = cell.closest('tr');
+            if (!teamRow) return;
+            
+            // Find the scorecard this team belongs to
+            const scorecard = cell.closest('.admin-scorecard');
+            if (!scorecard) return;
+            
+            // Find the status rows for this match
+            const statusRows = scorecard.querySelectorAll('tr.match-status-row');
+            
+            // Determine which team this is (first or second team in the match)
+            const allTeamRows = scorecard.querySelectorAll('tr.team-score-row, tr.team-row');
+            const teamIndex = Array.from(allTeamRows).indexOf(teamRow);
+            
+            if (teamIndex >= 0 && teamIndex < statusRows.length) {
+                const statusRow = statusRows[teamIndex];
+                const finalStatusCell = statusRow.querySelector('.match-status-final');
+                
+                if (finalStatusCell) {
+                    const status = finalStatusCell.textContent.trim();
+                    let points = 0;
+                    
+                    // Parse match status to determine points earned
+                    if (status === 'AS' || status === 'Tie' || status === 'T') {
+                        // All Square / Tie
+                        points = 1;
+                    } else if (status.includes('up') || status.includes('&')) {
+                        // This team is ahead (e.g., "1up", "3&1")
+                        points = 2;
+                    } else if (status.includes('dn')) {
+                        // This team is down (e.g., "1dn", "2dn")
+                        points = 0;
+                    } else if (status === '-' || status === '') {
+                        // Match not complete
+                        points = '-';
+                    }
+                    
+                    // Update the cell
+                    cell.textContent = points;
+                    
+                    // Color coding
+                    if (points === 2) {
+                        cell.style.background = '#d4edda'; // Green for win
+                        cell.style.color = '#155724';
+                    } else if (points === 1) {
+                        cell.style.background = '#fff3cd'; // Yellow for tie
+                        cell.style.color = '#856404';
+                    } else if (points === 0) {
+                        cell.style.background = '#f8d7da'; // Red for loss
+                        cell.style.color = '#721c24';
+                    } else {
+                        // Match incomplete
+                        cell.textContent = '-';
+                        cell.style.background = '#f8f9fa';
+                        cell.style.color = '#666';
+                    }
+                } else {
+                    // No status cell found
+                    cell.textContent = '-';
+                    cell.style.background = '#f8f9fa';
+                    cell.style.color = '#666';
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error updating team points:', error);
+    }
+}
+
 // Update team total cells
 function updateTeamTotals() {
     const teamTotalCells = document.querySelectorAll('td.team-total-cell');
@@ -3183,6 +3279,9 @@ function makeDesktopEditable(cell) {
         
         // Calculate match play status (1up, 2dn, etc.)
         calculateMatchStatus();
+        
+        // Update team points based on match status
+        updateTeamPoints();
         
         // Auto-save scores to database
         saveScoresToDatabase(weekNumber);
@@ -5443,4 +5542,5 @@ function restoreScoresInUI() {
     updateTeamScores();
     updateTeamTotals();
     calculateMatchStatus();
+    updateTeamPoints();
 }
