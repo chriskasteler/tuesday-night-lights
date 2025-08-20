@@ -3406,8 +3406,6 @@ function updateTeamPoints() {
                     const status = finalStatusCell.textContent.trim();
                     let points = 0;
                     
-                    console.log('🎯 POINTS: Team status:', status, 'for team index:', teamIndex);
-                    
                     // Parse match status to determine points earned
                     if (status === 'AS' || status === 'Tie' || status === 'T') {
                         // All Square / Tie
@@ -3422,8 +3420,6 @@ function updateTeamPoints() {
                         // Match not complete
                         points = '-';
                     }
-                    
-                    console.log('🎯 POINTS: Calculated points:', points, 'for status:', status);
                     
                     // Update the cell
                     cell.textContent = points;
