@@ -1486,15 +1486,7 @@ async function generateWeeklyScoringInterface(weekNumber, scheduleData) {
                 <p style="margin: 5px 0 0 0; color: #666;">Click player names to set lineups • Click score cells to enter scores</p>
             </div>
             
-            <div class="scorecard-selection" style="margin-bottom: 30px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
-                <div id="scorecard-status-${weekNumber}" style="display: flex; align-items: center; gap: 10px;">
-                    <button id="select-scorecard-btn-${weekNumber}" 
-                            onclick="openScorecardSelector(${weekNumber})" 
-                            style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                        Please Select Scorecard
-                    </button>
-                </div>
-            </div>
+
     `;
     
     // Generate unified scorecards for each matchup
@@ -1523,16 +1515,28 @@ async function generateUnifiedScorecard(weekNumber, matchupIndex, matchup) {
             
             <!-- Match 1 -->
             <div class="match-section" data-match="1">
-                <div class="match-header" style="background: #4a5d4a; color: white; padding: 10px 15px;">
+                <div class="match-header" style="background: #4a5d4a; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;">
                     <h4 style="margin: 0;">Match 1</h4>
+                    <div id="scorecard-status-${weekNumber}-${matchupIndex}-1" style="display: flex; align-items: center; gap: 10px;">
+                        <button onclick="openScorecardSelector(${weekNumber})" 
+                                style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">
+                            Please Select Scorecard
+                        </button>
+                    </div>
                 </div>
                 ${await generateUnifiedMatchTable(weekNumber, matchupIndex, 1, team1Name, team2Name)}
             </div>
             
             <!-- Match 2 -->
             <div class="match-section" data-match="2">
-                <div class="match-header" style="background: #4a5d4a; color: white; padding: 10px 15px;">
+                <div class="match-header" style="background: #4a5d4a; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;">
                     <h4 style="margin: 0;">Match 2</h4>
+                    <div id="scorecard-status-${weekNumber}-${matchupIndex}-2" style="display: flex; align-items: center; gap: 10px;">
+                        <button onclick="openScorecardSelector(${weekNumber})" 
+                                style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">
+                            Please Select Scorecard
+                        </button>
+                    </div>
                 </div>
                 ${await generateUnifiedMatchTable(weekNumber, matchupIndex, 2, team1Name, team2Name)}
             </div>
@@ -7392,39 +7396,37 @@ async function loadScorecardForWeek(weekNumber) {
         const weekScorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
         const weekScorecardDoc = await db.collection(weekScorecardPath).doc(`week-${weekNumber}`).get();
         
-        const statusDiv = document.getElementById(`scorecard-status-${weekNumber}`);
-        const selectBtn = document.getElementById(`select-scorecard-btn-${weekNumber}`);
+        // Find all scorecard status elements in match headers
+        const allStatusDivs = document.querySelectorAll(`[id^="scorecard-status-${weekNumber}-"]`);
         
         if (weekScorecardDoc.exists) {
             const scorecardData = weekScorecardDoc.data();
             console.log('📊 Found scorecard data:', scorecardData);
             
-            if (statusDiv) {
-                // Update the entire status area
+            // Update all match headers with green button and edit link
+            allStatusDivs.forEach(statusDiv => {
                 statusDiv.innerHTML = `
                     <button onclick="openScorecardSelector(${weekNumber})" 
-                            style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                            style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">
                         ✓ ${scorecardData.scorecardName}
                     </button>
-                    <span style="font-size: 0.85rem; color: #666; margin-left: 10px;">
-                        ${scorecardData.scorecardName} loaded • 
+                    <span style="font-size: 0.75rem; color: white; margin-left: 8px; opacity: 0.9;">
                         <button onclick="openScorecardSelector(${weekNumber})" 
-                                style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline; font-size: 0.85rem; padding: 0;">
+                                style="background: none; border: none; color: white; cursor: pointer; text-decoration: underline; font-size: 0.75rem; padding: 0; opacity: 0.8;">
                             edit
                         </button>
                     </span>
                 `;
-                console.log('✅ Updated scorecard status interface');
-            } else {
-                console.error('❌ Could not find scorecard status div');
-            }
+            });
+            
+            console.log(`✅ Updated ${allStatusDivs.length} scorecard status interfaces`);
             
             // Update par values in all tables
             updateParValues(scorecardData.parValues, scorecardData.total);
             
         } else {
-            // No scorecard selected - keep red button
-            console.log(`No scorecard assigned to Week ${weekNumber}`);
+            // No scorecard selected - keep red buttons in all headers
+            console.log(`No scorecard assigned to Week ${weekNumber} - keeping red buttons`);
         }
         
     } catch (error) {
