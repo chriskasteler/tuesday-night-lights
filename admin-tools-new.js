@@ -1673,26 +1673,18 @@ function getAdminTeamName(scheduleTeamName) {
 // Get actual player names from lineup data for Enter Scores
 function getAdminPlayerNames(weekNumber, groupIndex, matchNum, matchup) {
     try {
-        console.log(`Getting player names for week ${weekNumber}, group ${groupIndex}, match ${matchNum}`);
-        console.log('Current week scorecard data:', window.currentWeekScorecard);
-        
         // Check if we have week scorecard data with lineup information
         if (window.currentWeekScorecard && window.currentWeekScorecard[`matchup${groupIndex}Lineup`]) {
             const matchupLineup = window.currentWeekScorecard[`matchup${groupIndex}Lineup`];
-            console.log(`Found matchup lineup for group ${groupIndex}:`, matchupLineup);
-            
             const matchData = matchupLineup[`match${matchNum}`];
-            console.log(`Match ${matchNum} data:`, matchData);
             
             if (matchData) {
-                const playerNames = {
+                return {
                     team1Player1: matchData.team1Players && matchData.team1Players[0] ? matchData.team1Players[0].name : null,
                     team1Player2: matchData.team1Players && matchData.team1Players[1] ? matchData.team1Players[1].name : null,
                     team2Player1: matchData.team2Players && matchData.team2Players[0] ? matchData.team2Players[0].name : null,
                     team2Player2: matchData.team2Players && matchData.team2Players[1] ? matchData.team2Players[1].name : null
                 };
-                console.log('Extracted player names:', playerNames);
-                return playerNames;
             }
         }
         
@@ -1745,7 +1737,6 @@ async function loadAdminWeekScores() {
             if (referencedScorecardDoc.exists) {
                 window.currentWeekScorecard = weekScorecardData;
                 console.log(`✅ Loaded scorecard for Week ${selectedWeek}:`, window.currentWeekScorecard.scorecardName);
-                console.log('Full week scorecard data:', weekScorecardData);
             } else {
                 // Scorecard was deleted, clean up the week assignment
                 console.log(`Scorecard "${weekScorecardData.scorecardName}" no longer exists, cleaning up week assignment`);
@@ -2042,7 +2033,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                    <tbody>
                        ${generateParRow(weekNumber)}
                        <tr class="player-row">
-                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${playerNames.team1Player1}</td>
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Player1}</td>
                            ${generateScoreCells(team1Player1, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
@@ -2052,7 +2043,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
                        <tr class="player-row">
-                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team1)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team1Player2}</td>
                            ${generateScoreCells(team1Player2, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
@@ -2081,7 +2072,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                        </tr>
                        <tr style="height: 10px;"><td colspan="11" style="border: none;"></td></tr>
                        <tr class="player-row">
-                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'A' : 'C'}</td>
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Player1}</td>
                            ${generateScoreCells(team2Player1, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
@@ -2091,7 +2082,7 @@ function renderAdminScorecard(matchup, weekNumber, groupIndex, matchNum) {
                            <td class="stroke-total" style="padding: 4px; border: 1px solid #ddd; background: #f8f9fa;"></td>
                        </tr>
                        <tr class="player-row">
-                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${getAdminTeamName(matchup.team2)} Player ${matchNum === 1 ? 'B' : 'D'}</td>
+                           <td class="player-name" style="padding: 8px; border: 1px solid #ddd; font-weight: 500;">${team2Player2}</td>
                            ${generateScoreCells(team2Player2, matchNum, groupIndex, weekNumber)}
                            <td class="total-cell" style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: 600; background: #e8f5e8;">-</td>
                        </tr>
