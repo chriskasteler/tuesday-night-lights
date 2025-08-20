@@ -1417,7 +1417,8 @@ window.loadWeeklyScoring = async function() {
         instructionsDiv.style.display = 'block';
         
         // Load schedule data for this week
-        const scheduleData = await getWeekScheduleData(selectedWeek);
+        const weekData = getWeekScheduleData(selectedWeek);
+        const scheduleData = weekData ? weekData.matches : [];
         
         if (!scheduleData || scheduleData.length === 0) {
             contentDiv.innerHTML = `
