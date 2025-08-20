@@ -2775,8 +2775,10 @@ function getStrokeValue(player, hole) {
 // Calculate automatic match status based on team scores
 function calculateMatchStatus() {
     try {
+        console.log('Calculating match status...');
         // Find all team score rows (Best Ball and Alternate Shot)
         const teamScoreRows = document.querySelectorAll('tr.team-score-row, tr.team-row');
+        console.log('Found team score rows:', teamScoreRows.length);
         
         // Process each match (pair of team rows)
         for (let i = 0; i < teamScoreRows.length; i += 2) {
@@ -2807,6 +2809,8 @@ function calculateMatchStatus() {
                 team1StatusRow = team1Row.nextElementSibling;
                 team2StatusRow = team2Row.nextElementSibling;
             }
+            
+            console.log(`Match ${i/2 + 1}: Team1 cells: ${team1ScoreCells.length}, Team2 cells: ${team2ScoreCells.length}`);
             
             if (!team1StatusRow || !team2StatusRow) continue;
             
