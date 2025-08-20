@@ -2122,16 +2122,17 @@ function getSelectedPlayerIdsForWeeklyScoring() {
     const selectedIds = [];
     const dropdowns = document.querySelectorAll('#weekly-scoring-content select.player-dropdown[data-position]');
     
-    dropdowns.forEach((dropdown) => {
+    console.log(`🔍 DEBUG: Found ${dropdowns.length} dropdowns`);
+    
+    dropdowns.forEach((dropdown, index) => {
+        console.log(`   Dropdown ${index}: value="${dropdown.value}", position="${dropdown.dataset.position}"`);
         if (dropdown.value && dropdown.value !== "" && dropdown.value.trim() !== '') {
             selectedIds.push(dropdown.value);  // Collect player IDs
+            console.log(`   ✅ Added: ${dropdown.value}`);
         }
     });
     
-    // Temporary debug to see what's happening
-    if (selectedIds.length > 0) {
-        console.log(`🔍 Selected player IDs: ${selectedIds.join(', ')}`);
-    }
+    console.log(`🔍 Final selected IDs: [${selectedIds.join(', ')}]`);
     
     return selectedIds;
 }
