@@ -2972,33 +2972,34 @@ function updateTeamScores() {
                     if (teamLabel) {
                         const labelText = teamLabel.textContent;
                         console.log('Team label text:', labelText);
-                        const teamMatch = labelText.match(/(Team \d+)/);
-                        if (teamMatch) {
-                            const team = teamMatch[1];
+                        
+                        // Determine match number from context
+                        const scorecard = cell.closest('.admin-scorecard');
+                        let matchNum = 1; // Default to match 1
+                        
+                        if (scorecard) {
+                            const matchTitle = scorecard.querySelector('.match-title');
+                            if (matchTitle) {
+                                matchNum = parseInt(matchTitle.textContent.replace('Match ', '')) || 1;
+                            }
+                        }
+                        
+                        // Find actual player names from the scorecard for this team/match
+                        const scorecardElement = cell.closest('.admin-scorecard');
+                        if (scorecardElement) {
+                            const playerCells = scorecardElement.querySelectorAll(`td.score-cell[data-hole="${holeNumber}"]`);
+                            let teamPlayerCells = [];
                             
-                            // Determine match number from context
-                            const scorecard = cell.closest('.admin-scorecard');
-                            let matchNum = 1; // Default to match 1
-                            
-                            if (scorecard) {
-                                const matchTitle = scorecard.querySelector('.match-title');
-                                if (matchTitle) {
-                                    matchNum = parseInt(matchTitle.textContent.replace('Match ', '')) || 1;
-                                }
+                            // Determine which team this is based on label text and position
+                            if (labelText.includes('Team 1') || labelText.includes('Whack Shack')) {
+                                teamPlayerCells = [playerCells[0], playerCells[1]]; // First 2 players
+                                console.log('Team 1/Whack Shack - using first 2 players');
+                            } else if (labelText.includes('Team 2') || labelText.includes('Bump & Run')) {
+                                teamPlayerCells = [playerCells[2], playerCells[3]]; // Last 2 players  
+                                console.log('Team 2/Bump & Run - using last 2 players');
                             }
                             
-                            // Find actual player names from the scorecard for this team/match
-                            const scorecardElement = cell.closest('.admin-scorecard');
-                            if (scorecardElement) {
-                                const playerCells = scorecardElement.querySelectorAll(`td.score-cell[data-hole="${holeNumber}"]`);
-                                let teamPlayerCells = [];
-                                
-                                // Find the player cells for this team (first 2 or last 2 rows)
-                                if (labelText.includes('Whack Shack')) {
-                                    teamPlayerCells = [playerCells[0], playerCells[1]]; // First 2 players
-                                } else if (labelText.includes('Bump & Run')) {
-                                    teamPlayerCells = [playerCells[2], playerCells[3]]; // Last 2 players  
-                                }
+                            console.log('Team player cells:', teamPlayerCells);
                                 
                                 // Get actual player names and scores
                                 let bestNetScore = null;
