@@ -1685,22 +1685,24 @@ async function loadAdminWeekScores() {
         await loadAdminTeamsData();
     }
     
-    // Check if a scorecard has been assigned to this week
+    // Check if a scorecard has been assigned to this week - use nested structure
     try {
-        const weekScorecardDoc = await db.collection('weekScorecards').doc(`week-${selectedWeek}`).get();
+        const weekScorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
+        const weekScorecardDoc = await db.collection(weekScorecardPath).doc(`week-${selectedWeek}`).get();
         if (weekScorecardDoc.exists) {
             const weekScorecardData = weekScorecardDoc.data();
             
-            // Verify that the referenced scorecard still exists
-            const referencedScorecardDoc = await db.collection('scorecards').doc(weekScorecardData.scorecardId).get();
+            // Verify that the referenced scorecard still exists - use nested structure
+            const scorecardsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+            const referencedScorecardDoc = await db.collection(scorecardsPath).doc(weekScorecardData.scorecardId).get();
             
             if (referencedScorecardDoc.exists) {
                 window.currentWeekScorecard = weekScorecardData;
                 console.log(`✅ Loaded scorecard for Week ${selectedWeek}:`, window.currentWeekScorecard.scorecardName);
             } else {
                 // Scorecard was deleted, clean up the week assignment
-                console.log(`🧹 Scorecard "${weekScorecardData.scorecardName}" no longer exists, cleaning up week assignment`);
-                await db.collection('weekScorecards').doc(`week-${selectedWeek}`).delete();
+                console.log(`Scorecard "${weekScorecardData.scorecardName}" no longer exists, cleaning up week assignment`);
+                await db.collection(weekScorecardPath).doc(`week-${selectedWeek}`).delete();
                 window.currentWeekScorecard = null;
                 console.log(`ℹ️ Cleaned up invalid scorecard assignment for Week ${selectedWeek}`);
             }
@@ -3777,7 +3779,8 @@ function reapplyScoringStylesForWeek(weekNumber) {
 async function showScorecardSelector(weekNumber) {
     try {
         // Fetch available scorecards
-        const scorecardsSnapshot = await db.collection('scorecards').orderBy('name').get();
+        const scorecardsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+        const scorecardsSnapshot = await db.collection(scorecardsPath).orderBy('name').get();
         
         if (scorecardsSnapshot.empty) {
             alert('No scorecards available. Please create a scorecard in Scorecard Setup first.');
@@ -3844,8 +3847,9 @@ async function showScorecardSelector(weekNumber) {
 // Select a scorecard for a specific week
 async function selectScorecardForWeek(scorecardId, scorecardName, weekNumber) {
     try {
-        // Get the scorecard data
-        const scorecardDoc = await db.collection('scorecards').doc(scorecardId).get();
+        // Get the scorecard data - use nested structure
+        const scorecardsPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/scorecards';
+        const scorecardDoc = await db.collection(scorecardsPath).doc(scorecardId).get();
         if (!scorecardDoc.exists) {
             alert('Scorecard not found.');
             return;
@@ -3853,8 +3857,9 @@ async function selectScorecardForWeek(scorecardId, scorecardName, weekNumber) {
         
         const scorecardData = scorecardDoc.data();
         
-        // Save the week-scorecard association
-        await db.collection('weekScorecards').doc(`week-${weekNumber}`).set({
+        // Save the week-scorecard association - use nested structure
+        const weekScorecardPath = 'clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weekScorecards';
+        await db.collection(weekScorecardPath).doc(`week-${weekNumber}`).set({
             weekNumber: weekNumber,
             scorecardId: scorecardId,
             scorecardName: scorecardName,
