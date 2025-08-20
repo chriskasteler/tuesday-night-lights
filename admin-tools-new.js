@@ -1767,6 +1767,9 @@ async function loadExistingWeeklyScoringData(weekNumber) {
         
         // Load existing lineup and score data
         console.log(`Loading existing data for Week ${weekNumber}`);
+        
+        // Load scores and strokes from database
+        await loadScoresFromDatabase(weekNumber);
     } catch (error) {
         console.error('Error loading existing weekly scoring data:', error);
     }
