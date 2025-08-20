@@ -1673,18 +1673,26 @@ function getAdminTeamName(scheduleTeamName) {
 // Get actual player names from lineup data for Enter Scores
 function getAdminPlayerNames(weekNumber, groupIndex, matchNum, matchup) {
     try {
+        console.log(`Getting player names for week ${weekNumber}, group ${groupIndex}, match ${matchNum}`);
+        console.log('Current week scorecard data:', window.currentWeekScorecard);
+        
         // Check if we have week scorecard data with lineup information
         if (window.currentWeekScorecard && window.currentWeekScorecard[`matchup${groupIndex}Lineup`]) {
             const matchupLineup = window.currentWeekScorecard[`matchup${groupIndex}Lineup`];
+            console.log(`Found matchup lineup for group ${groupIndex}:`, matchupLineup);
+            
             const matchData = matchupLineup[`match${matchNum}`];
+            console.log(`Match ${matchNum} data:`, matchData);
             
             if (matchData) {
-                return {
+                const playerNames = {
                     team1Player1: matchData.team1Players && matchData.team1Players[0] ? matchData.team1Players[0].name : null,
                     team1Player2: matchData.team1Players && matchData.team1Players[1] ? matchData.team1Players[1].name : null,
                     team2Player1: matchData.team2Players && matchData.team2Players[0] ? matchData.team2Players[0].name : null,
                     team2Player2: matchData.team2Players && matchData.team2Players[1] ? matchData.team2Players[1].name : null
                 };
+                console.log('Extracted player names:', playerNames);
+                return playerNames;
             }
         }
         
