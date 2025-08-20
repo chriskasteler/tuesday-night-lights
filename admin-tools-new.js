@@ -2233,12 +2233,26 @@ window.editScoreCell = function(cell) {
     input.select();
     
     // Save on blur or enter
-    const saveScore = () => {
+    const saveScore = async () => {
         const newScore = input.value.trim();
         if (newScore && newScore !== currentScore) {
             cell.textContent = newScore;
-            // TODO: Save to database and trigger calculations
-            console.log(`Score updated: ${cell.dataset.player} hole ${cell.dataset.hole}: ${newScore}`);
+            
+            // Update in memory
+            const player = cell.dataset.player;
+            const hole = cell.dataset.hole;
+            const week = cell.dataset.week;
+            
+            if (!currentPlayerScores[player]) currentPlayerScores[player] = {};
+            currentPlayerScores[player][hole] = newScore;
+            
+            // Apply score styling
+            applyScoreTypeStyle(cell, newScore);
+            
+            // Save to database
+            await saveScoresToDatabase(week);
+            
+            console.log(`Score saved: ${player} hole ${hole}: ${newScore}`);
         } else {
             cell.textContent = currentScore;
         }
@@ -3537,6 +3551,13 @@ window.setStroke = function setStroke(player, hole, strokeType) {
         
         // Update team totals (for all formats)
         updateTeamTotals();
+        
+        // Save strokes to database
+        const weekElement = document.querySelector('#weekly-scoring-week-select');
+        if (weekElement && weekElement.value) {
+            const weekNumber = weekElement.value.split(' - ')[0].replace('Week ', '');
+            saveScoresToDatabase(weekNumber);
+        }
         
         console.log(`✅ Stroke successfully set for ${player} on hole ${hole}: ${strokeType}`);
     } catch (error) {
