@@ -1548,16 +1548,23 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 <tr class="player-row" data-team="1" data-player="1">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;" 
                         data-team="${team1Name}" data-match="${matchNumber}" data-position="1">
-                        <select class="player-dropdown" 
-                                data-week="${weekNumber}" 
-                                data-matchup="${matchupIndex}" 
-                                data-match="${matchNumber}" 
-                                data-team="${team1Name}" 
-                                data-position="1"
-                                onchange="handleWeeklyScoringPlayerSelection(this)"
-                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                            <option value="">Select Player 1...</option>
-                        </select>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <select class="player-dropdown" 
+                                    data-week="${weekNumber}" 
+                                    data-matchup="${matchupIndex}" 
+                                    data-match="${matchNumber}" 
+                                    data-team="${team1Name}" 
+                                    data-position="1"
+                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                                    style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                                <option value="">Select Player 1...</option>
+                            </select>
+                            <button class="remove-player-btn" 
+                                    onclick="removePlayerFromLineup(this)"
+                                    style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
+                                Remove
+                            </button>
+                        </div>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team1Name} Player 1`, 1)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
@@ -1571,16 +1578,23 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 <tr class="player-row" data-team="1" data-player="2">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #e8f5e8;"
                         data-team="${team1Name}" data-match="${matchNumber}" data-position="2">
-                        <select class="player-dropdown" 
-                                data-week="${weekNumber}" 
-                                data-matchup="${matchupIndex}" 
-                                data-match="${matchNumber}" 
-                                data-team="${team1Name}" 
-                                data-position="2"
-                                onchange="handleWeeklyScoringPlayerSelection(this)"
-                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                            <option value="">Select Player 2...</option>
-                        </select>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <select class="player-dropdown" 
+                                    data-week="${weekNumber}" 
+                                    data-matchup="${matchupIndex}" 
+                                    data-match="${matchNumber}" 
+                                    data-team="${team1Name}" 
+                                    data-position="2"
+                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                                    style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                                <option value="">Select Player 2...</option>
+                            </select>
+                            <button class="remove-player-btn" 
+                                    onclick="removePlayerFromLineup(this)"
+                                    style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
+                                Remove
+                            </button>
+                        </div>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team1Name} Player 2`, 2)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
@@ -1615,16 +1629,23 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 <tr class="player-row" data-team="2" data-player="1">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
                         data-team="${team2Name}" data-match="${matchNumber}" data-position="1">
-                        <select class="player-dropdown" 
-                                data-week="${weekNumber}" 
-                                data-matchup="${matchupIndex}" 
-                                data-match="${matchNumber}" 
-                                data-team="${team2Name}" 
-                                data-position="1"
-                                onchange="handleWeeklyScoringPlayerSelection(this)"
-                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                            <option value="">Select Player 1...</option>
-                        </select>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <select class="player-dropdown" 
+                                    data-week="${weekNumber}" 
+                                    data-matchup="${matchupIndex}" 
+                                    data-match="${matchNumber}" 
+                                    data-team="${team2Name}" 
+                                    data-position="1"
+                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                                    style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                                <option value="">Select Player 1...</option>
+                            </select>
+                            <button class="remove-player-btn" 
+                                    onclick="removePlayerFromLineup(this)"
+                                    style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
+                                Remove
+                            </button>
+                        </div>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team2Name} Player 1`, 3)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
@@ -1638,16 +1659,23 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
                 <tr class="player-row" data-team="2" data-player="2">
                     <td class="player-name-cell" style="padding: 10px; border: 1px solid #ddd; background: #fff3cd;"
                         data-team="${team2Name}" data-match="${matchNumber}" data-position="2">
-                        <select class="player-dropdown" 
-                                data-week="${weekNumber}" 
-                                data-matchup="${matchupIndex}" 
-                                data-match="${matchNumber}" 
-                                data-team="${team2Name}" 
-                                data-position="2"
-                                onchange="handleWeeklyScoringPlayerSelection(this)"
-                                style="width: 100%; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
-                            <option value="">Select Player 2...</option>
-                        </select>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <select class="player-dropdown" 
+                                    data-week="${weekNumber}" 
+                                    data-matchup="${matchupIndex}" 
+                                    data-match="${matchNumber}" 
+                                    data-team="${team2Name}" 
+                                    data-position="2"
+                                    onchange="handleWeeklyScoringPlayerSelection(this)"
+                                    style="flex: 1; padding: 5px; border: none; background: transparent; font-size: 0.9rem;">
+                                <option value="">Select Player 2...</option>
+                            </select>
+                            <button class="remove-player-btn" 
+                                    onclick="removePlayerFromLineup(this)"
+                                    style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; cursor: pointer; display: none;">
+                                Remove
+                            </button>
+                        </div>
                     </td>
                     ${generateEditableScoreCells(weekNumber, matchupIndex, matchNumber, `${team2Name} Player 2`, 4)}
                     <td class="total-cell" style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: 600;">-</td>
@@ -1922,6 +1950,9 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         
         // Update score cells with selected player name
         updateScoreCellsPlayerName(dropdown, selectedPlayer);
+        
+        // Show/hide remove button based on selection
+        toggleRemoveButton(dropdown);
         
         // Refresh all dropdowns to enforce smart selection (temporarily disabled to prevent loop)
         // console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
@@ -7061,4 +7092,109 @@ function findPlayerIdByName(playerName) {
     }
     
     return null;
+}
+
+// ===== REMOVE PLAYER FUNCTIONALITY =====
+
+// Toggle remove button visibility based on dropdown selection
+function toggleRemoveButton(dropdown) {
+    const removeBtn = dropdown.parentNode.querySelector('.remove-player-btn');
+    if (removeBtn) {
+        if (dropdown.value && dropdown.value !== '') {
+            removeBtn.style.display = 'block';
+        } else {
+            removeBtn.style.display = 'none';
+        }
+    }
+}
+
+// Remove player from lineup
+async function removePlayerFromLineup(removeButton) {
+    try {
+        // Find the dropdown associated with this remove button
+        const dropdown = removeButton.parentNode.querySelector('.player-dropdown');
+        if (!dropdown) {
+            console.error('Could not find dropdown for remove button');
+            return;
+        }
+        
+        const weekNumber = dropdown.dataset.week;
+        const matchupIndex = dropdown.dataset.matchup;
+        const matchNumber = dropdown.dataset.match;
+        const teamName = dropdown.dataset.team;
+        const position = dropdown.dataset.position;
+        
+        console.log(`🗑️ REMOVING PLAYER: Week ${weekNumber}, Matchup ${matchupIndex}, Match ${matchNumber}, Team ${teamName}, Position ${position}`);
+        
+        // Clear the dropdown selection
+        dropdown.value = '';
+        
+        // Hide the remove button
+        removeButton.style.display = 'none';
+        
+        // Clear score cells for this player
+        clearScoreCellsForPlayer(dropdown);
+        
+        // Remove from database
+        await removeLineupFromDatabase(weekNumber, matchupIndex, matchNumber, teamName, position);
+        
+        console.log(`✅ PLAYER REMOVED: Successfully removed player from position`);
+        
+    } catch (error) {
+        console.error('❌ Error removing player from lineup:', error);
+        alert('Error removing player. Please try again.');
+    }
+}
+
+// Make the function globally available
+window.removePlayerFromLineup = removePlayerFromLineup;
+
+// Clear score cells when player is removed
+function clearScoreCellsForPlayer(dropdown) {
+    const playerName = dropdown.dataset.team + ' Player ' + dropdown.dataset.position;
+    const scoreCells = document.querySelectorAll(`[data-player="${playerName}"]`);
+    scoreCells.forEach(cell => {
+        if (cell.classList.contains('score-cell')) {
+            cell.textContent = '-';
+            cell.removeAttribute('data-score');
+        }
+    });
+}
+
+// Remove lineup from database
+async function removeLineupFromDatabase(weekNumber, matchupIndex, matchNumber, teamName, position) {
+    try {
+        const docPath = `clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups`;
+        const docId = `week-${weekNumber}`;
+        const docRef = db.collection(docPath).doc(docId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists) {
+            console.log('No lineup document exists to remove from');
+            return;
+        }
+        
+        const data = doc.data();
+        const matchupFieldName = `matchup${matchupIndex}`;
+        const matchKey = `match${matchNumber}`;
+        const teamKey = teamName.includes('Whack Shack') ? 'team1Players' : 'team2Players';
+        const positionIndex = parseInt(position) - 1;
+        
+        // Navigate to the correct position and set it to null
+        if (data[matchupFieldName] && 
+            data[matchupFieldName][matchKey] && 
+            data[matchupFieldName][matchKey][teamKey] && 
+            data[matchupFieldName][matchKey][teamKey][positionIndex]) {
+            
+            data[matchupFieldName][matchKey][teamKey][positionIndex] = null;
+            data.lastUpdated = new Date().toISOString();
+            data.updatedBy = 'weekly-scoring-admin-remove';
+            
+            await docRef.set(data);
+            console.log(`✅ LINEUP REMOVED: Successfully removed player from database`);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error removing lineup from database:', error);
+    }
 }
