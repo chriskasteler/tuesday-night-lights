@@ -1449,6 +1449,9 @@ window.loadWeeklyScoring = async function() {
         // Load existing data
         await loadExistingWeeklyScoringData(selectedWeek);
         
+        // Load existing lineups from weeklyLineups collection
+        await loadExistingLineupsFromDatabase(selectedWeek);
+        
         console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
         
     } catch (error) {
@@ -1932,7 +1935,7 @@ function handleWeeklyScoringPlayerSelection(dropdown) {
         }, 10); // Small delay to let browser finish the selection
         
         // Save lineup change to database
-        // TODO: Implement saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
+        await saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
         
     } catch (error) {
         console.error('Error handling weekly scoring player selection:', error);
@@ -6721,4 +6724,250 @@ function restoreScoresInUI() {
     setTimeout(() => {
         updateTeamPoints();
     }, 100);
+}
+
+// ===== LINEUP SAVING FUNCTIONALITY =====
+
+// Save a single lineup change to the weeklyLineups database
+async function saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayerId) {
+    try {
+        console.log(`💾 SAVING LINEUP: Week ${weekNumber}, Matchup ${matchupIndex}, Match ${matchNumber}, Team ${teamName}, Position ${position}, Player ID: ${selectedPlayerId}`);
+        
+        // Get player info from the player ID
+        const playerInfo = getPlayerInfoById(selectedPlayerId);
+        if (!playerInfo) {
+            console.error(`❌ Could not find player info for ID: ${selectedPlayerId}`);
+            return;
+        }
+        
+        // Determine the correct field path in the database
+        const docPath = `clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups`;
+        const docId = `week-${weekNumber}`;
+        const matchupFieldName = `matchup${matchupIndex}`;
+        
+        // Get the existing document
+        const docRef = db.collection(docPath).doc(docId);
+        const existingDoc = await docRef.get();
+        
+        let currentData = {};
+        if (existingDoc.exists) {
+            currentData = existingDoc.data();
+        }
+        
+        // Initialize the matchup data if it doesn't exist
+        if (!currentData[matchupFieldName]) {
+            currentData[matchupFieldName] = {
+                match1: { team1Players: [], team2Players: [] },
+                match2: { team1Players: [], team2Players: [] }
+            };
+        }
+        
+        // Determine which match and team array to update
+        const matchKey = `match${matchNumber}`;
+        const teamKey = teamName.includes('Whack Shack') ? 'team1Players' : 'team2Players';
+        
+        // Ensure the arrays exist
+        if (!currentData[matchupFieldName][matchKey]) {
+            currentData[matchupFieldName][matchKey] = { team1Players: [], team2Players: [] };
+        }
+        if (!currentData[matchupFieldName][matchKey][teamKey]) {
+            currentData[matchupFieldName][matchKey][teamKey] = [];
+        }
+        
+        // Update the specific position (position 1 = index 0, position 2 = index 1)
+        const playerArray = currentData[matchupFieldName][matchKey][teamKey];
+        const positionIndex = parseInt(position) - 1;
+        
+        // Expand array if needed
+        while (playerArray.length <= positionIndex) {
+            playerArray.push(null);
+        }
+        
+        // Set the player at the correct position
+        playerArray[positionIndex] = {
+            name: playerInfo.name,
+            email: playerInfo.email,
+            userId: playerInfo.userId
+        };
+        
+        // Add metadata
+        currentData.lastUpdated = new Date().toISOString();
+        currentData.updatedBy = 'weekly-scoring-admin';
+        
+        // Save to database
+        await docRef.set(currentData);
+        
+        console.log(`✅ LINEUP SAVED: Successfully saved ${playerInfo.name} to Week ${weekNumber}, Matchup ${matchupIndex}, Match ${matchNumber}, Team ${teamName}, Position ${position}`);
+        
+    } catch (error) {
+        console.error('❌ Error saving lineup change:', error);
+        console.error('Parameters:', { weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayerId });
+    }
+}
+
+// Get player information by player ID
+function getPlayerInfoById(playerId) {
+    // Look through all teams to find the player
+    if (!window.teamPlayersMap) {
+        console.error('teamPlayersMap not available');
+        return null;
+    }
+    
+    for (const teamName in window.teamPlayersMap) {
+        const players = window.teamPlayersMap[teamName];
+        const player = players.find(p => p.id === playerId);
+        if (player) {
+            return {
+                name: player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim(),
+                email: player.email,
+                userId: player.userId || player.id
+            };
+        }
+    }
+    
+    // Fallback: if not found in teamPlayersMap, try window.allPlayers
+    if (window.allPlayers) {
+        const player = window.allPlayers.find(p => p.id === playerId);
+        if (player) {
+            return {
+                name: player.name,
+                email: player.email,
+                userId: player.userId || player.id
+            };
+        }
+    }
+    
+    console.error(`Player not found for ID: ${playerId}`);
+    return null;
+}
+
+// Load existing lineups from the weeklyLineups database and populate dropdowns
+async function loadExistingLineupsFromDatabase(weekNumber) {
+    try {
+        console.log(`📥 LOADING LINEUPS: Loading existing lineups for Week ${weekNumber}`);
+        
+        // Load lineup data from weeklyLineups collection
+        const docPath = `clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups`;
+        const docId = `week-${weekNumber}`;
+        const docRef = db.collection(docPath).doc(docId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists) {
+            console.log(`📥 LOADING LINEUPS: No existing lineups found for Week ${weekNumber}`);
+            return;
+        }
+        
+        const lineupsData = doc.data();
+        console.log(`📥 LOADING LINEUPS: Found lineup data:`, lineupsData);
+        
+        // Iterate through each matchup (matchup0, matchup1, matchup2)
+        for (const matchupKey in lineupsData) {
+            if (!matchupKey.startsWith('matchup')) continue;
+            
+            const matchupIndex = matchupKey.replace('matchup', '');
+            const matchupData = lineupsData[matchupKey];
+            
+            // Iterate through each match (match1, match2)
+            for (const matchKey in matchupData) {
+                if (!matchKey.startsWith('match')) continue;
+                
+                const matchNumber = matchKey.replace('match', '');
+                const matchData = matchupData[matchKey];
+                
+                // Load team1Players
+                if (matchData.team1Players) {
+                    await loadPlayersIntoDropdowns(weekNumber, matchupIndex, matchNumber, 'team1', matchData.team1Players);
+                }
+                
+                // Load team2Players
+                if (matchData.team2Players) {
+                    await loadPlayersIntoDropdowns(weekNumber, matchupIndex, matchNumber, 'team2', matchData.team2Players);
+                }
+            }
+        }
+        
+        console.log(`✅ LOADING LINEUPS: Successfully loaded existing lineups for Week ${weekNumber}`);
+        
+    } catch (error) {
+        console.error('❌ Error loading existing lineups:', error);
+    }
+}
+
+// Load players into the specific dropdowns based on database data
+async function loadPlayersIntoDropdowns(weekNumber, matchupIndex, matchNumber, teamSide, playersArray) {
+    try {
+        console.log(`🎯 LOADING PLAYERS: Week ${weekNumber}, Matchup ${matchupIndex}, Match ${matchNumber}, Team ${teamSide}, Players:`, playersArray);
+        
+        // Find the dropdowns for this specific match and team
+        const dropdowns = document.querySelectorAll(`
+            .player-dropdown[data-week="${weekNumber}"][data-matchup="${matchupIndex}"][data-match="${matchNumber}"]
+        `);
+        
+        // Filter dropdowns by team (team1 or team2)
+        const teamDropdowns = Array.from(dropdowns).filter(dropdown => {
+            const teamName = dropdown.dataset.team;
+            if (teamSide === 'team1') {
+                return teamName && teamName.includes('Whack Shack'); // Adjust based on your team naming
+            } else {
+                return teamName && !teamName.includes('Whack Shack'); // Team 2
+            }
+        });
+        
+        console.log(`🎯 LOADING PLAYERS: Found ${teamDropdowns.length} dropdowns for ${teamSide}`);
+        
+        // Set each player in the correct position dropdown
+        playersArray.forEach((player, index) => {
+            if (!player) return; // Skip null entries
+            
+            const position = index + 1; // Position 1-based
+            const dropdown = teamDropdowns.find(d => d.dataset.position === String(position));
+            
+            if (dropdown) {
+                // Find the player ID from the player name
+                const playerId = findPlayerIdByName(player.name);
+                if (playerId) {
+                    dropdown.value = playerId;
+                    console.log(`✅ LOADING PLAYERS: Set ${player.name} (ID: ${playerId}) in position ${position}`);
+                } else {
+                    console.warn(`⚠️ LOADING PLAYERS: Could not find player ID for ${player.name}`);
+                }
+            } else {
+                console.warn(`⚠️ LOADING PLAYERS: Could not find dropdown for position ${position}`);
+            }
+        });
+        
+        // Refresh dropdowns to update the smart selection
+        setTimeout(() => {
+            refreshWeeklyScoringPlayerDropdowns();
+        }, 100);
+        
+    } catch (error) {
+        console.error('❌ Error loading players into dropdowns:', error);
+    }
+}
+
+// Find player ID by name (reverse lookup)
+function findPlayerIdByName(playerName) {
+    if (!window.teamPlayersMap) return null;
+    
+    for (const teamName in window.teamPlayersMap) {
+        const players = window.teamPlayersMap[teamName];
+        const player = players.find(p => {
+            const name = p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim();
+            return name === playerName;
+        });
+        if (player) {
+            return player.id;
+        }
+    }
+    
+    // Fallback to window.allPlayers
+    if (window.allPlayers) {
+        const player = window.allPlayers.find(p => p.name === playerName);
+        if (player) {
+            return player.id;
+        }
+    }
+    
+    return null;
 }
