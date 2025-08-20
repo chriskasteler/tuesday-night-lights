@@ -1976,32 +1976,48 @@ function getPlayerOptionsForTeamName(teamName, excludeNames = []) {
 
 // EXACT COPY of working refreshAllPlayerDropdowns but for Weekly Scoring
 function refreshAllPlayerDropdowns() {
+    console.log('🚀 STARTING refreshAllPlayerDropdowns...');
     const selectedPlayerNames = getSelectedPlayerNames();
     const allSelects = document.querySelectorAll('.player-dropdown');
     
     console.log('📋 Selected players:', selectedPlayerNames);
+    console.log('📋 Found dropdowns:', allSelects.length);
     
-    allSelects.forEach(select => {
+    allSelects.forEach((select, index) => {
         const teamName = select.dataset.team;
         const currentValue = select.value;
+        
+        console.log(`🔄 Processing dropdown ${index}: team="${teamName}", current="${currentValue}"`);
         
         if (teamName) {
             // Exclude all selected players except the current selection in this dropdown
             const excludeNames = selectedPlayerNames.filter(name => name !== currentValue);
             
-            console.log(`🔄 Refreshing dropdown for ${teamName} (current: "${currentValue}")`);
+            console.log(`   📝 Excluding players: [${excludeNames.join(', ')}]`);
             
             // Update the dropdown options
-            select.innerHTML = getPlayerOptionsForTeamName(teamName, excludeNames);
+            const newHTML = getPlayerOptionsForTeamName(teamName, excludeNames);
+            console.log(`   🔧 Generated HTML length: ${newHTML.length}`);
+            
+            select.innerHTML = newHTML;
             
             // Restore the current selection (if it's still valid)
             if (currentValue && currentValue !== '') {
                 select.value = currentValue;
+                console.log(`   🔙 Restored selection: "${currentValue}"`);
             }
             
             console.log(`   ✅ ${teamName}: ${select.options.length - 1} available players`);
+            
+            // Log all option values for debugging
+            const optionValues = Array.from(select.options).map(opt => opt.value).filter(val => val);
+            console.log(`   📄 Available options: [${optionValues.join(', ')}]`);
+        } else {
+            console.warn(`   ⚠️ Dropdown ${index} missing team data`);
         }
     });
+    
+    console.log('🏁 FINISHED refreshAllPlayerDropdowns');
 }
 
 // Edit player name functionality
