@@ -2023,8 +2023,7 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         // Show/hide remove button based on selection
         toggleRemoveButton(dropdown);
         
-        // Refresh all dropdowns to enforce smart selection
-        console.log('🔄 WEEKLY SCORING: Triggering smart selection refresh...');
+        // Refresh all dropdowns to enforce smart selection (reduced console spam)
         setTimeout(() => {
             refreshWeeklyScoringPlayerDropdowns();
         }, 100);
@@ -2164,85 +2163,49 @@ function getSelectedPlayerNames() {
 
 // Generate player options for a team (excluding selected players) - for Weekly Scoring
 function getPlayerOptionsForTeamName(teamName, excludePlayerIds = []) {
-    console.log(`🔧 getPlayerOptionsForTeamName: team="${teamName}", excludePlayerIds=[${excludePlayerIds.join(', ')}]`);
-    
     let options = '<option value="">Select Player...</option>';
-    
     const teamPlayers = window.teamPlayersMap?.[teamName] || [];
-    console.log(`   📋 Team ${teamName} has ${teamPlayers.length} players`);
     
     teamPlayers.forEach(player => {
         const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
-        const isExcluded = excludePlayerIds.includes(player.id);  // Exclude by ID not name!
-        
-        console.log(`   🔍 Player "${playerName}" (ID: ${player.id}): excluded=${isExcluded}`);
+        const isExcluded = excludePlayerIds.includes(player.id);
         
         if (playerName && !isExcluded) {
-            options += `<option value="${player.id}">${playerName}</option>`;  // Use player ID as value!
-            console.log(`   ✅ Added "${playerName}" (ID: ${player.id}) to options`);
-        } else if (isExcluded) {
-            console.log(`   ❌ Excluded "${playerName}" (ID: ${player.id}) from options`);
+            options += `<option value="${player.id}">${playerName}</option>`;
         }
     });
     
-    console.log(`   📄 Final options HTML length: ${options.length}`);
     return options;
 }
 
 // Weekly Scoring version of refreshAllPlayerDropdowns
 function refreshWeeklyScoringPlayerDropdowns() {
-    console.log('🚀 STARTING refreshWeeklyScoringPlayerDropdowns...');
-    const selectedPlayerIds = getSelectedPlayerIdsForWeeklyScoring();  // Use IDs like Manage Teams!
+    const selectedPlayerIds = getSelectedPlayerIdsForWeeklyScoring();
     const allSelects = document.querySelectorAll('#weekly-scoring-content .player-dropdown');
     
-    console.log('📋 Selected player IDs:', selectedPlayerIds);
-    console.log('📋 Found dropdowns:', allSelects.length);
-    
-    allSelects.forEach((select, index) => {
+    allSelects.forEach((select) => {
         const teamName = select.dataset.team;
         const currentValue = select.value;
-        
-        console.log(`🔄 Processing dropdown ${index}: team="${teamName}", current="${currentValue}"`);
         
         if (teamName) {
             // Exclude all selected player IDs except the current selection in this dropdown
             const excludeIds = selectedPlayerIds.filter(id => id !== currentValue);
             
-            console.log(`   📝 Excluding player IDs: [${excludeIds.join(', ')}]`);
-            
             // Update the dropdown options using ID exclusion
             const newHTML = getPlayerOptionsForTeamName(teamName, excludeIds);
-            console.log(`   🔧 Generated HTML length: ${newHTML.length}`);
-            
             select.innerHTML = newHTML;
             
             // Restore the current selection (if it's still valid)
             if (currentValue && currentValue !== '') {
-                console.log(`   🔍 Attempting to restore selection: "${currentValue}"`);
-                
-                // Log all available options for debugging
-                const allOptions = Array.from(select.options);
-                console.log(`   📋 Available options in dropdown:`);
-                allOptions.forEach((opt, i) => {
-                    console.log(`      ${i}: value="${opt.value}", text="${opt.textContent}"`);
-                });
-                
                 // Check if the option exists in the dropdown
-                const optionExists = allOptions.some(option => option.value === currentValue);
-                console.log(`   🔍 Option exists: ${optionExists}`);
+                const optionExists = Array.from(select.options).some(option => option.value === currentValue);
                 
                 if (optionExists) {
-                select.value = currentValue;
-                    console.log(`   🔙 Restored selection: "${currentValue}" -> dropdown.value is now: "${select.value}"`);
+                    select.value = currentValue;
                 } else {
                     // If option doesn't exist, add it manually and select it
-                    console.log(`   ⚠️ Current selection "${currentValue}" not found in options, adding it manually`);
-                    
-                    // Find the player name for this ID
                     const teamPlayers = window.teamPlayersMap?.[teamName] || [];
                     const player = teamPlayers.find(p => p.id === currentValue);
-                    console.log(`   🔍 Found player data:`, player);
-                    
                     if (player) {
                         const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
                         const option = document.createElement('option');
@@ -2250,24 +2213,11 @@ function refreshWeeklyScoringPlayerDropdowns() {
                         option.textContent = playerName;
                         option.selected = true;
                         select.appendChild(option);
-                        console.log(`   ✅ Added and selected "${playerName}" (ID: ${currentValue}) -> dropdown.value is now: "${select.value}"`);
-                    } else {
-                        console.log(`   ❌ No player found with ID "${currentValue}" in team ${teamName}`);
                     }
                 }
             }
-            
-            console.log(`   ✅ ${teamName}: ${select.options.length - 1} available players`);
-            
-            // Log all option values for debugging
-            const optionValues = Array.from(select.options).map(opt => opt.value).filter(val => val);
-            console.log(`   📄 Available options: [${optionValues.join(', ')}]`);
-        } else {
-            console.warn(`   ⚠️ Dropdown ${index} missing team data`);
         }
     });
-    
-    console.log('🏁 FINISHED refreshWeeklyScoringPlayerDropdowns');
 }
 
 // Edit player name functionality
