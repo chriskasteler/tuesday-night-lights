@@ -2052,12 +2052,22 @@ function refreshWeeklyScoringPlayerDropdowns() {
             
             // Restore the current selection (if it's still valid)
             if (currentValue && currentValue !== '') {
+                console.log(`   🔍 Attempting to restore selection: "${currentValue}"`);
+                
+                // Log all available options for debugging
+                const allOptions = Array.from(select.options);
+                console.log(`   📋 Available options in dropdown:`);
+                allOptions.forEach((opt, i) => {
+                    console.log(`      ${i}: value="${opt.value}", text="${opt.textContent}"`);
+                });
+                
                 // Check if the option exists in the dropdown
-                const optionExists = Array.from(select.options).some(option => option.value === currentValue);
+                const optionExists = allOptions.some(option => option.value === currentValue);
+                console.log(`   🔍 Option exists: ${optionExists}`);
                 
                 if (optionExists) {
                     select.value = currentValue;
-                    console.log(`   🔙 Restored selection: "${currentValue}"`);
+                    console.log(`   🔙 Restored selection: "${currentValue}" -> dropdown.value is now: "${select.value}"`);
                 } else {
                     // If option doesn't exist, add it manually and select it
                     console.log(`   ⚠️ Current selection "${currentValue}" not found in options, adding it manually`);
@@ -2065,6 +2075,7 @@ function refreshWeeklyScoringPlayerDropdowns() {
                     // Find the player name for this ID
                     const teamPlayers = window.teamPlayersMap?.[teamName] || [];
                     const player = teamPlayers.find(p => p.id === currentValue);
+                    console.log(`   🔍 Found player data:`, player);
                     
                     if (player) {
                         const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
@@ -2073,7 +2084,9 @@ function refreshWeeklyScoringPlayerDropdowns() {
                         option.textContent = playerName;
                         option.selected = true;
                         select.appendChild(option);
-                        console.log(`   ✅ Added and selected "${playerName}" (ID: ${currentValue})`);
+                        console.log(`   ✅ Added and selected "${playerName}" (ID: ${currentValue}) -> dropdown.value is now: "${select.value}"`);
+                    } else {
+                        console.log(`   ❌ No player found with ID "${currentValue}" in team ${teamName}`);
                     }
                 }
             }
