@@ -1455,8 +1455,11 @@ window.loadWeeklyScoring = async function() {
         // Add save buttons to each matchup
         addSaveButtonsToMatchups(selectedWeek);
         
-        // Refresh all stroke indicators to ensure they display correctly
-        refreshStrokeIndicators();
+        // Add a small delay to ensure UI is fully rendered before loading scores
+        setTimeout(async () => {
+            await loadScoresFromDatabase(selectedWeek);
+            refreshStrokeIndicators();
+        }, 500);
         
         console.log(`✅ Weekly Scoring loaded for Week ${selectedWeek}`);
         
@@ -1765,11 +1768,8 @@ async function loadExistingWeeklyScoringData(weekNumber) {
             console.log('✅ Player dropdowns already populated, skipping repopulation');
         }
         
-        // Load existing lineup and score data
+        // Load existing lineup data
         console.log(`Loading existing data for Week ${weekNumber}`);
-        
-        // Load scores and strokes from database
-        await loadScoresFromDatabase(weekNumber);
     } catch (error) {
         console.error('Error loading existing weekly scoring data:', error);
     }
