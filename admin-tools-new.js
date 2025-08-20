@@ -1120,11 +1120,14 @@ async function calculateAndUpdateStandings() {
         const weekScorecardsSnapshot = await db.collection(weekScorecardsPath).get();
         
         // Process each week's results
+        console.log(`🏆 STANDINGS: Found ${weekScorecardsSnapshot.docs.length} week documents`);
+        
         for (const weekDoc of weekScorecardsSnapshot.docs) {
             const weekData = weekDoc.data();
             const weekNumber = weekData.weekNumber;
             
             console.log(`🏆 STANDINGS: Processing week ${weekNumber} results...`);
+            console.log(`🏆 STANDINGS: Week ${weekNumber} data keys:`, Object.keys(weekData));
             
             // Process each matchup in the week
             for (let matchupIndex = 0; matchupIndex < 3; matchupIndex++) { // 3 matchups per week
