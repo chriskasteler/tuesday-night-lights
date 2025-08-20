@@ -2722,13 +2722,9 @@ function calculateBestBallTeamScore(team, hole, matchNum, groupIndex) {
     const playerA = `${team}-${matchNum === 1 ? 'A' : 'C'}`;
     const playerB = `${team}-${matchNum === 1 ? 'B' : 'D'}`;
     
-    console.log(`Looking for players: ${playerA}, ${playerB} for hole ${hole}`);
-    
     // Get gross scores for both players
     const scoreA = currentPlayerScores[playerA] && currentPlayerScores[playerA][hole];
     const scoreB = currentPlayerScores[playerB] && currentPlayerScores[playerB][hole];
-    
-    console.log(`Scores found: ${playerA}=${scoreA}, ${playerB}=${scoreB}`);
     
     if (!scoreA && !scoreB) return null; // No scores entered yet
     
@@ -2779,10 +2775,8 @@ function getStrokeValue(player, hole) {
 // Calculate automatic match status based on team scores
 function calculateMatchStatus() {
     try {
-        console.log('Calculating match status...');
         // Find all team score rows (Best Ball and Alternate Shot)
         const teamScoreRows = document.querySelectorAll('tr.team-score-row, tr.team-row');
-        console.log('Found team score rows:', teamScoreRows.length);
         
         // Process each match (pair of team rows)
         for (let i = 0; i < teamScoreRows.length; i += 2) {
@@ -2813,8 +2807,6 @@ function calculateMatchStatus() {
                 team1StatusRow = team1Row.nextElementSibling;
                 team2StatusRow = team2Row.nextElementSibling;
             }
-            
-            console.log(`Match ${i/2 + 1}: Team1 cells: ${team1ScoreCells.length}, Team2 cells: ${team2ScoreCells.length}`);
             
             if (!team1StatusRow || !team2StatusRow) continue;
             
@@ -2960,9 +2952,6 @@ function calculateMatchStatus() {
 // Update team score cells for best ball format
 function updateTeamScores() {
     try {
-        console.log('Updating team scores...');
-        console.log('Current player scores:', currentPlayerScores);
-        
         // Find all team score cells that need calculation (Best Ball format)
         const teamScoreCells = document.querySelectorAll('td.team-score-cell:not(.score-cell)');
         
@@ -2995,17 +2984,50 @@ function updateTeamScores() {
                                 }
                             }
                             
-                            // Calculate best ball score (only for Best Ball format)
-                            const bestScore = calculateBestBallTeamScore(team, holeNumber, matchNum, 0);
-                            
-                            if (bestScore !== null) {
-                                cell.textContent = Math.round(bestScore * 2) / 2; // Handle half strokes properly
-                                cell.style.fontWeight = '600';
-                                cell.style.color = '#2d4a2d';
-                            } else {
-                                cell.textContent = '-';
-                                cell.style.fontWeight = '600';
-                                cell.style.color = '#666';
+                            // Find actual player names from the scorecard for this team/match
+                            const scorecard = cell.closest('.admin-scorecard');
+                            if (scorecard) {
+                                const playerCells = scorecard.querySelectorAll(`td.score-cell[data-hole="${holeNumber}"]`);
+                                let teamPlayerCells = [];
+                                
+                                // Find the player cells for this team (first 2 or last 2 rows)
+                                if (labelText.includes('Whack Shack')) {
+                                    teamPlayerCells = [playerCells[0], playerCells[1]]; // First 2 players
+                                } else if (labelText.includes('Bump & Run')) {
+                                    teamPlayerCells = [playerCells[2], playerCells[3]]; // Last 2 players  
+                                }
+                                
+                                // Get actual player names and scores
+                                let bestNetScore = null;
+                                teamPlayerCells.forEach(playerCell => {
+                                    if (playerCell) {
+                                        const playerName = playerCell.dataset.player;
+                                        const score = currentPlayerScores[playerName] && currentPlayerScores[playerName][holeNumber];
+                                        
+                                        if (score) {
+                                            // Get stroke info for net score calculation
+                                            const strokeType = currentPlayerStrokes[playerName] && currentPlayerStrokes[playerName][holeNumber];
+                                            let strokeValue = 0;
+                                            if (strokeType === 'full') strokeValue = 1;
+                                            else if (strokeType === 'half') strokeValue = 0.5;
+                                            
+                                            const netScore = parseInt(score) - strokeValue;
+                                            if (bestNetScore === null || netScore < bestNetScore) {
+                                                bestNetScore = netScore;
+                                            }
+                                        }
+                                    }
+                                });
+                                
+                                if (bestNetScore !== null) {
+                                    cell.textContent = Math.round(bestNetScore * 2) / 2; // Handle half strokes properly
+                                    cell.style.fontWeight = '600';
+                                    cell.style.color = '#2d4a2d';
+                                } else {
+                                    cell.textContent = '-';
+                                    cell.style.fontWeight = '600';
+                                    cell.style.color = '#666';
+                                }
                             }
                         }
                     }
