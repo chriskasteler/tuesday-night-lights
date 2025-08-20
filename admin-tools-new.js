@@ -5664,7 +5664,7 @@ function getWeekScheduleData(week) {
             format: 'Four-Ball (Best Ball)',
             matches: [
                 { team1: 'Whack Shack', team2: 'Cream Team' },
-                { team1: 'Bump & Run', team2: 'So Sushi Samurai' },
+                { team1: 'Bump & Run', team2: 'So Sushi Samurais' },
                 { team1: 'Aviari', team2: 'Be The Ball' }
             ]
         },
@@ -5674,14 +5674,14 @@ function getWeekScheduleData(week) {
             matches: [
                 { team1: 'Whack Shack', team2: 'Bump & Run' },
                 { team1: 'Cream Team', team2: 'Aviari' },
-                { team1: 'So Sushi Samurai', team2: 'Be The Ball' }
+                { team1: 'So Sushi Samurais', team2: 'Be The Ball' }
             ]
         },
         '3': {
             date: 'September 2',
             format: 'Scramble',
             matches: [
-                { team1: 'Whack Shack', team2: 'So Sushi Samurai' },
+                { team1: 'Whack Shack', team2: 'So Sushi Samurais' },
                 { team1: 'Cream Team', team2: 'Be The Ball' },
                 { team1: 'Bump & Run', team2: 'Aviari' }
             ]
@@ -5692,7 +5692,7 @@ function getWeekScheduleData(week) {
             matches: [
                 { team1: 'Whack Shack', team2: 'Aviari' },
                 { team1: 'Cream Team', team2: 'Bump & Run' },
-                { team1: 'So Sushi Samurai', team2: 'Be The Ball' }
+                { team1: 'So Sushi Samurais', team2: 'Be The Ball' }
             ]
         },
         '5': {
@@ -5700,7 +5700,7 @@ function getWeekScheduleData(week) {
             format: 'Modified Stableford',
             matches: [
                 { team1: 'Whack Shack', team2: 'Be The Ball' },
-                { team1: 'Cream Team', team2: 'So Sushi Samurai' },
+                { team1: 'Cream Team', team2: 'So Sushi Samurais' },
                 { team1: 'Bump & Run', team2: 'Aviari' }
             ]
         }
