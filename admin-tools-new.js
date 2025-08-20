@@ -5411,45 +5411,45 @@ function getWeekScheduleData(week) {
             date: 'August 19',
             format: 'Four-Ball (Best Ball)',
             matches: [
-                { team1: 'Team 1', team2: 'Team 2' },
-                { team1: 'Team 3', team2: 'Team 4' },
-                { team1: 'Team 5', team2: 'Team 6' }
+                { team1: 'Whack Shack', team2: 'Cream Team' },
+                { team1: 'Bump & Run', team2: 'So Sushi Samurai' },
+                { team1: 'Avery', team2: 'Be The Ball' }
             ]
         },
         '2': {
             date: 'August 26',
             format: 'Alternate Shot',
             matches: [
-                { team1: 'Team 1', team2: 'Team 3' },
-                { team1: 'Team 2', team2: 'Team 5' },
-                { team1: 'Team 4', team2: 'Team 6' }
+                { team1: 'Whack Shack', team2: 'Bump & Run' },
+                { team1: 'Cream Team', team2: 'Avery' },
+                { team1: 'So Sushi Samurai', team2: 'Be The Ball' }
             ]
         },
         '3': {
             date: 'September 2',
             format: 'Scramble',
             matches: [
-                { team1: 'Team 1', team2: 'Team 4' },
-                { team1: 'Team 2', team2: 'Team 6' },
-                { team1: 'Team 3', team2: 'Team 5' }
+                { team1: 'Whack Shack', team2: 'So Sushi Samurai' },
+                { team1: 'Cream Team', team2: 'Be The Ball' },
+                { team1: 'Bump & Run', team2: 'Avery' }
             ]
         },
         '4': {
             date: 'September 9',
             format: 'High-Low',
             matches: [
-                { team1: 'Team 1', team2: 'Team 5' },
-                { team1: 'Team 2', team2: 'Team 3' },
-                { team1: 'Team 4', team2: 'Team 6' }
+                { team1: 'Whack Shack', team2: 'Avery' },
+                { team1: 'Cream Team', team2: 'Bump & Run' },
+                { team1: 'So Sushi Samurai', team2: 'Be The Ball' }
             ]
         },
         '5': {
             date: 'September 23',
             format: 'Modified Stableford',
             matches: [
-                { team1: 'Team 1', team2: 'Team 6' },
-                { team1: 'Team 2', team2: 'Team 4' },
-                { team1: 'Team 3', team2: 'Team 5' }
+                { team1: 'Whack Shack', team2: 'Be The Ball' },
+                { team1: 'Cream Team', team2: 'So Sushi Samurai' },
+                { team1: 'Bump & Run', team2: 'Avery' }
             ]
         }
     };
