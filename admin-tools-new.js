@@ -7397,25 +7397,27 @@ async function loadScorecardForWeek(weekNumber) {
         
         if (weekScorecardDoc.exists) {
             const scorecardData = weekScorecardDoc.data();
+            console.log('📊 Found scorecard data:', scorecardData);
             
-            // Update button to show selected scorecard
-            selectBtn.style.background = '#28a745';
-            selectBtn.innerHTML = `✓ ${scorecardData.scorecardName}`;
-            
-            // Add edit button
-            statusDiv.innerHTML = `
-                <button onclick="openScorecardSelector(${weekNumber})" 
-                        style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                    ✓ ${scorecardData.scorecardName}
-                </button>
-                <span style="font-size: 0.85rem; color: #666;">
-                    ${scorecardData.scorecardName} loaded • 
+            if (statusDiv) {
+                // Update the entire status area
+                statusDiv.innerHTML = `
                     <button onclick="openScorecardSelector(${weekNumber})" 
-                            style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline; font-size: 0.85rem;">
-                        edit
+                            style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                        ✓ ${scorecardData.scorecardName}
                     </button>
-                </span>
-            `;
+                    <span style="font-size: 0.85rem; color: #666; margin-left: 10px;">
+                        ${scorecardData.scorecardName} loaded • 
+                        <button onclick="openScorecardSelector(${weekNumber})" 
+                                style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline; font-size: 0.85rem; padding: 0;">
+                            edit
+                        </button>
+                    </span>
+                `;
+                console.log('✅ Updated scorecard status interface');
+            } else {
+                console.error('❌ Could not find scorecard status div');
+            }
             
             // Update par values in all tables
             updateParValues(scorecardData.parValues, scorecardData.total);
