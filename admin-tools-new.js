@@ -2080,12 +2080,19 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
             cell.style.opacity = '1';
             cell.style.pointerEvents = 'auto';
             
-            // Update the button onclick to use player ID
+            // Store the actual player ID in the cell for stroke reference
+            cell.dataset.actualPlayerId = selectedValue;
+            console.log(`🏌️ Updated stroke cell for hole ${cell.dataset.hole} to use player ID: ${selectedValue}`);
+            
+            // Update the button onclick to use a wrapper function that reads the actual player ID
             const button = cell.querySelector('button');
             if (button) {
                 const hole = cell.dataset.hole;
-                button.onclick = () => openStrokeSelector(selectedValue, hole);
-                console.log(`🏌️ Updated stroke button for hole ${hole} to use player ID: ${selectedValue}`);
+                button.onclick = () => {
+                    const actualPlayerId = cell.dataset.actualPlayerId || cell.dataset.player;
+                    console.log(`🏌️ Stroke button clicked - using player ID: ${actualPlayerId}`);
+                    openStrokeSelector(actualPlayerId, hole);
+                };
             }
         } else {
             // Disable stroke cell and reset to generic name
