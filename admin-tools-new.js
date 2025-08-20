@@ -6705,21 +6705,16 @@ async function loadScoresFromDatabase(weekNumber) {
         if (scoresDoc.exists) {
             const scoresData = scoresDoc.data();
             
-            console.log('📊 RAW SCORES DATA:', scoresData);
-            
             // Restore scores to memory
             currentPlayerScores = scoresData.playerScores || {};
             currentPlayerStrokes = scoresData.playerStrokes || {};
-            
-            console.log('📊 LOADED PLAYER SCORES:', currentPlayerScores);
-            console.log('📊 LOADED PLAYER STROKES:', currentPlayerStrokes);
             
             // Update the UI with loaded scores
             restoreScoresInUI();
             
             console.log(`✅ Scores loaded for Week ${weekNumber}`);
         } else {
-            console.log(`❌ No scores document found for week-${weekNumber}`);
+            console.log(`No scores found for week-${weekNumber}`);
         }
         
     } catch (error) {
@@ -6729,26 +6724,14 @@ async function loadScoresFromDatabase(weekNumber) {
 
 // Restore scores in the UI after loading from database
 function restoreScoresInUI() {
-    console.log('🔄 RESTORE SCORES: Starting UI restoration...');
-    
-    // Check if there are any score cells on the page
-    const allScoreCells = document.querySelectorAll('td.score-cell');
-    console.log(`🔄 RESTORE SCORES: Found ${allScoreCells.length} score cells on page`);
-    
     // Update all score cells
     Object.keys(currentPlayerScores).forEach(player => {
         Object.keys(currentPlayerScores[player]).forEach(hole => {
             const score = currentPlayerScores[player][hole];
-            const selector = `td.score-cell[data-player="${player}"][data-hole="${hole}"]`;
-            const cell = document.querySelector(selector);
-            console.log(`🔄 RESTORE SCORES: Looking for ${player} hole ${hole} with selector: ${selector}`);
-            console.log(`🔄 RESTORE SCORES: Found cell:`, cell);
+            const cell = document.querySelector(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
             if (cell) {
                 cell.textContent = score;
                 applyScoreTypeStyle(cell, score);
-                console.log(`✅ RESTORE SCORES: Set ${player} hole ${hole} = ${score}`);
-            } else {
-                console.log(`❌ RESTORE SCORES: Could not find cell for ${player} hole ${hole}`);
             }
         });
     });
@@ -6833,18 +6816,18 @@ window.saveMatchupLineup = saveMatchupLineup;
 // Add save buttons to each matchup dynamically
 function addSaveButtonsToMatchups(weekNumber) {
     try {
-        console.log(`🎯 ADDING SAVE BUTTONS: Adding save buttons for Week ${weekNumber}`);
+
         
         // Find all unified scorecards
         const scorecards = document.querySelectorAll('.unified-scorecard');
-        console.log(`🎯 ADDING SAVE BUTTONS: Found ${scorecards.length} scorecards`);
+
         
         scorecards.forEach((scorecard, index) => {
             const matchupIndex = scorecard.dataset.matchup || index;
             
             // Check if save button already exists
             if (scorecard.querySelector('.save-matchup-button')) {
-                console.log(`🎯 ADDING SAVE BUTTONS: Save button already exists for matchup ${matchupIndex}`);
+
                 return;
             }
             
@@ -6869,7 +6852,7 @@ function addSaveButtonsToMatchups(weekNumber) {
             // Append the save button to the scorecard
             scorecard.appendChild(saveButtonDiv);
             
-            console.log(`✅ ADDING SAVE BUTTONS: Added save button for matchup ${matchupIndex}`);
+
         });
         
     } catch (error) {
@@ -6993,7 +6976,7 @@ function getPlayerInfoById(playerId) {
 // Load existing lineups from the weeklyLineups database and populate dropdowns
 async function loadExistingLineupsFromDatabase(weekNumber) {
     try {
-        console.log(`📥 LOADING LINEUPS: Loading existing lineups for Week ${weekNumber}`);
+
         
         // Load lineup data from weeklyLineups collection
         const docPath = `clubs/braemar-country-club/leagues/braemar-highland-league/seasons/2025/weeklyLineups`;
@@ -7002,12 +6985,12 @@ async function loadExistingLineupsFromDatabase(weekNumber) {
         const doc = await docRef.get();
         
         if (!doc.exists) {
-            console.log(`📥 LOADING LINEUPS: No existing lineups found for Week ${weekNumber}`);
+
             return;
         }
         
         const lineupsData = doc.data();
-        console.log(`📥 LOADING LINEUPS: Found lineup data:`, lineupsData);
+
         
         // Iterate through each matchup (matchup0, matchup1, matchup2)
         for (const matchupKey in lineupsData) {
@@ -7035,7 +7018,7 @@ async function loadExistingLineupsFromDatabase(weekNumber) {
             }
         }
         
-        console.log(`✅ LOADING LINEUPS: Successfully loaded existing lineups for Week ${weekNumber}`);
+        console.log(`✅ Lineups loaded for Week ${weekNumber}`);
         
     } catch (error) {
         console.error('❌ Error loading existing lineups:', error);
@@ -7060,7 +7043,7 @@ async function loadPlayersIntoDropdowns(weekNumber, matchupIndex, matchNumber, t
             }
         });
         
-        console.log(`🎯 LOADING PLAYERS: Found ${teamDropdowns.length} dropdowns for ${teamSide}`);
+
         
         // Set each player in the correct position dropdown
         playersArray.forEach((player, index) => {
@@ -7227,8 +7210,6 @@ async function removeLineupFromDatabase(weekNumber, matchupIndex, matchNumber, t
 // Refresh all stroke indicators on the page
 function refreshStrokeIndicators() {
     try {
-        console.log('🔄 Refreshing all stroke indicators...');
-        
         // Go through all players and holes that have strokes
         for (const player in currentPlayerStrokes) {
             for (const hole in currentPlayerStrokes[player]) {
@@ -7236,9 +7217,7 @@ function refreshStrokeIndicators() {
             }
         }
         
-        console.log('✅ Stroke indicators refreshed');
-        
     } catch (error) {
-        console.error('❌ Error refreshing stroke indicators:', error);
+        console.error('Error refreshing stroke indicators:', error);
     }
 }
