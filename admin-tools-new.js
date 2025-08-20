@@ -2304,6 +2304,9 @@ window.editScoreCell = function(cell) {
             // Apply score styling
             applyScoreTypeStyle(cell, newScore);
             
+            // Update player total
+            updatePlayerTotal(player);
+            
             // Save to database
             await saveScoresToDatabase(week);
             
@@ -2348,6 +2351,9 @@ window.editScoreCell = function(cell) {
                     if (currentPlayerScores[player] && currentPlayerScores[player][hole]) {
                         delete currentPlayerScores[player][hole];
                     }
+                    
+                    // Update player total
+                    updatePlayerTotal(player);
                     
                     // Save to database
                     await saveScoresToDatabase(week);
