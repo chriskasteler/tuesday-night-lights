@@ -1796,6 +1796,8 @@ function generateStrokeCells(playerName) {
 
 // Simple stroke toggle function - cycles through: none -> half -> full -> none
 window.toggleStroke = function toggleStroke(cell) {
+    console.log('🎯 toggleStroke called on cell:', cell.dataset.player, 'hole:', cell.dataset.hole);
+    
     // Use cell position (generic player name) for stroke storage, NOT actual player ID
     const cellPosition = cell.dataset.player; // This is the generic name like "Whack Shack Player 1"
     const hole = parseInt(cell.dataset.hole);
@@ -1815,6 +1817,8 @@ window.toggleStroke = function toggleStroke(cell) {
     } else {
         newStroke = 'none';
     }
+    
+    console.log(`🔄 Stroke cycling: ${currentStroke} -> ${newStroke}`);
     
     // Initialize cell position strokes if needed
     if (!currentPlayerStrokes[cellPosition]) {
