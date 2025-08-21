@@ -1777,7 +1777,7 @@ async function generateUnifiedMatchTable(weekNumber, matchupIndex, matchNumber, 
     `;
 }
 
-// Generate stroke cells for a player
+// Generate stroke cells for a player - SIMPLE VERSION
 function generateStrokeCells(playerName) {
     let cells = '';
     for (let hole = 1; hole <= 9; hole++) {
@@ -1785,16 +1785,77 @@ function generateStrokeCells(playerName) {
             <td class="stroke-cell" 
                 data-player="${playerName}"
                 data-hole="${hole}"
-                style="padding: 5px; border: 1px solid #ddd; text-align: center; font-size: 0.8rem;">
-                <button onclick="openStrokeSelector('${playerName}', ${hole})"
-                        style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
-                    Add
-                </button>
-                <div class="stroke-display" style="margin-top: 2px; font-size: 0.75rem; color: #666;">-</div>
+                style="padding: 5px; border: 1px solid #ddd; text-align: center; font-size: 0.8rem; cursor: pointer;"
+                onclick="toggleStroke(this)">
+                <div class="stroke-display">-</div>
             </td>
         `;
     }
     return cells;
+}
+
+// Simple stroke toggle function - cycles through: none -> half -> full -> none
+window.toggleStroke = function toggleStroke(cell) {
+    const player = cell.dataset.player;
+    const hole = parseInt(cell.dataset.hole);
+    
+    // Get current stroke state
+    let currentStroke = 'none';
+    if (currentPlayerStrokes[player] && currentPlayerStrokes[player][hole]) {
+        currentStroke = currentPlayerStrokes[player][hole];
+    }
+    
+    // Cycle to next state
+    let newStroke;
+    if (currentStroke === 'none') {
+        newStroke = 'half';
+    } else if (currentStroke === 'half') {
+        newStroke = 'full';
+    } else {
+        newStroke = 'none';
+    }
+    
+    // Initialize player strokes if needed
+    if (!currentPlayerStrokes[player]) {
+        currentPlayerStrokes[player] = {};
+    }
+    
+    // Update stroke data
+    if (newStroke === 'none') {
+        delete currentPlayerStrokes[player][hole];
+    } else {
+        currentPlayerStrokes[player][hole] = newStroke;
+    }
+    
+    // Update visual display
+    updateStrokeDisplay(cell, newStroke);
+    
+    // Update score cell indicator
+    updateScoreStrokeIndicator(player, hole);
+    
+    // Save strokes to database
+    const weekNumber = document.getElementById('weekly-scoring-week-select').value;
+    if (weekNumber) {
+        saveStrokesToDatabase(weekNumber);
+    }
+};
+
+// Update stroke display in cell
+function updateStrokeDisplay(cell, strokeType) {
+    const display = cell.querySelector('.stroke-display');
+    if (strokeType === 'full') {
+        display.textContent = '●';
+        display.style.color = '#28a745';
+        display.style.fontWeight = 'bold';
+    } else if (strokeType === 'half') {
+        display.textContent = '½';
+        display.style.color = '#ffc107';
+        display.style.fontWeight = 'bold';
+    } else {
+        display.textContent = '-';
+        display.style.color = '#666';
+        display.style.fontWeight = 'normal';
+    }
 }
 
 // Generate editable score cells for a player
@@ -7468,13 +7529,24 @@ async function removeLineupFromDatabase(weekNumber, matchupIndex, matchNumber, t
 // Refresh all stroke indicators on the page
 function refreshStrokeIndicators() {
     try {
-        // Go through all players and holes that have strokes
-        for (const player in currentPlayerStrokes) {
-            for (const hole in currentPlayerStrokes[player]) {
-                updateScoreStrokeIndicator(player, hole);
+        // Go through all stroke cells and update their display
+        const allStrokeCells = document.querySelectorAll('td.stroke-cell');
+        allStrokeCells.forEach(cell => {
+            const player = cell.dataset.player;
+            const hole = parseInt(cell.dataset.hole);
+            
+            // Get stroke state
+            let strokeType = 'none';
+            if (currentPlayerStrokes[player] && currentPlayerStrokes[player][hole]) {
+                strokeType = currentPlayerStrokes[player][hole];
             }
-        }
+            
+            // Update display
+            updateStrokeDisplay(cell, strokeType);
+            updateScoreStrokeIndicator(player, hole);
+        });
         
+        console.log('Stroke indicators refreshed');
     } catch (error) {
         console.error('Error refreshing stroke indicators:', error);
     }
