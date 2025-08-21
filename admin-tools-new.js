@@ -3782,24 +3782,28 @@ window.openStrokeSelector = function openStrokeSelector(player, hole) {
 // Set stroke for a player on a specific hole
 window.setStroke = function setStroke(player, hole, strokeType) {
     try {
-        console.log(`Setting stroke for ${player} on hole ${hole}: ${strokeType}`);
+        console.log(`Setting stroke for position ${player} on hole ${hole}: ${strokeType}`);
         
         // Close modal first to ensure it closes even if there's an error
         closeStrokeSelector();
         
-        // Initialize player strokes if needed
-        if (!currentPlayerStrokes[player]) currentPlayerStrokes[player] = {};
-        
-        // Set stroke type
-        if (strokeType === 'none') {
-            delete currentPlayerStrokes[player][hole];
-        } else {
-            currentPlayerStrokes[player][hole] = strokeType;
+        // Find the stroke cell by data attributes instead of using player names
+        const strokeCell = document.querySelector(`td.stroke-cell[data-player="${player}"][data-hole="${hole}"]`);
+        if (!strokeCell) {
+            console.error(`Could not find stroke cell for ${player} hole ${hole}`);
+            return;
         }
         
-        // Update visual indicators
-        updateStrokeCell(player, hole);
-        updateScoreStrokeIndicator(player, hole);
+        // Store stroke data directly on the cell
+        if (strokeType === 'none') {
+            strokeCell.removeAttribute('data-stroke');
+        } else {
+            strokeCell.setAttribute('data-stroke', strokeType);
+        }
+        
+        // Update visual indicators for this specific cell
+        updateStrokeCellVisual(strokeCell, strokeType);
+        updateStrokeIndicatorOnScoreCell(strokeCell, hole, strokeType);
         
         // Update score styling for this cell (if there's a score)
         if (currentPlayerScores[player] && currentPlayerScores[player][hole]) {
@@ -3842,21 +3846,50 @@ window.closeStrokeSelector = function closeStrokeSelector() {
     document.body.style.overflow = '';
 }
 
-// Update stroke cell visual state
-function updateStrokeCell(player, hole) {
-    const strokeCells = document.querySelectorAll(`td.stroke-cell[data-player="${player}"][data-hole="${hole}"]`);
-    const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
+// Update visual state of a single stroke cell
+function updateStrokeCellVisual(strokeCell, strokeType) {
+    const player = strokeCell.dataset.player;
+    const hole = strokeCell.dataset.hole;
     
-    strokeCells.forEach(cell => {
-        if (strokeType === 'full') {
-            cell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #e8f5e8; color: #2d4a2d; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">FULL</div>`;
-        } else if (strokeType === 'half') {
-            cell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #fff3cd; color: #856404; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">HALF</div>`;
-        } else {
-            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>
-                            <div class="stroke-display" style="margin-top: 2px; font-size: 0.75rem; color: #666;">-</div>`;
-        }
-    });
+    if (strokeType === 'full') {
+        strokeCell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #e8f5e8; color: #2d4a2d; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">FULL</div>`;
+    } else if (strokeType === 'half') {
+        strokeCell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #fff3cd; color: #856404; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">HALF</div>`;
+    } else {
+        strokeCell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>
+                        <div class="stroke-display" style="margin-top: 2px; font-size: 0.75rem; color: #666;">-</div>`;
+    }
+}
+
+// Update stroke indicator on the score cell above
+function updateStrokeIndicatorOnScoreCell(strokeCell, hole, strokeType) {
+    // Find the score cell in the row above this stroke cell
+    const playerRow = strokeCell.closest('tr').previousElementSibling;
+    if (!playerRow) return;
+    
+    const scoreCell = playerRow.querySelector(`td.score-cell[data-hole="${hole}"]`);
+    if (!scoreCell) return;
+    
+    // Remove existing stroke indicator
+    const existingIndicator = scoreCell.querySelector('.stroke-indicator');
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+    
+    // Add new stroke indicator if needed
+    if (strokeType === 'full') {
+        const indicator = document.createElement('div');
+        indicator.className = 'stroke-indicator';
+        indicator.textContent = '●';
+        indicator.style.cssText = 'position: absolute; top: 2px; right: 2px; font-size: 0.6rem; color: #666; pointer-events: none;';
+        scoreCell.appendChild(indicator);
+    } else if (strokeType === 'half') {
+        const indicator = document.createElement('div');
+        indicator.className = 'stroke-indicator';
+        indicator.textContent = '½';
+        indicator.style.cssText = 'position: absolute; top: 2px; right: 2px; font-size: 0.6rem; color: #666; pointer-events: none;';
+        scoreCell.appendChild(indicator);
+    }
 }
 
 // Update score cell stroke indicator (dot or 1/2)
