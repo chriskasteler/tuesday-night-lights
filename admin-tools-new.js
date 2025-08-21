@@ -1796,13 +1796,14 @@ function generateStrokeCells(playerName) {
 
 // Simple stroke toggle function - cycles through: none -> half -> full -> none
 window.toggleStroke = function toggleStroke(cell) {
-    const player = cell.dataset.player;
+    // Use cell position (generic player name) for stroke storage, NOT actual player ID
+    const cellPosition = cell.dataset.player; // This is the generic name like "Whack Shack Player 1"
     const hole = parseInt(cell.dataset.hole);
     
-    // Get current stroke state
+    // Get current stroke state for this CELL POSITION
     let currentStroke = 'none';
-    if (currentPlayerStrokes[player] && currentPlayerStrokes[player][hole]) {
-        currentStroke = currentPlayerStrokes[player][hole];
+    if (currentPlayerStrokes[cellPosition] && currentPlayerStrokes[cellPosition][hole]) {
+        currentStroke = currentPlayerStrokes[cellPosition][hole];
     }
     
     // Cycle to next state
@@ -1815,23 +1816,23 @@ window.toggleStroke = function toggleStroke(cell) {
         newStroke = 'none';
     }
     
-    // Initialize player strokes if needed
-    if (!currentPlayerStrokes[player]) {
-        currentPlayerStrokes[player] = {};
+    // Initialize cell position strokes if needed
+    if (!currentPlayerStrokes[cellPosition]) {
+        currentPlayerStrokes[cellPosition] = {};
     }
     
-    // Update stroke data
+    // Update stroke data for this CELL POSITION
     if (newStroke === 'none') {
-        delete currentPlayerStrokes[player][hole];
+        delete currentPlayerStrokes[cellPosition][hole];
     } else {
-        currentPlayerStrokes[player][hole] = newStroke;
+        currentPlayerStrokes[cellPosition][hole] = newStroke;
     }
     
     // Update visual display
     updateStrokeDisplay(cell, newStroke);
     
-    // Update score cell indicator
-    updateScoreStrokeIndicator(player, hole);
+    // Update score cell indicator for this cell position
+    updateScoreStrokeIndicator(cellPosition, hole);
     
     // Save strokes to database
     const weekElement = document.getElementById('weekly-scoring-week-select');
