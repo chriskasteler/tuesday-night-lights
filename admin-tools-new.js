@@ -7621,13 +7621,22 @@ function updateBestBallScores() {
                 console.log(`🔍 Score cell classes:`, scoreCell.className);
                 console.log(`🔍 Score cell children:`, scoreCell.children);
                 
-                // Check for stroke indicator on this cell (new system uses .stroke-indicator-overlay)
-                const strokeIndicator = scoreCell.querySelector('.stroke-indicator-overlay');
-                console.log(`🔍 Stroke indicator found:`, strokeIndicator);
+                // Check for stroke indicator on this cell - look for any span with stroke symbols
+                let strokeIndicator = scoreCell.querySelector('.stroke-indicator-overlay');
                 
-                // Also check if there are any child elements at all
-                const allChildren = scoreCell.querySelectorAll('*');
-                console.log(`🔍 All child elements:`, allChildren);
+                // If not found, check for span elements with stroke symbols (fallback)
+                if (!strokeIndicator) {
+                    const spans = scoreCell.querySelectorAll('span');
+                    for (let span of spans) {
+                        const text = span.textContent.trim();
+                        if (text === '●' || text === '½') {
+                            strokeIndicator = span;
+                            break;
+                        }
+                    }
+                }
+                
+                console.log(`🔍 Stroke indicator found:`, strokeIndicator);
                 
                 if (strokeIndicator) {
                     const strokeText = strokeIndicator.textContent.trim();
