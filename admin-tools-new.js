@@ -1783,10 +1783,9 @@ function generateStrokeCells(playerName) {
     for (let hole = 1; hole <= 9; hole++) {
         cells += `
             <td class="stroke-cell" 
-                data-player="${playerName}"
                 data-hole="${hole}"
                 style="padding: 5px; border: 1px solid #ddd; text-align: center; font-size: 0.8rem;">
-                <button class="stroke-add-btn" data-player="${playerName}" data-hole="${hole}"
+                <button onclick="openStrokeSelector(this, ${hole})"
                         style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
                     Add
                 </button>
@@ -3709,8 +3708,10 @@ function selectScore(score) {
     }, 200);
 }
 
-// Open stroke selector for a player on a specific hole
-window.openStrokeSelector = function openStrokeSelector(player, hole) {
+// Open stroke selector for a cell on a specific hole
+window.openStrokeSelector = function openStrokeSelector(buttonElement, hole) {
+    const strokeCell = buttonElement.closest('.stroke-cell');
+    
     // Create stroke selector modal
     const modal = document.createElement('div');
     modal.id = 'stroke-selector-modal';
