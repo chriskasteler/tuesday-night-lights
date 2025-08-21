@@ -7617,20 +7617,25 @@ function updateBestBallScores() {
                 // Calculate net score (gross - strokes)
                 let netScore = grossScore;
                 
-                // Check for stroke indicator on this cell
-                const strokeIndicator = scoreCell.querySelector('.stroke-indicator');
+                // Check for stroke indicator on this cell (new system uses .stroke-indicator-overlay)
+                const strokeIndicator = scoreCell.querySelector('.stroke-indicator-overlay');
                 if (strokeIndicator) {
                     const strokeText = strokeIndicator.textContent.trim();
                     if (strokeText === '●' || strokeText === '1') {
                         netScore -= 1;  // Full stroke
+                        console.log(`🏌️ Found full stroke: ${grossScore} - 1 = ${netScore}`);
                     } else if (strokeText === '½') {
                         netScore -= 0.5;  // Half stroke
+                        console.log(`🏌️ Found half stroke: ${grossScore} - 0.5 = ${netScore}`);
                     }
+                } else {
+                    console.log(`🏌️ No stroke found for gross score: ${grossScore}, net: ${netScore}`);
                 }
                 
                 // Keep the best (lowest) net score
                 if (bestNetScore === null || netScore < bestNetScore) {
                     bestNetScore = netScore;
+                    console.log(`🏆 New best net score: ${netScore}`);
                 }
             });
             
