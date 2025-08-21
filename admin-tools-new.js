@@ -3933,7 +3933,12 @@ function updateScoreStrokeIndicator(player, hole) {
     const scoreCells = document.querySelectorAll(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
     const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
     
+    console.log(`🔍 updateScoreStrokeIndicator: player=${player}, hole=${hole}, strokeType=${strokeType}, found ${scoreCells.length} cells`);
+    
     scoreCells.forEach(cell => {
+        // Ensure cell has position relative for absolute positioning to work
+        cell.style.position = 'relative';
+        
         // Remove any existing stroke indicators
         const existingIndicator = cell.querySelector('.stroke-indicator-overlay');
         if (existingIndicator) {
@@ -3948,13 +3953,15 @@ function updateScoreStrokeIndicator(player, hole) {
                 position: absolute;
                 top: 2px;
                 right: 2px;
-                width: 4px;
-                height: 4px;
+                width: 8px;
+                height: 8px;
                 background: black;
                 border-radius: 50%;
                 pointer-events: none;
+                z-index: 10;
             `;
             cell.appendChild(indicator);
+            console.log(`✅ Added full stroke indicator to cell`);
         } else if (strokeType === 'half') {
             const indicator = document.createElement('div');
             indicator.className = 'stroke-indicator-overlay';
@@ -3963,13 +3970,17 @@ function updateScoreStrokeIndicator(player, hole) {
                 position: absolute;
                 top: 1px;
                 right: 2px;
-                font-size: 10px;
+                font-size: 12px;
                 color: black;
                 font-weight: bold;
                 pointer-events: none;
                 line-height: 1;
+                z-index: 10;
             `;
             cell.appendChild(indicator);
+            console.log(`✅ Added half stroke indicator to cell`);
+        } else {
+            console.log(`❌ No stroke indicator needed (strokeType: ${strokeType})`);
         }
     });
 }
