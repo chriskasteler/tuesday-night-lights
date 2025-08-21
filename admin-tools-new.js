@@ -7617,19 +7617,26 @@ function updateBestBallScores() {
                 // Calculate net score (gross - strokes)
                 let netScore = grossScore;
                 
+                console.log(`🔍 Checking score cell for hole ${hole}: gross=${grossScore}, innerHTML="${scoreCell.innerHTML}"`);
+                
                 // Check for stroke indicator on this cell (new system uses .stroke-indicator-overlay)
                 const strokeIndicator = scoreCell.querySelector('.stroke-indicator-overlay');
+                console.log(`🔍 Stroke indicator found:`, strokeIndicator);
+                
                 if (strokeIndicator) {
                     const strokeText = strokeIndicator.textContent.trim();
+                    console.log(`🔍 Stroke text: "${strokeText}"`);
                     if (strokeText === '●' || strokeText === '1') {
                         netScore -= 1;  // Full stroke
                         console.log(`🏌️ Found full stroke: ${grossScore} - 1 = ${netScore}`);
                     } else if (strokeText === '½') {
                         netScore -= 0.5;  // Half stroke
                         console.log(`🏌️ Found half stroke: ${grossScore} - 0.5 = ${netScore}`);
+                    } else {
+                        console.log(`❓ Unknown stroke text: "${strokeText}"`);
                     }
                 } else {
-                    console.log(`🏌️ No stroke found for gross score: ${grossScore}, net: ${netScore}`);
+                    console.log(`🏌️ No stroke indicator found for gross score: ${grossScore}, net: ${netScore}`);
                 }
                 
                 // Keep the best (lowest) net score
