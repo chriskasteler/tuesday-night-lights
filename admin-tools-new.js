@@ -2086,14 +2086,12 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
             const hole = cell.dataset.hole;
             const button = cell.querySelector('button');
             if (button) {
-                console.log(`🔧 Replacing stroke button for hole ${hole} with player ID: ${selectedValue}`);
                 button.outerHTML = `
                     <button onclick="openStrokeSelector('${selectedValue}', ${hole})"
                             style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
                         Add
                     </button>
                 `;
-                console.log(`✅ Button replaced for hole ${hole}`);
             }
         } else {
             // Disable stroke cell and reset to generic name
@@ -3713,7 +3711,6 @@ function selectScore(score) {
 
 // Open stroke selector for a player on a specific hole
 window.openStrokeSelector = function openStrokeSelector(player, hole) {
-    console.log(`🏌️ openStrokeSelector called with player: "${player}", hole: ${hole}`);
     // Create stroke selector modal
     const modal = document.createElement('div');
     modal.id = 'stroke-selector-modal';
