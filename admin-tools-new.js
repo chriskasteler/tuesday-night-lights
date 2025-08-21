@@ -1842,10 +1842,13 @@ window.toggleStroke = function toggleStroke(cell) {
 
 // Update stroke display in cell
 function updateStrokeDisplay(cell, strokeType) {
-    const display = cell.querySelector('.stroke-display');
+    // Check if this is a new-style cell with .stroke-display
+    let display = cell.querySelector('.stroke-display');
+    
     if (!display) {
-        console.error('No stroke-display element found in cell:', cell);
-        return;
+        // This is an old-style cell, convert it to new style
+        cell.innerHTML = '<div class="stroke-display">-</div>';
+        display = cell.querySelector('.stroke-display');
     }
     
     if (strokeType === 'full') {
