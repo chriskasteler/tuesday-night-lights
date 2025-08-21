@@ -2072,34 +2072,30 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
         }
     });
     
-    // Also update stroke cells
-    console.log(`🏌️ Found ${strokeCells.length} stroke cells for player update`);
+    // Also update stroke cells - completely rebuild the buttons with correct player IDs
     strokeCells.forEach(cell => {
         if (selectedValue) {
             // Enable stroke cell and update data-player to actual player ID
-            cell.dataset.player = selectedValue;  // Store the actual player ID
+            cell.dataset.player = selectedValue;
             cell.style.opacity = '1';
             cell.style.pointerEvents = 'auto';
             
-            // Store the actual player ID in the cell for stroke reference
-            cell.dataset.actualPlayerId = selectedValue;
-            console.log(`🏌️ Updated stroke cell for hole ${cell.dataset.hole} to use player ID: ${selectedValue}`);
-            
-            // Update the button onclick to use a wrapper function that reads the actual player ID
+            // Completely replace the button HTML with new onclick using player ID
+            const hole = cell.dataset.hole;
             const button = cell.querySelector('button');
             if (button) {
-                const hole = cell.dataset.hole;
-                button.onclick = () => {
-                    const actualPlayerId = cell.dataset.actualPlayerId || cell.dataset.player;
-                    console.log(`🏌️ Stroke button clicked - using player ID: ${actualPlayerId}`);
-                    openStrokeSelector(actualPlayerId, hole);
-                };
+                button.outerHTML = `
+                    <button onclick="openStrokeSelector('${selectedValue}', ${hole})"
+                            style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
+                        Add
+                    </button>
+                `;
             }
         } else {
             // Disable stroke cell and reset to generic name
             const teamName = dropdown.dataset.team;
             const position = dropdown.dataset.position;
-            cell.dataset.player = `${teamName} Player ${position}`;  // Generic name
+            cell.dataset.player = `${teamName} Player ${position}`;
             cell.style.opacity = '0.5';
             cell.style.pointerEvents = 'none';
             
@@ -2109,11 +2105,16 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
                 indicator.remove();
             }
             
-            // Reset button onclick to generic name
+            // Reset button to generic name
+            const hole = cell.dataset.hole;
             const button = cell.querySelector('button');
             if (button) {
-                const hole = cell.dataset.hole;
-                button.onclick = () => openStrokeSelector(`${teamName} Player ${position}`, hole);
+                button.outerHTML = `
+                    <button onclick="openStrokeSelector('${teamName} Player ${position}', ${hole})"
+                            style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
+                        Add
+                    </button>
+                `;
             }
         }
     });
