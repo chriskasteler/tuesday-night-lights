@@ -3711,14 +3711,15 @@ function selectScore(score) {
 // Open stroke selector for a cell on a specific hole
 window.openStrokeSelector = function openStrokeSelector(buttonElement, hole) {
     // Handle both old (player, hole) and new (buttonElement, hole) calls
-    let strokeCell;
+    let player, actualHole;
     if (typeof buttonElement === 'string') {
-        // Old format: openStrokeSelector(player, hole) - find the cell by context
-        console.log('Old stroke selector call - finding cell by context');
-        return; // Skip for now
+        // Old format: openStrokeSelector(player, hole)
+        player = buttonElement;
+        actualHole = hole;
     } else {
-        // New format: openStrokeSelector(buttonElement, hole)
-        strokeCell = buttonElement.closest('.stroke-cell');
+        // New format: openStrokeSelector(buttonElement, hole) - not implemented yet
+        console.log('New stroke selector format not implemented yet');
+        return;
     }
     
     // Create stroke selector modal
@@ -3855,20 +3856,11 @@ function updateStrokeCell(player, hole) {
     
     strokeCells.forEach(cell => {
         if (strokeType === 'full') {
-            cell.textContent = 'FULL';
-            cell.style.background = '#e8f5e8';
-            cell.style.color = '#2d4a2d';
-            cell.style.fontWeight = 'bold';
+            cell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #e8f5e8; color: #2d4a2d; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">FULL</div>`;
         } else if (strokeType === 'half') {
-            cell.textContent = 'HALF';
-            cell.style.background = '#fff3cd';
-            cell.style.color = '#856404';
-            cell.style.fontWeight = 'bold';
+            cell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #fff3cd; color: #856404; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">HALF</div>`;
         } else {
-            cell.textContent = 'add';
-            cell.style.background = '#f8f9fa';
-            cell.style.color = '#666';
-            cell.style.fontWeight = 'normal';
+            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>`;
         }
     });
 }
