@@ -7600,7 +7600,7 @@ function updateBestBallScores() {
             let bestNetScore = null;
             let hasAnyScore = false;
             
-            teamPlayerRows.forEach(row => {
+            teamPlayerRows.forEach((row, index) => {
                 // Find the score cell for this hole in this player's row
                 const scoreCell = row.querySelector(`.score-cell[data-hole="${hole}"]`);
                 if (!scoreCell) return;
@@ -7617,46 +7617,35 @@ function updateBestBallScores() {
                 // Calculate net score (gross - strokes)
                 let netScore = grossScore;
                 
-                console.log(`🔍 Checking score cell for hole ${hole}: gross=${grossScore}, innerHTML="${scoreCell.innerHTML}"`);
-                console.log(`🔍 Score cell classes:`, scoreCell.className);
-                console.log(`🔍 Score cell children:`, scoreCell.children);
-                
-                // Check for stroke indicator on this cell - multiple possible classes
-                let strokeIndicator = scoreCell.querySelector('.stroke-indicator-overlay');
-                
-                // If not found, check for old stroke indicator class
-                if (!strokeIndicator) {
-                    strokeIndicator = scoreCell.querySelector('.stroke-indicator');
+                // DIFFERENT APPROACH: Find strokes by position mapping
+                // Team 1 players are positions 1-2, Team 2 players are positions 3-4 (roughly)
+                let genericPlayerName;
+                if (team === "1") {
+                    // First team - use index 0,1 for players 1,2
+                    const teamName = "Whack Shack"; // Get from row data or hardcode for now
+                    genericPlayerName = `${teamName} Player ${index + 1}`;
+                } else {
+                    // Second team
+                    const teamName = "Bump & Run"; // Get from row data or hardcode for now  
+                    genericPlayerName = `${teamName} Player ${index + 1}`;
                 }
                 
-                // If still not found, check for span elements with stroke symbols (fallback)
-                if (!strokeIndicator) {
-                    const spans = scoreCell.querySelectorAll('span');
-                    for (let span of spans) {
-                        const text = span.textContent.trim();
-                        if (text === '●' || text === '½') {
-                            strokeIndicator = span;
-                            break;
-                        }
-                    }
-                }
+                console.log(`🔍 Looking for strokes under: "${genericPlayerName}" for hole ${hole}`);
                 
-                console.log(`🔍 Stroke indicator found:`, strokeIndicator);
-                
-                if (strokeIndicator) {
-                    const strokeText = strokeIndicator.textContent.trim();
-                    console.log(`🔍 Stroke text: "${strokeText}"`);
-                    if (strokeText === '●' || strokeText === '1') {
-                        netScore -= 1;  // Full stroke
-                        console.log(`🏌️ Found full stroke: ${grossScore} - 1 = ${netScore}`);
-                    } else if (strokeText === '½') {
-                        netScore -= 0.5;  // Half stroke
-                        console.log(`🏌️ Found half stroke: ${grossScore} - 0.5 = ${netScore}`);
-                    } else {
-                        console.log(`❓ Unknown stroke text: "${strokeText}"`);
+                // Check if this position has strokes in currentPlayerStrokes
+                if (currentPlayerStrokes[genericPlayerName] && currentPlayerStrokes[genericPlayerName][hole]) {
+                    const strokeType = currentPlayerStrokes[genericPlayerName][hole];
+                    console.log(`🎯 Found stroke data: ${strokeType}`);
+                    
+                    if (strokeType === 'full') {
+                        netScore -= 1;
+                        console.log(`🏌️ Applied full stroke: ${grossScore} - 1 = ${netScore}`);
+                    } else if (strokeType === 'half') {
+                        netScore -= 0.5;
+                        console.log(`🏌️ Applied half stroke: ${grossScore} - 0.5 = ${netScore}`);
                     }
                 } else {
-                    console.log(`🏌️ No stroke indicator found for gross score: ${grossScore}, net: ${netScore}`);
+                    console.log(`🏌️ No stroke data found for ${genericPlayerName}, hole ${hole}`);
                 }
                 
                 // Keep the best (lowest) net score
