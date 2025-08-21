@@ -3708,17 +3708,10 @@ function selectScore(score) {
     }, 200);
 }
 
-// Open stroke selector for a cell on a specific hole
-window.openStrokeSelector = function openStrokeSelector(buttonElement, hole) {
-    // Handle both old (player, hole) and new (buttonElement, hole) calls
-    let player, actualHole;
-    if (typeof buttonElement === 'string') {
-        // Old format: openStrokeSelector(player, hole)
-        player = buttonElement;
-        actualHole = hole;
-    } else {
-        // New format: openStrokeSelector(buttonElement, hole) - not implemented yet
-        console.log('New stroke selector format not implemented yet');
+// Open stroke selector for a player on a specific hole
+window.openStrokeSelector = function openStrokeSelector(player, hole) {
+    // Prevent double-opening by checking if modal already exists
+    if (document.getElementById('stroke-selector-modal')) {
         return;
     }
     
@@ -3860,7 +3853,8 @@ function updateStrokeCell(player, hole) {
         } else if (strokeType === 'half') {
             cell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #fff3cd; color: #856404; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">HALF</div>`;
         } else {
-            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>`;
+            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>
+                            <div class="stroke-display" style="margin-top: 2px; font-size: 0.75rem; color: #666;">-</div>`;
         }
     });
 }
