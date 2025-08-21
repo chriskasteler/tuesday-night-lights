@@ -7618,10 +7618,16 @@ function updateBestBallScores() {
                 let netScore = grossScore;
                 
                 console.log(`🔍 Checking score cell for hole ${hole}: gross=${grossScore}, innerHTML="${scoreCell.innerHTML}"`);
+                console.log(`🔍 Score cell classes:`, scoreCell.className);
+                console.log(`🔍 Score cell children:`, scoreCell.children);
                 
                 // Check for stroke indicator on this cell (new system uses .stroke-indicator-overlay)
                 const strokeIndicator = scoreCell.querySelector('.stroke-indicator-overlay');
                 console.log(`🔍 Stroke indicator found:`, strokeIndicator);
+                
+                // Also check if there are any child elements at all
+                const allChildren = scoreCell.querySelectorAll('*');
+                console.log(`🔍 All child elements:`, allChildren);
                 
                 if (strokeIndicator) {
                     const strokeText = strokeIndicator.textContent.trim();
