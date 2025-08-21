@@ -1850,7 +1850,7 @@ function updateStrokeDisplay(cell, strokeType) {
         // This is an old-style cell, convert it to new style
         cell.innerHTML = '<div class="stroke-display">-</div>';
         cell.style.cursor = 'pointer';
-        cell.onclick = function() { toggleStroke(this); };
+        cell.onclick = function() { window.toggleStroke(this); };
         display = cell.querySelector('.stroke-display');
     }
     
