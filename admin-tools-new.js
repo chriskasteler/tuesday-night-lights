@@ -1843,6 +1843,11 @@ window.toggleStroke = function toggleStroke(cell) {
 // Update stroke display in cell
 function updateStrokeDisplay(cell, strokeType) {
     const display = cell.querySelector('.stroke-display');
+    if (!display) {
+        console.error('No stroke-display element found in cell:', cell);
+        return;
+    }
+    
     if (strokeType === 'full') {
         display.textContent = '●';
         display.style.color = '#28a745';
@@ -3904,20 +3909,10 @@ window.closeStrokeSelector = function closeStrokeSelector() {
     document.body.style.overflow = '';
 }
 
-// Update stroke cell visual state - restored to working version
+// OLD STROKE SYSTEM - DISABLED
 function updateStrokeCell(player, hole) {
-    const strokeCells = document.querySelectorAll(`td.stroke-cell[data-player="${player}"][data-hole="${hole}"]`);
-    const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
-    
-    strokeCells.forEach(cell => {
-        if (strokeType === 'full') {
-            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #e8f5e8; border: 1px solid #2d4a2d; color: #2d4a2d; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px; font-weight: bold;">FULL</button>`;
-        } else if (strokeType === 'half') {
-            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #fff3cd; border: 1px solid #856404; color: #856404; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px; font-weight: bold;">HALF</button>`;
-        } else {
-            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>`;
-        }
-    });
+    // This function is disabled - using new simple stroke system instead
+    console.log('updateStrokeCell called but disabled - using new simple stroke system');
 }
 
 // Update stroke indicator on the score cell above
