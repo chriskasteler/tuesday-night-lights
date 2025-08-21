@@ -2147,52 +2147,10 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
         }
     });
     
-    // Also update stroke cells - completely rebuild the buttons with correct player IDs
-    strokeCells.forEach(cell => {
-        if (selectedValue) {
-            // Enable stroke cell and update data-player to actual player ID
-            cell.dataset.player = selectedValue;
-            cell.style.opacity = '1';
-            cell.style.pointerEvents = 'auto';
-            
-            // Completely replace the button HTML with new onclick using player ID
-            const hole = cell.dataset.hole;
-            const button = cell.querySelector('button');
-            if (button) {
-                button.outerHTML = `
-                    <button onclick="openStrokeSelector('${selectedValue}', ${hole})"
-                            style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
-                        Add
-                    </button>
-                `;
-            }
-        } else {
-            // Disable stroke cell and reset to generic name
-            const teamName = dropdown.dataset.team;
-            const position = dropdown.dataset.position;
-            cell.dataset.player = `${teamName} Player ${position}`;
-            cell.style.opacity = '0.5';
-            cell.style.pointerEvents = 'none';
-            
-            // Clear any existing stroke indicators
-            const indicator = cell.querySelector('.stroke-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
-            
-            // Reset button to generic name
-            const hole = cell.dataset.hole;
-            const button = cell.querySelector('button');
-            if (button) {
-                button.outerHTML = `
-                    <button onclick="openStrokeSelector('${teamName} Player ${position}', ${hole})"
-                            style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
-                        Add
-                    </button>
-                `;
-            }
-        }
-    });
+    // IMPORTANT: Do NOT update stroke cell data-player - strokes must stay tied to CELL POSITION
+    // Stroke cells keep their original data-player (generic position name)
+    // This ensures strokes are tied to the cell position, not the actual player
+    console.log(`Stroke cells remain tied to position, not player - this is correct behavior`);
 }
 
 // Helper function to get player name by ID
@@ -7379,6 +7337,9 @@ async function loadPlayersIntoDropdowns(weekNumber, matchupIndex, matchNumber, t
                 if (playerId) {
                     dropdown.value = playerId;
                     console.log(`✅ LOADING PLAYERS: Set ${player.name} (ID: ${playerId}) in position ${position}`);
+                    
+                    // Enable score cells and update stroke cell data for this player selection
+                    updateScoreCellsForPlayerSelection(dropdown, playerId);
                 } else {
                     console.warn(`⚠️ LOADING PLAYERS: Could not find player ID for ${player.name}`);
                 }
