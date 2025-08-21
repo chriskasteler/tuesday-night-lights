@@ -3850,12 +3850,11 @@ function updateStrokeCell(player, hole) {
     
     strokeCells.forEach(cell => {
         if (strokeType === 'full') {
-            cell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #e8f5e8; color: #2d4a2d; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">FULL</div>`;
+            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #e8f5e8; border: 1px solid #2d4a2d; color: #2d4a2d; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px; font-weight: bold;">FULL</button>`;
         } else if (strokeType === 'half') {
-            cell.innerHTML = `<div onclick="openStrokeSelector('${player}', ${hole})" style="cursor: pointer; padding: 2px 6px; background: #fff3cd; color: #856404; font-weight: bold; border-radius: 3px; font-size: 0.75rem;">HALF</div>`;
+            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #fff3cd; border: 1px solid #856404; color: #856404; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px; font-weight: bold;">HALF</button>`;
         } else {
-            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>
-                            <div class="stroke-display" style="margin-top: 2px; font-size: 0.75rem; color: #666;">-</div>`;
+            cell.innerHTML = `<button onclick="openStrokeSelector('${player}', ${hole})" style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">Add</button>`;
         }
     });
 }
