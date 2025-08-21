@@ -1785,9 +1785,9 @@ function generateStrokeCells(playerName) {
             <td class="stroke-cell" 
                 data-player="${playerName}"
                 data-hole="${hole}"
-                style="padding: 5px; border: 1px solid #ddd; text-align: center; font-size: 0.8rem; cursor: pointer;"
+                style="padding: 5px; border: 1px solid #ddd; text-align: center; font-size: 0.75rem; cursor: pointer; color: #007bff;"
                 onclick="toggleStroke(this)">
-                <div class="stroke-display">-</div>
+                <div class="stroke-display">tap</div>
             </td>
         `;
     }
@@ -1795,12 +1795,36 @@ function generateStrokeCells(playerName) {
 }
 
 // Simple stroke toggle function - cycles through: none -> half -> full -> none
-window.toggleStroke = function toggleStroke(cell) {
-    console.log('🎯 toggleStroke called on cell:', cell.dataset.player, 'hole:', cell.dataset.hole);
+window.toggleStroke = function toggleStroke(strokeCell) {
+    console.log('🎯 toggleStroke called');
     
-    // Use cell position (generic player name) for stroke storage, NOT actual player ID
-    const cellPosition = cell.dataset.player; // This is the generic name like "Whack Shack Player 1"
-    const hole = parseInt(cell.dataset.hole);
+    // Find the corresponding score cell (same hole, same player position)
+    const hole = parseInt(strokeCell.dataset.hole);
+    const cellPosition = strokeCell.dataset.player; // Generic name like "Whack Shack Player 1"
+    
+    // Find the score cell in the row above (player row)
+    const scoreRow = strokeCell.closest('tr').previousElementSibling;
+    const scoreCell = scoreRow.querySelector(`[data-hole="${hole}"][data-player]`);
+    
+    // Make sure we find the right score cell for this position
+    let targetScoreCell = null;
+    const scoreCells = scoreRow.querySelectorAll(`[data-hole="${hole}"]`);
+    for (let cell of scoreCells) {
+        // Check if this score cell is for the same position
+        const strokeRowCells = strokeCell.closest('tr').querySelectorAll('[data-hole]');
+        const strokeCellIndex = Array.from(strokeRowCells).indexOf(strokeCell);
+        const scoreCellIndex = Array.from(scoreRow.querySelectorAll('[data-hole]')).indexOf(cell);
+        
+        if (strokeCellIndex === scoreCellIndex) {
+            targetScoreCell = cell;
+            break;
+        }
+    }
+    
+    if (!targetScoreCell) {
+        console.error('Could not find score cell for hole', hole);
+        return;
+    }
     
     // Get current stroke state for this CELL POSITION
     let currentStroke = 'none';
@@ -1818,7 +1842,7 @@ window.toggleStroke = function toggleStroke(cell) {
         newStroke = 'none';
     }
     
-    console.log(`🔄 Stroke cycling: ${currentStroke} -> ${newStroke}`);
+    console.log(`🔄 Stroke cycling: ${currentStroke} -> ${newStroke} for position ${cellPosition}`);
     
     // Initialize cell position strokes if needed
     if (!currentPlayerStrokes[cellPosition]) {
@@ -1832,10 +1856,7 @@ window.toggleStroke = function toggleStroke(cell) {
         currentPlayerStrokes[cellPosition][hole] = newStroke;
     }
     
-    // Update visual display
-    updateStrokeDisplay(cell, newStroke);
-    
-    // Update score cell indicator for this cell position
+    // Update visual indicator on the SCORE CELL (not stroke cell)
     updateScoreStrokeIndicator(cellPosition, hole);
     
     // Save strokes to database
@@ -1846,32 +1867,24 @@ window.toggleStroke = function toggleStroke(cell) {
     }
 };
 
-// Update stroke display in cell
+// Update stroke display in cell - stroke cells always show "tap"
 function updateStrokeDisplay(cell, strokeType) {
     // Check if this is a new-style cell with .stroke-display
     let display = cell.querySelector('.stroke-display');
     
     if (!display) {
         // This is an old-style cell, convert it to new style
-        cell.innerHTML = '<div class="stroke-display">-</div>';
+        cell.innerHTML = '<div class="stroke-display">tap</div>';
         cell.style.cursor = 'pointer';
         cell.onclick = function() { window.toggleStroke(this); };
         display = cell.querySelector('.stroke-display');
     }
     
-    if (strokeType === 'full') {
-        display.textContent = '●';
-        display.style.color = '#28a745';
-        display.style.fontWeight = 'bold';
-    } else if (strokeType === 'half') {
-        display.textContent = '½';
-        display.style.color = '#ffc107';
-        display.style.fontWeight = 'bold';
-    } else {
-        display.textContent = '-';
-        display.style.color = '#666';
-        display.style.fontWeight = 'normal';
-    }
+    // Stroke cells always show "tap" - never change the display
+    display.textContent = 'tap';
+    display.style.color = '#007bff';
+    display.style.fontWeight = 'normal';
+    display.style.fontSize = '0.75rem';
 }
 
 // Generate editable score cells for a player
@@ -2103,7 +2116,7 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         
         // Refresh all dropdowns to enforce smart selection (but don't undo stroke button fixes)
         setTimeout(() => {
-            refreshWeeklyScoringPlayerDropdowns();
+        refreshWeeklyScoringPlayerDropdowns();
         }, 50);
         
         // Save lineup change to database
@@ -2280,7 +2293,7 @@ function refreshWeeklyScoringPlayerDropdowns() {
                 
                 if (optionExists) {
                     select.value = currentValue;
-                } else {
+        } else {
                     // If option doesn't exist, add it manually and select it
                     const teamPlayers = window.teamPlayersMap?.[teamName] || [];
                     const player = teamPlayers.find(p => p.id === currentValue);
@@ -3900,13 +3913,13 @@ function updateStrokeIndicatorOnScoreCell(strokeCell, hole, strokeType) {
     }
     
     // Add new stroke indicator if needed
-    if (strokeType === 'full') {
+        if (strokeType === 'full') {
         const indicator = document.createElement('div');
         indicator.className = 'stroke-indicator';
         indicator.textContent = '●';
         indicator.style.cssText = 'position: absolute; top: 2px; right: 2px; font-size: 0.6rem; color: #666; pointer-events: none;';
         scoreCell.appendChild(indicator);
-    } else if (strokeType === 'half') {
+        } else if (strokeType === 'half') {
         const indicator = document.createElement('div');
         indicator.className = 'stroke-indicator';
         indicator.textContent = '½';
