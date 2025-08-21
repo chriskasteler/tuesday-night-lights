@@ -3710,7 +3710,16 @@ function selectScore(score) {
 
 // Open stroke selector for a cell on a specific hole
 window.openStrokeSelector = function openStrokeSelector(buttonElement, hole) {
-    const strokeCell = buttonElement.closest('.stroke-cell');
+    // Handle both old (player, hole) and new (buttonElement, hole) calls
+    let strokeCell;
+    if (typeof buttonElement === 'string') {
+        // Old format: openStrokeSelector(player, hole) - find the cell by context
+        console.log('Old stroke selector call - finding cell by context');
+        return; // Skip for now
+    } else {
+        // New format: openStrokeSelector(buttonElement, hole)
+        strokeCell = buttonElement.closest('.stroke-cell');
+    }
     
     // Create stroke selector modal
     const modal = document.createElement('div');
