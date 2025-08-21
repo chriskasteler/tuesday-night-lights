@@ -2024,8 +2024,10 @@ async function handleWeeklyScoringPlayerSelection(dropdown) {
         // Show/hide remove button based on selection
         toggleRemoveButton(dropdown);
         
-        // Refresh all dropdowns to enforce smart selection
-        refreshWeeklyScoringPlayerDropdowns();
+        // Refresh all dropdowns to enforce smart selection (but don't undo stroke button fixes)
+        setTimeout(() => {
+            refreshWeeklyScoringPlayerDropdowns();
+        }, 50);
         
         // Save lineup change to database
         await saveLineupChange(weekNumber, matchupIndex, matchNumber, teamName, position, selectedPlayer);
@@ -2084,12 +2086,14 @@ function updateScoreCellsForPlayerSelection(dropdown, selectedValue) {
             const hole = cell.dataset.hole;
             const button = cell.querySelector('button');
             if (button) {
+                console.log(`🔧 Replacing stroke button for hole ${hole} with player ID: ${selectedValue}`);
                 button.outerHTML = `
                     <button onclick="openStrokeSelector('${selectedValue}', ${hole})"
                             style="background: #f8f9fa; border: 1px solid #ccc; padding: 2px 6px; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
                         Add
                     </button>
                 `;
+                console.log(`✅ Button replaced for hole ${hole}`);
             }
         } else {
             // Disable stroke cell and reset to generic name
