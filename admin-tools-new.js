@@ -1834,9 +1834,10 @@ window.toggleStroke = function toggleStroke(cell) {
     updateScoreStrokeIndicator(player, hole);
     
     // Save strokes to database
-    const weekNumber = document.getElementById('weekly-scoring-week-select').value;
-    if (weekNumber) {
-        saveStrokesToDatabase(weekNumber);
+    const weekElement = document.getElementById('weekly-scoring-week-select');
+    if (weekElement && weekElement.value) {
+        const weekNumber = weekElement.value.split(' - ')[0].replace('Week ', '');
+        saveScoresToDatabase(weekNumber);
     }
 };
 
