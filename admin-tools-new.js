@@ -3928,61 +3928,87 @@ function updateStrokeIndicatorOnScoreCell(strokeCell, hole, strokeType) {
     }
 }
 
-// Update score cell stroke indicator (dot or 1/2)
-function updateScoreStrokeIndicator(player, hole) {
-    const scoreCells = document.querySelectorAll(`td.score-cell[data-player="${player}"][data-hole="${hole}"]`);
-    const strokeType = currentPlayerStrokes[player] && currentPlayerStrokes[player][hole];
+// Update score cell stroke indicator (dot or 1/2) - finds cell by POSITION not player name
+function updateScoreStrokeIndicator(cellPosition, hole) {
+    const strokeType = currentPlayerStrokes[cellPosition] && currentPlayerStrokes[cellPosition][hole];
     
-    console.log(`🔍 updateScoreStrokeIndicator: player=${player}, hole=${hole}, strokeType=${strokeType}, found ${scoreCells.length} cells`);
+    console.log(`🔍 updateScoreStrokeIndicator: cellPosition=${cellPosition}, hole=${hole}, strokeType=${strokeType}`);
     
-    scoreCells.forEach(cell => {
-        // Ensure cell has position relative for absolute positioning to work
-        cell.style.position = 'relative';
-        
-        // Remove any existing stroke indicators
-        const existingIndicator = cell.querySelector('.stroke-indicator-overlay');
-        if (existingIndicator) {
-            existingIndicator.remove();
-        }
-        
-        // Add new stroke indicator if needed
-        if (strokeType === 'full') {
-            const indicator = document.createElement('div');
-            indicator.className = 'stroke-indicator-overlay';
-            indicator.style.cssText = `
-                position: absolute;
-                top: 2px;
-                right: 2px;
-                width: 8px;
-                height: 8px;
-                background: black;
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 10;
-            `;
-            cell.appendChild(indicator);
-            console.log(`✅ Added full stroke indicator to cell`);
-        } else if (strokeType === 'half') {
-            const indicator = document.createElement('div');
-            indicator.className = 'stroke-indicator-overlay';
-            indicator.textContent = '½';
-            indicator.style.cssText = `
-                position: absolute;
-                top: 1px;
-                right: 2px;
-                font-size: 12px;
-                color: black;
-                font-weight: bold;
-                pointer-events: none;
-                line-height: 1;
-                z-index: 10;
-            `;
-            cell.appendChild(indicator);
-            console.log(`✅ Added half stroke indicator to cell`);
-        } else {
-            console.log(`❌ No stroke indicator needed (strokeType: ${strokeType})`);
-        }
-    });
+    // Find the stroke cell with this position and hole
+    const strokeCell = document.querySelector(`td.stroke-cell[data-player="${cellPosition}"][data-hole="${hole}"]`);
+    if (!strokeCell) {
+        console.log(`❌ Could not find stroke cell for position ${cellPosition}, hole ${hole}`);
+        return;
+    }
+    
+    // Find the score cell directly above this stroke cell (same column position)
+    const strokeRow = strokeCell.closest('tr');
+    const playerRow = strokeRow.previousElementSibling;
+    
+    if (!playerRow) {
+        console.log(`❌ Could not find player row above stroke row`);
+        return;
+    }
+    
+    // Find the score cell in the same column position
+    const strokeCells = strokeRow.querySelectorAll('td.stroke-cell');
+    const strokeCellIndex = Array.from(strokeCells).indexOf(strokeCell);
+    const scoreCells = playerRow.querySelectorAll('td.score-cell');
+    const scoreCell = scoreCells[strokeCellIndex];
+    
+    if (!scoreCell) {
+        console.log(`❌ Could not find score cell at index ${strokeCellIndex}`);
+        return;
+    }
+    
+    console.log(`✅ Found score cell for position ${strokeCellIndex}, hole ${hole}`);
+    
+    // Ensure cell has position relative for absolute positioning to work
+    scoreCell.style.position = 'relative';
+    
+    // Remove any existing stroke indicators
+    const existingIndicator = scoreCell.querySelector('.stroke-indicator-overlay');
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+    
+    // Add new stroke indicator if needed
+    if (strokeType === 'full') {
+        const indicator = document.createElement('div');
+        indicator.className = 'stroke-indicator-overlay';
+        indicator.style.cssText = `
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: black;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+        `;
+        scoreCell.appendChild(indicator);
+        console.log(`✅ Added full stroke indicator (●) to score cell`);
+    } else if (strokeType === 'half') {
+        const indicator = document.createElement('div');
+        indicator.className = 'stroke-indicator-overlay';
+        indicator.textContent = '½';
+        indicator.style.cssText = `
+            position: absolute;
+            top: 1px;
+            right: 2px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+            pointer-events: none;
+            line-height: 1;
+            z-index: 10;
+        `;
+        scoreCell.appendChild(indicator);
+        console.log(`✅ Added half stroke indicator (½) to score cell`);
+    } else {
+        console.log(`❌ No stroke indicator needed (strokeType: ${strokeType})`);
+    }
 }
 
 // Open match status selector for a team on a specific hole
