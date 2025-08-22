@@ -935,7 +935,7 @@ const hardcodedResults = {
                 },
                 whackShackBestBall: [4, 5, 3, 4.5, 5, 4, 4, 3, 4], // Whack Shack team best ball
                 bumpRunBestBall: [4, 3, 3, 4, 3, 4, 4, 3, 3],      // Bump & Run team best ball
-                matchStatus: ['AS', '2dn', 'AS', '½dn', '2dn', 'AS', 'AS', 'AS', '1dn'] // Hole-by-hole match status
+                matchStatus: ['AS', '1dn', 'AS', '1dn', '2dn', '2dn', '2dn', '2dn', '1dn'] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
@@ -969,7 +969,7 @@ const hardcodedResults = {
                 },
                 whackShackBestBall: [4, 4, 4, 4, 5, 5, 5, 3, 4], // Whack Shack team best ball
                 bumpRunBestBall: [4, 4, 3, 3, 5.5, 4, 4, 3, 3],  // Bump & Run team best ball
-                matchStatus: ['AS', 'AS', '1up', '1up', '½dn', '1dn', '1dn', 'AS', '1dn'] // Hole-by-hole match status
+                matchStatus: ['AS', 'AS', '1up', '2up', '1up', '1up', '1up', 'AS', '1up'] // Hole-by-hole match status
             }
         ]
     },
@@ -1016,7 +1016,7 @@ const hardcodedResults = {
                 },
                 beTheBallBestBall: [4, 5, 3, 5, 4, 4, 4, 3, 3], // Be the Ball team best ball
                 aviariBestBall: [4, 4, 3, 4, 3, 4, 5, 4, 4],      // Aviari team best ball
-                matchStatus: ['AS', '1dn', 'AS', '1dn', '1dn', 'AS', '1up', '1up', '1up'] // Hole-by-hole match status
+                matchStatus: ['AS', '1dn', 'AS', '1dn', '1dn', 'AS', '1up', 'AS', '1dn'] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
@@ -1050,7 +1050,7 @@ const hardcodedResults = {
                 },
                 beTheBallBestBall: [4, 5, 2, 5, 4, 4, 4, 4, 4], // Be the Ball team best ball
                 aviariBestBall: [4, 4, 4, 4, 5.5, 4, 4, 3, 3],  // Aviari team best ball
-                matchStatus: ['AS', '1dn', '2up', '1up', '1½up', 'AS', 'AS', '1dn', '1dn'] // Hole-by-hole match status
+                matchStatus: ['AS', '1dn', '1up', 'AS', '1up', 'AS', 'AS', '1dn', '1dn'] // Hole-by-hole match status
             }
         ]
     }
