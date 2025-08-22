@@ -935,7 +935,7 @@ const hardcodedResults = {
                 },
                 whackShackBestBall: [3, 5, 3, 4.5, 5, 4, 4, 3, 4], // Whack Shack team best ball
                 bumpRunBestBall: [4, 3, 3, 4, 3, 4, 4, 3, 3],      // Bump & Run team best ball
-                matchStatus: ['1up', 'AS', 'AS', '1dn', '2dn', '2dn', '2dn', '2dn', '3dn'] // Hole-by-hole match status
+                matchStatus: ['1up', 'AS', 'AS', '1dn', '2dn', '2dn', '2dn', '2&1', ''] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
@@ -1211,9 +1211,12 @@ function showMultiMatchScorecard(matchData) {
         });
         
         // Determine team1 final result
-        const finalStatus = match.matchStatus[8];
+        const finalStatus = match.matchStatus[8] || match.matchStatus[7]; // Check hole 9 first, then hole 8
         let team1Result = '';
-        if (finalStatus.includes('up')) {
+        if (finalStatus.includes('&')) {
+            // Match ended early (e.g., "2&1")
+            team1Result = `${team2} wins ${finalStatus}`;
+        } else if (finalStatus.includes('up')) {
             team1Result = `${team2} wins ${finalStatus}`;
         } else if (finalStatus.includes('dn')) {
             team1Result = `${team1} wins ${finalStatus.replace('dn', 'up')}`;
@@ -1267,7 +1270,10 @@ function showMultiMatchScorecard(matchData) {
         match.matchStatus.forEach(status => {
             // Show status from team2's perspective - invert the stored status
             let team2Status = status;
-            if (status.includes('dn')) {
+            if (status.includes('&')) {
+                // For early end format like "2&1", show from team2's perspective
+                team2Status = status; // Team2 loses, so show as is but they see it as a loss
+            } else if (status.includes('dn')) {
                 team2Status = status.replace('dn', 'up');
             } else if (status.includes('up')) {
                 team2Status = status.replace('up', 'dn');
@@ -1277,7 +1283,11 @@ function showMultiMatchScorecard(matchData) {
         
         // Determine team2 final result
         let team2Result = '';
-        if (finalStatus.includes('up')) {
+        if (finalStatus.includes('&')) {
+            // Match ended early (e.g., "2&1") - invert for team2's perspective
+            const invertedStatus = finalStatus.replace('&', '&');  // Keep the & format but from their perspective
+            team2Result = `${team1} wins ${invertedStatus}`;
+        } else if (finalStatus.includes('up')) {
             team2Result = `${team1} wins ${finalStatus}`;
         } else if (finalStatus.includes('dn')) {
             team2Result = `${team2} wins ${finalStatus.replace('dn', 'up')}`;
