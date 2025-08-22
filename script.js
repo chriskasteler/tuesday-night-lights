@@ -902,7 +902,42 @@ const hardcodedResults = {
         team1: 'Whack Shack',
         team2: 'Bump & Run', 
         result: 'Bump & Run wins 2-0',
-        scorecard: 'Coming soon - provide scores and strokes'
+        scorecard: {
+            match1: {
+                whackShack: {
+                    player: 'Dustin Slade',
+                    scores: [4, 8, 3, 5, 5, 4, 5, 3, 4],
+                    strokes: [null, 'full', null, 'half', null, null, null, null, null],
+                    net: [4, 7, 3, 4.5, 5, 4, 5, 3, 4], 
+                    total: 39.5
+                },
+                bumpRun: {
+                    player: 'Tyler Slade',
+                    scores: [4, 6, 6, 8, 7, 7, 4, 3, 4],
+                    strokes: ['full', 'full', 'full', 'full', 'full', 'full', null, null, null],
+                    net: [3, 5, 5, 7, 6, 6, 4, 3, 4],
+                    total: 43
+                },
+                bestBall: [3, 5, 3, 4.5, 5, 4, 4, 3, 4] // Best net score per hole
+            },
+            match2: {
+                whackShack: {
+                    player: 'Kyle Silvera', 
+                    scores: [4, 4, 3, 6, 4, 4, 4, 4, 3],
+                    strokes: [null, null, null, null, null, null, null, null, null],
+                    net: [4, 4, 3, 6, 4, 4, 4, 4, 3],
+                    total: 36
+                },
+                bumpRun: {
+                    player: 'Matthew Gins',
+                    scores: [4, 4, 5, 5, 4, 6, 5, 3, 6], 
+                    strokes: [null, 'full', 'full', 'full', 'full', 'half', null, null, null],
+                    net: [4, 3, 4, 4, 3, 5.5, 5, 3, 6],
+                    total: 37.5
+                },
+                bestBall: [4, 3, 3, 4, 3, 4, 4, 3, 3] // Best net score per hole
+            }
+        }
     },
     'week1-match2': {
         team1: 'Aviari',
@@ -918,6 +953,148 @@ const hardcodedResults = {
     }
 };
 
+function showDetailedScorecard(matchData) {
+    const { team1, team2, result, scorecard } = matchData;
+    
+    // Create detailed scorecard HTML
+    let html = `
+        <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+            <h2 style="text-align: center; color: #2d4a2d;">${team1} vs ${team2}</h2>
+            <p style="text-align: center; font-weight: bold; font-size: 1.1em; color: #0066cc;">${result}</p>
+            
+            <h3 style="color: #2d4a2d;">Match 1</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9em;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="border: 1px solid #ddd; padding: 8px;">Player</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">1</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">2</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">3</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">4</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">5</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">6</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">7</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">8</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">9</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+    
+    // Add Match 1 players
+    [scorecard.match1.whackShack, scorecard.match1.bumpRun].forEach(player => {
+        html += `<tr>
+            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${player.player}</td>`;
+        
+        // Add scores with stroke indicators
+        player.scores.forEach((score, i) => {
+            let cellContent = score;
+            if (player.strokes[i] === 'full') {
+                cellContent += ' ●';
+            } else if (player.strokes[i] === 'half') {
+                cellContent += ' ½';
+            }
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${cellContent}</td>`;
+        });
+        
+        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${player.total}</td></tr>`;
+    });
+    
+    // Add best ball row
+    html += `<tr style="background: #e8f5e8;">
+        <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Best Ball (Net)</td>`;
+    scorecard.match1.bestBall.forEach(score => {
+        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${score}</td>`;
+    });
+    const match1Total = scorecard.match1.bestBall.reduce((a, b) => a + b, 0);
+    html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${match1Total}</td></tr>`;
+    
+    html += `</tbody></table>
+            
+            <h3 style="color: #2d4a2d;">Match 2</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9em;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="border: 1px solid #ddd; padding: 8px;">Player</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">1</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">2</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">3</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">4</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">5</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">6</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">7</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">8</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">9</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+    
+    // Add Match 2 players
+    [scorecard.match2.whackShack, scorecard.match2.bumpRun].forEach(player => {
+        html += `<tr>
+            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${player.player}</td>`;
+        
+        // Add scores with stroke indicators
+        player.scores.forEach((score, i) => {
+            let cellContent = score;
+            if (player.strokes[i] === 'full') {
+                cellContent += ' ●';
+            } else if (player.strokes[i] === 'half') {
+                cellContent += ' ½';
+            }
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${cellContent}</td>`;
+        });
+        
+        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${player.total}</td></tr>`;
+    });
+    
+    // Add best ball row
+    html += `<tr style="background: #e8f5e8;">
+        <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Best Ball (Net)</td>`;
+    scorecard.match2.bestBall.forEach(score => {
+        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${score}</td>`;
+    });
+    const match2Total = scorecard.match2.bestBall.reduce((a, b) => a + b, 0);
+    html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${match2Total}</td></tr>`;
+    
+    html += `</tbody></table>
+        </div>`;
+    
+    // Create and show modal
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); z-index: 1000; display: flex;
+        align-items: center; justify-content: center; padding: 20px;
+    `;
+    
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: white; border-radius: 8px; padding: 30px;
+        max-height: 90vh; overflow-y: auto; position: relative;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    `;
+    
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.style.cssText = `
+        position: absolute; top: 10px; right: 15px; font-size: 24px;
+        border: none; background: none; cursor: pointer; color: #666;
+    `;
+    closeButton.onclick = () => document.body.removeChild(modal);
+    
+    content.innerHTML = html;
+    content.appendChild(closeButton);
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    // Close on background click
+    modal.onclick = (e) => {
+        if (e.target === modal) document.body.removeChild(modal);
+    };
+}
+
 async function openScorecard(matchId, team1, team2, format) {
     console.log('🎯 SCORECARD: Opening hardcoded scorecard for', matchId, team1, team2, format);
     
@@ -925,7 +1102,13 @@ async function openScorecard(matchId, team1, team2, format) {
     if (hardcodedResults[matchId]) {
         const matchData = hardcodedResults[matchId];
         
-        // Show a simple results modal
+        // If it's detailed scorecard data, format it nicely
+        if (typeof matchData.scorecard === 'object' && matchData.scorecard.match1) {
+            showDetailedScorecard(matchData);
+            return;
+        }
+        
+        // Otherwise show simple results
         alert(`${matchData.team1} vs ${matchData.team2}\n\nResult: ${matchData.result}\n\n${matchData.scorecard}`);
         return;
     }
