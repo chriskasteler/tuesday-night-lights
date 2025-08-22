@@ -1003,13 +1003,13 @@ const hardcodedResults = {
                 },
                 creamTeamPlayer2: {
                     player: 'Andrew Patterson',
-                    scores: [4, 5, 2, 4, 3, 3, 3, 3, 3],
+                    scores: [4, 5, 2, 4, 3, 3, 3, 3, 4],
                     strokes: [null, null, null, null, null, null, null, null, null],
-                    net: [4, 5, 2, 4, 3, 3, 3, 3, 3],
-                    total: 30
+                    net: [4, 5, 2, 4, 3, 3, 3, 3, 4],
+                    total: 31
                 },
                 samuraisBestBall: [4, 4, 2, 4, 3, 4, 4, 3, 5], // Samurais team best ball
-                creamTeamBestBall: [3, 5, 2, 4, 3, 3, 3, 2, 3], // Cream Team best ball
+                creamTeamBestBall: [3, 5, 2, 4, 3, 3, 3, 2, 4], // Cream Team best ball
                 matchStatus: ['1dn', 'AS', 'AS', 'AS', 'AS', '1dn', '2dn', '3&1', ''] // Hole-by-hole match status
             },
             {
