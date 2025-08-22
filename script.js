@@ -1010,7 +1010,7 @@ const hardcodedResults = {
                 },
                 samuraisBestBall: [4, 4, 2, 4, 3, 4, 4, 3, 5], // Samurais team best ball
                 creamTeamBestBall: [3, 5, 2, 4, 3, 3, 3, 2, 3], // Cream Team best ball
-                matchStatus: ['1dn', '1dn', 'AS', 'AS', 'AS', '1dn', '1dn', '1dn', '2dn'] // Hole-by-hole match status
+                matchStatus: ['1dn', 'AS', 'AS', 'AS', 'AS', '1dn', '2dn', '3&1', ''] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
@@ -1044,7 +1044,7 @@ const hardcodedResults = {
                 },
                 samuraisBestBall: [5, 4, 3, 3.5, 4, 4, 5, 3, 4], // Samurais team best ball
                 creamTeamBestBall: [4, 3, 3, 5, 4, 3, 3, 3, 4], // Cream Team best ball
-                matchStatus: ['1dn', 'AS', 'AS', '1up', '1up', '2up', '3up', '3up', '3up'] // Hole-by-hole match status
+                matchStatus: ['1dn', 'AS', 'AS', '1up', '1up', '2up', '3&2', '', ''] // Hole-by-hole match status
             }
         ]
     },
@@ -1085,7 +1085,7 @@ const hardcodedResults = {
                 },
                 beTheBallBestBall: [4, 5, 3, 5, 4, 4, 4, 3, 3], // Be the Ball team best ball
                 aviariBestBall: [4, 4, 3, 4, 3, 4, 5, 4, 4],      // Aviari team best ball
-                matchStatus: ['AS', '1dn', 'AS', '1dn', '1dn', 'AS', '1up', 'AS', '1dn'] // Hole-by-hole match status
+                matchStatus: ['AS', '1dn', 'AS', '1dn', 'AS', 'AS', '1up', '2up', '3up'] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
@@ -1119,7 +1119,7 @@ const hardcodedResults = {
                 },
                 beTheBallBestBall: [4, 5, 2, 5, 4, 4, 4, 4, 4], // Be the Ball team best ball
                 aviariBestBall: [4, 4, 4, 4, 5.5, 4, 4, 3, 3],  // Aviari team best ball
-                matchStatus: ['AS', '1dn', '1up', 'AS', '1up', 'AS', 'AS', '1dn', '1dn'] // Hole-by-hole match status
+                matchStatus: ['AS', '1dn', 'AS', '1dn', 'AS', 'AS', 'AS', '1dn', '2dn'] // Hole-by-hole match status
             }
         ]
     }
