@@ -1090,36 +1090,36 @@ const hardcodedResults = {
             {
                 title: 'Match 2',
                 beTheBallPlayer1: {
-                    player: 'Ryan Richardson',
-                    scores: [4, 5, 3, 5, 4, 4, 6, 4, 4],
-                    strokes: [null, null, null, null, null, null, null, null, null],
-                    net: [4, 5, 3, 5, 4, 4, 6, 4, 4],
-                    total: 39
-                },
-                beTheBallPlayer2: {
-                    player: 'Peter Cunningham',
-                    scores: [5, 6, 3, 7, 7, 5, 4, 4, 7],
-                    strokes: [null, 'full', 'full', 'full', 'full', null, null, null, null],
-                    net: [5, 5, 2, 6, 6, 5, 4, 4, 7],
-                    total: 44
-                },
-                aviariPlayer1: {
                     player: 'Nicholas Bravo',
                     scores: [6, 5, 4, 4, 6, 5, 4, 3, 6],
                     strokes: [null, 'half', null, null, null, null, null, null, null],
                     net: [6, 4.5, 4, 4, 6, 5, 4, 3, 6],
                     total: 42.5
                 },
-                aviariPlayer2: {
+                beTheBallPlayer2: {
                     player: 'Adam Zonlonz',
                     scores: [4, 5, 4, 6, 6, 4, 4, 3, 3],
                     strokes: [null, 'full', null, 'full', 'half', null, null, null, null],
                     net: [4, 4, 4, 5, 5.5, 4, 4, 3, 3],
                     total: 36.5
                 },
-                beTheBallBestBall: [4, 5, 2, 5, 4, 4, 4, 4, 4], // Be the Ball team best ball
-                aviariBestBall: [4, 4, 4, 4, 5.5, 4, 4, 3, 3],  // Aviari team best ball
-                matchStatus: ['AS', '1dn', 'AS', '1dn', 'AS', 'AS', 'AS', '1dn', '2dn'] // Hole-by-hole match status
+                aviariPlayer1: {
+                    player: 'Ryan Richardson',
+                    scores: [4, 5, 3, 5, 4, 4, 6, 4, 4],
+                    strokes: [null, null, null, null, null, null, null, null, null],
+                    net: [4, 5, 3, 5, 4, 4, 6, 4, 4],
+                    total: 39
+                },
+                aviariPlayer2: {
+                    player: 'Peter Cunningham',
+                    scores: [5, 6, 3, 7, 7, 5, 4, 4, 7],
+                    strokes: [null, 'full', 'full', 'full', 'full', null, null, null, null],
+                    net: [5, 5, 2, 6, 6, 5, 4, 4, 7],
+                    total: 44
+                },
+                beTheBallBestBall: [4, 4, 4, 4, 5.5, 4, 4, 3, 3], // Be the Ball team best ball (Nicholas + Adam)
+                aviariBestBall: [4, 5, 2, 5, 4, 4, 4, 4, 4],  // Aviari team best ball (Ryan + Peter)
+                matchStatus: ['AS', '1up', 'AS', '1up', 'AS', 'AS', 'AS', '1up', '2up'] // Hole-by-hole match status
             }
         ]
     }
