@@ -896,13 +896,42 @@ document.addEventListener('DOMContentLoaded', function() {
 // Scorecard functionality
 let currentMatch = null;
 
+// Hardcoded Week 1 results 
+const hardcodedResults = {
+    'week1-match1': {
+        team1: 'Whack Shack',
+        team2: 'Bump & Run', 
+        result: 'Bump & Run wins 2-0',
+        scorecard: 'Coming soon - provide scores and strokes'
+    },
+    'week1-match2': {
+        team1: 'Aviari',
+        team2: 'Cream Team',
+        result: 'Match Split 1-1', 
+        scorecard: 'Coming soon - provide scores and strokes'
+    },
+    'week1-match3': {
+        team1: 'Samurais',
+        team2: 'Be the Ball',
+        result: 'Match Split 1-1',
+        scorecard: 'Coming soon - provide scores and strokes'
+    }
+};
+
 async function openScorecard(matchId, team1, team2, format) {
-    console.log('🎯 SCORECARD: Opening scorecard for', matchId, team1, team2, format);
-    console.log('🎯 SCORECARD: Current user state:', firebase.auth().currentUser?.email);
-    console.log('🎯 SCORECARD: Global team names:', globalTeamNames);
+    console.log('🎯 SCORECARD: Opening hardcoded scorecard for', matchId, team1, team2, format);
+    
+    // Check if we have hardcoded results for this match
+    if (hardcodedResults[matchId]) {
+        const matchData = hardcodedResults[matchId];
+        
+        // Show a simple results modal
+        alert(`${matchData.team1} vs ${matchData.team2}\n\nResult: ${matchData.result}\n\n${matchData.scorecard}`);
+        return;
+    }
     
     try {
-        // Convert team names from "Team 1" format to actual team names
+        // Convert team names from "Team 1" format to actual team names  
         const actualTeam1 = globalTeamNames[team1] || team1;
         const actualTeam2 = globalTeamNames[team2] || team2;
     
