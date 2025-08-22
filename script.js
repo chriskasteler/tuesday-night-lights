@@ -1210,8 +1210,14 @@ function showMultiMatchScorecard(matchData) {
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${status}</td>`;
         });
         
-        // Determine team1 final result
-        const finalStatus = match.matchStatus[8] || match.matchStatus[7]; // Check hole 9 first, then hole 8
+        // Determine team1 final result - find the last non-empty status
+        let finalStatus = '';
+        for (let i = match.matchStatus.length - 1; i >= 0; i--) {
+            if (match.matchStatus[i] && match.matchStatus[i] !== '') {
+                finalStatus = match.matchStatus[i];
+                break;
+            }
+        }
         let team1Result = '';
         if (finalStatus.includes('&')) {
             // Match ended early (e.g., "2&1") - team1 lost, show blank
