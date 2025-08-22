@@ -974,10 +974,79 @@ const hardcodedResults = {
         ]
     },
     'week1-match2': {
-        team1: 'Aviari',
+        team1: 'Samurais',
         team2: 'Cream Team',
-        result: 'Match Split 1-1', 
-        scorecard: 'Coming soon - provide scores and strokes'
+        result: 'Match Split 1-1',
+        matches: [
+            {
+                title: 'Match 1',
+                samuraisPlayer1: {
+                    player: 'James Kim',
+                    scores: [4, 5, 3, 5, 6, 4, 4, 3, 6],
+                    strokes: [null, 'full', null, 'full', 'half', null, null, null, null],
+                    net: [4, 4, 3, 4, 5.5, 4, 4, 3, 6],
+                    total: 37.5
+                },
+                samuraisPlayer2: {
+                    player: 'Stephen Kirsch',
+                    scores: [6, 6, 3, 6, 3, 4, 4, 6, 5], // Hole 9 score estimated - need actual score
+                    strokes: [null, 'full', 'full', 'full', null, null, null, null, null],
+                    net: [6, 5, 2, 5, 3, 4, 4, 6, 5],
+                    total: 40 // Will need to update when hole 9 is confirmed
+                },
+                creamTeamPlayer1: {
+                    player: 'Steven O\'Conner',
+                    scores: [4, 7, 3, 5, 5, 4, 4, 3, 6],
+                    strokes: ['full', 'full', 'full', 'full', 'full', 'full', null, 'full', null],
+                    net: [3, 6, 2, 4, 4, 3, 4, 2, 6],
+                    total: 34
+                },
+                creamTeamPlayer2: {
+                    player: 'Andrew Patterson',
+                    scores: [4, 5, 2, 4, 3, 3, 3, 3, 3],
+                    strokes: [null, null, null, null, null, null, null, null, null],
+                    net: [4, 5, 2, 4, 3, 3, 3, 3, 3],
+                    total: 30
+                },
+                samuraisBestBall: [4, 4, 2, 4, 3, 4, 4, 3, 5], // Samurais team best ball
+                creamTeamBestBall: [3, 5, 2, 4, 3, 3, 3, 2, 3], // Cream Team best ball
+                matchStatus: ['1dn', '1dn', 'AS', 'AS', 'AS', '1dn', '1dn', '1dn', '2dn'] // Hole-by-hole match status
+            },
+            {
+                title: 'Match 2',
+                samuraisPlayer1: {
+                    player: 'Greg Linzner',
+                    scores: [5, 5, 4, 6, 5, 4, 5, 5, 4],
+                    strokes: [null, 'full', null, 'full', 'full', null, null, null, null],
+                    net: [5, 4, 4, 5, 4, 4, 5, 5, 4],
+                    total: 40
+                },
+                samuraisPlayer2: {
+                    player: 'Ryo Kuroda',
+                    scores: [5, 5, 3, 4, 6, 4, 6, 3, 4],
+                    strokes: [null, 'full', null, 'half', null, null, null, null, null],
+                    net: [5, 4, 3, 3.5, 6, 4, 6, 3, 4],
+                    total: 38.5
+                },
+                creamTeamPlayer1: {
+                    player: 'Bryan Gorog',
+                    scores: [4, 6, 3, 7, 4, 3, 4, 3, 6],
+                    strokes: [null, null, null, null, null, null, null, null, null],
+                    net: [4, 6, 3, 7, 4, 3, 4, 3, 6],
+                    total: 40
+                },
+                creamTeamPlayer2: {
+                    player: 'Brain Wolfe',
+                    scores: [4, 3, 3, 5, 4, 3, 3, 3, 4],
+                    strokes: [null, null, null, null, null, null, null, null, null],
+                    net: [4, 3, 3, 5, 4, 3, 3, 3, 4],
+                    total: 32
+                },
+                samuraisBestBall: [5, 4, 3, 3.5, 4, 4, 5, 3, 4], // Samurais team best ball
+                creamTeamBestBall: [4, 3, 3, 5, 4, 3, 3, 3, 4], // Cream Team best ball
+                matchStatus: ['1dn', 'AS', 'AS', '1up', '1up', '2up', '3up', '3up', '3up'] // Hole-by-hole match status
+            }
+        ]
     },
     'week1-match3': {
         team1: 'Be the Ball',
