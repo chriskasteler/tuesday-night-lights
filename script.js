@@ -1037,14 +1037,14 @@ const hardcodedResults = {
                 },
                 creamTeamPlayer2: {
                     player: 'Brain Wolfe',
-                    scores: [4, 3, 3, 5, 4, 3, 3, 3, 4],
-                    strokes: [null, null, null, null, null, null, null, null, null],
+                    scores: [4, 4, 3, 5, 4, 3, 3, 3, 4],
+                    strokes: [null, 'full', null, null, null, null, null, null, null],
                     net: [4, 3, 3, 5, 4, 3, 3, 3, 4],
                     total: 32
                 },
                 samuraisBestBall: [5, 4, 3, 3.5, 4, 4, 5, 3, 4], // Samurais team best ball
                 creamTeamBestBall: [4, 3, 3, 5, 4, 3, 3, 3, 4], // Cream Team best ball
-                matchStatus: ['1dn', 'AS', 'AS', '1up', '1up', '2up', '3&2', '', ''] // Hole-by-hole match status
+                matchStatus: ['1dn', '2dn', '1dn', 'AS', 'AS', '1up', 'AS', 'AS', 'AS'] // Hole-by-hole match status
             }
         ]
     },
