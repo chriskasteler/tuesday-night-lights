@@ -1057,10 +1057,10 @@ const hardcodedResults = {
                 title: 'Match 1',
                 beTheBallPlayer1: {
                     player: 'Josh Stein',
-                    scores: [4, 6, 3, 5, 5, 5, 4, 5, 4],
+                    scores: [4, 6, 3, 5, 5, 4, 5, 4, 3],
                     strokes: [null, 'full', null, null, 'full', null, null, null, null],
-                    net: [4, 5, 3, 5, 4, 5, 4, 5, 4],
-                    total: 39
+                    net: [4, 5, 3, 5, 4, 4, 5, 4, 3],
+                    total: 37
                 },
                 beTheBallPlayer2: {
                     player: 'Steve Lee',
@@ -1083,9 +1083,9 @@ const hardcodedResults = {
                     net: [4, 4, 3, 4, 3, 6, 5, 4, 4],
                     total: 37
                 },
-                beTheBallBestBall: [4, 4, 3, 4, 4, 4, 4, 5, 4], // Be the Ball team best ball (Josh + Steve)
+                beTheBallBestBall: [4, 4, 3, 4, 4, 4, 5, 4, 3], // Be the Ball team best ball (Josh + Steve)
                 aviariBestBall: [4, 4, 3, 4, 3, 4, 4, 3, 3],      // Aviari team best ball (Tate + Andy)
-                matchStatus: ['AS', 'AS', 'AS', 'AS', '1dn', '1dn', '1dn', 'AS', '1up'] // Hole-by-hole match status
+                matchStatus: ['AS', 'AS', 'AS', 'AS', '1dn', '1dn', 'AS', '1up', '1up'] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
