@@ -1085,7 +1085,7 @@ const hardcodedResults = {
                 },
                 beTheBallBestBall: [4, 4, 3, 4, 4, 4, 5, 4, 3], // Be the Ball team best ball (Josh + Steve)
                 aviariBestBall: [4, 4, 3, 4, 3, 4, 4, 3, 3],      // Aviari team best ball (Tate + Andy)
-                matchStatus: ['AS', 'AS', 'AS', 'AS', '1dn', '1dn', 'AS', '1up', '1up'] // Hole-by-hole match status
+                matchStatus: ['AS', 'AS', 'AS', 'AS', '1dn', '1dn', 'AS', '2&1', ''] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
