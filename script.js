@@ -1206,14 +1206,8 @@ function showMultiMatchScorecard(matchData) {
         html += `<tr style="background: #e8f5e8;">
             <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team1} Status</td>`;
         match.matchStatus.forEach(status => {
-            // Show status from team1's perspective
-            let team1Status = status;
-            if (status.includes('dn')) {
-                team1Status = status.replace('dn', 'up');
-            } else if (status.includes('up')) {
-                team1Status = status.replace('up', 'dn');
-            }
-            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team1Status}</td>`;
+            // Show status from team1's perspective - no inversion needed, the stored status is correct
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${status}</td>`;
         });
         
         // Determine team1 final result
@@ -1271,8 +1265,14 @@ function showMultiMatchScorecard(matchData) {
         html += `<tr style="background: #ffe8e8;">
             <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team2} Status</td>`;
         match.matchStatus.forEach(status => {
-            // Show status from original perspective (team2's perspective)
-            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${status}</td>`;
+            // Show status from team2's perspective - invert the stored status
+            let team2Status = status;
+            if (status.includes('dn')) {
+                team2Status = status.replace('dn', 'up');
+            } else if (status.includes('up')) {
+                team2Status = status.replace('up', 'dn');
+            }
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team2Status}</td>`;
         });
         
         // Determine team2 final result
