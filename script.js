@@ -976,7 +976,7 @@ const hardcodedResults = {
     'week1-match2': {
         team1: 'Samurais',
         team2: 'Cream Team',
-        result: 'Match Split 1-1',
+        result: 'Cream Team wins 2-0',
         matches: [
             {
                 title: 'Match 1',
@@ -1044,7 +1044,7 @@ const hardcodedResults = {
                 },
                 samuraisBestBall: [5, 4, 3, 3.5, 4, 4, 5, 3, 4], // Samurais team best ball
                 creamTeamBestBall: [4, 3, 3, 5, 4, 3, 3, 3, 4], // Cream Team best ball
-                matchStatus: ['1dn', '2dn', '1dn', 'AS', 'AS', '1up', 'AS', 'AS', 'AS'] // Hole-by-hole match status
+                matchStatus: ['1dn', '2dn', '2dn', '1dn', '1dn', '2dn', '3&2', '', ''] // Hole-by-hole match status
             }
         ]
     },
