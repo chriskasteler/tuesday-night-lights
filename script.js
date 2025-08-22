@@ -1063,18 +1063,18 @@ const hardcodedResults = {
                     total: 39
                 },
                 beTheBallPlayer2: {
-                    player: 'Tate Frazier',
-                    scores: [4, 5, 3, 5, 4, 4, 4, 3, 3],
-                    strokes: [null, null, null, null, null, null, null, null, null],
-                    net: [4, 5, 3, 5, 4, 4, 4, 3, 3],
-                    total: 35
-                },
-                aviariPlayer1: {
                     player: 'Steve Lee',
                     scores: [4, 5, 4, 5, 5, 4, 5, 5, 4],
                     strokes: [null, 'full', null, 'full', 'full', null, null, null, null],
                     net: [4, 4, 4, 4, 4, 4, 5, 5, 4],
                     total: 38
+                },
+                aviariPlayer1: {
+                    player: 'Tate Frazier',
+                    scores: [4, 5, 3, 5, 4, 4, 4, 3, 3],
+                    strokes: [null, null, null, null, null, null, null, null, null],
+                    net: [4, 5, 3, 5, 4, 4, 4, 3, 3],
+                    total: 35
                 },
                 aviariPlayer2: {
                     player: 'Andy Barenson',
@@ -1083,9 +1083,9 @@ const hardcodedResults = {
                     net: [4, 4, 3, 4, 3, 6, 5, 4, 4],
                     total: 37
                 },
-                beTheBallBestBall: [4, 5, 3, 5, 4, 4, 4, 3, 3], // Be the Ball team best ball
-                aviariBestBall: [4, 4, 3, 4, 3, 4, 5, 4, 4],      // Aviari team best ball
-                matchStatus: ['AS', '1dn', '1dn', '2dn', '1dn', '1dn', 'AS', '1up', '2up'] // Hole-by-hole match status
+                beTheBallBestBall: [4, 4, 3, 4, 4, 4, 4, 5, 4], // Be the Ball team best ball (Josh + Steve)
+                aviariBestBall: [4, 4, 3, 4, 3, 4, 4, 3, 3],      // Aviari team best ball (Tate + Andy)
+                matchStatus: ['AS', 'AS', 'AS', 'AS', '1dn', '1dn', '1dn', 'AS', '1up'] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
