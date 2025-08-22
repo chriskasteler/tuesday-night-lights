@@ -1214,12 +1214,14 @@ function showMultiMatchScorecard(matchData) {
         const finalStatus = match.matchStatus[8] || match.matchStatus[7]; // Check hole 9 first, then hole 8
         let team1Result = '';
         if (finalStatus.includes('&')) {
-            // Match ended early (e.g., "2&1")
-            team1Result = `${team2} wins ${finalStatus}`;
+            // Match ended early (e.g., "2&1") - team1 lost, show blank
+            team1Result = '';
         } else if (finalStatus.includes('up')) {
-            team1Result = `${team2} wins ${finalStatus}`;
+            // team1 is up, so team1 wins
+            team1Result = `${team1} wins ${finalStatus}`;
         } else if (finalStatus.includes('dn')) {
-            team1Result = `${team1} wins ${finalStatus.replace('dn', 'up')}`;
+            // team1 is down, show blank (they lost)
+            team1Result = '';
         } else {
             team1Result = 'Tied';
         }
@@ -1284,12 +1286,13 @@ function showMultiMatchScorecard(matchData) {
         // Determine team2 final result
         let team2Result = '';
         if (finalStatus.includes('&')) {
-            // Match ended early (e.g., "2&1") - invert for team2's perspective
-            const invertedStatus = finalStatus.replace('&', '&');  // Keep the & format but from their perspective
-            team2Result = `${team1} wins ${invertedStatus}`;
+            // Match ended early (e.g., "2&1") - team2 won
+            team2Result = `${team2} wins ${finalStatus}`;
         } else if (finalStatus.includes('up')) {
-            team2Result = `${team1} wins ${finalStatus}`;
+            // team1 is up, so team2 lost, show blank
+            team2Result = '';
         } else if (finalStatus.includes('dn')) {
+            // team1 is down, so team2 won
             team2Result = `${team2} wins ${finalStatus.replace('dn', 'up')}`;
         } else {
             team2Result = 'Tied';
