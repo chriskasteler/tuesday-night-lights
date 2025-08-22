@@ -933,7 +933,7 @@ const hardcodedResults = {
                     net: [4, 3, 4, 4, 3, 5.5, 5, 3, 6],
                     total: 37.5
                 },
-                whackShackBestBall: [4, 5, 3, 4.5, 5, 4, 4, 3, 4], // Whack Shack team best ball
+                whackShackBestBall: [3, 5, 3, 4.5, 5, 4, 4, 3, 4], // Whack Shack team best ball
                 bumpRunBestBall: [4, 3, 3, 4, 3, 4, 4, 3, 3],      // Bump & Run team best ball
                 matchStatus: ['AS', '1dn', 'AS', '1dn', '2dn', '2dn', '2dn', '2dn', '1dn'] // Hole-by-hole match status
             },
