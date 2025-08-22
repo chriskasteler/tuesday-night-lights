@@ -983,42 +983,76 @@ const hardcodedResults = {
         team1: 'Be the Ball',
         team2: 'Aviari',
         result: 'Match Split 1-1',
-        scorecard: {
-            match1: {
-                beTheBall: {
+        matches: [
+            {
+                title: 'Match 1',
+                beTheBallPlayer1: {
                     player: 'Josh Stein',
                     scores: [4, 6, 3, 5, 5, 5, 4, 5, 4],
                     strokes: [null, 'full', null, null, 'full', null, null, null, null],
                     net: [4, 5, 3, 5, 4, 5, 4, 5, 4],
                     total: 39
                 },
-                aviari: {
-                    player: 'Steve Lee',
-                    scores: [4, 5, 4, 5, 5, 4, 5, 5, 4],
-                    strokes: [null, 'full', null, 'full', 'full', null, null, null, null],
-                    net: [4, 4, 4, 4, 4, 4, 5, 5, 4],
-                    total: 38
-                },
-                bestBall: [4, 4, 3, 4, 4, 4, 4, 5, 4] // Best net score per hole
-            },
-            match2: {
-                beTheBall: {
+                beTheBallPlayer2: {
                     player: 'Tate Frazier',
                     scores: [4, 5, 3, 5, 4, 4, 4, 3, 3],
                     strokes: [null, null, null, null, null, null, null, null, null],
                     net: [4, 5, 3, 5, 4, 4, 4, 3, 3],
                     total: 35
                 },
-                aviari: {
+                aviariPlayer1: {
+                    player: 'Steve Lee',
+                    scores: [4, 5, 4, 5, 5, 4, 5, 5, 4],
+                    strokes: [null, 'full', null, 'full', 'full', null, null, null, null],
+                    net: [4, 4, 4, 4, 4, 4, 5, 5, 4],
+                    total: 38
+                },
+                aviariPlayer2: {
                     player: 'Andy Barenson',
                     scores: [4, 5, 3, 5, 4, 6, 5, 4, 4],
                     strokes: [null, 'full', null, 'full', 'full', null, null, null, null],
                     net: [4, 4, 3, 4, 3, 6, 5, 4, 4],
                     total: 37
                 },
-                bestBall: [4, 4, 3, 4, 3, 4, 4, 3, 3] // Best net score per hole
+                beTheBallBestBall: [4, 5, 3, 5, 4, 4, 4, 3, 3], // Be the Ball team best ball
+                aviariBestBall: [4, 4, 3, 4, 3, 4, 5, 4, 4],      // Aviari team best ball
+                matchStatus: ['AS', '1dn', 'AS', '1dn', '1dn', 'AS', '1up', '1up', '1up'] // Hole-by-hole match status
+            },
+            {
+                title: 'Match 2',
+                beTheBallPlayer1: {
+                    player: 'Ryan Richardson',
+                    scores: [4, 5, 3, 5, 4, 4, 6, 4, 4],
+                    strokes: [null, null, null, null, null, null, null, null, null],
+                    net: [4, 5, 3, 5, 4, 4, 6, 4, 4],
+                    total: 39
+                },
+                beTheBallPlayer2: {
+                    player: 'Peter Cunningham',
+                    scores: [5, 6, 3, 7, 7, 5, 4, 4, 7],
+                    strokes: [null, 'full', 'full', 'full', 'full', null, null, null, null],
+                    net: [5, 5, 2, 6, 6, 5, 4, 4, 7],
+                    total: 44
+                },
+                aviariPlayer1: {
+                    player: 'Nicholas Bravo',
+                    scores: [6, 5, 4, 4, 6, 5, 4, 3, 6],
+                    strokes: [null, 'half', null, null, null, null, null, null, null],
+                    net: [6, 4.5, 4, 4, 6, 5, 4, 3, 6],
+                    total: 42.5
+                },
+                aviariPlayer2: {
+                    player: 'Adam Zonlonz',
+                    scores: [4, 5, 4, 6, 6, 4, 4, 3, 3],
+                    strokes: [null, 'full', null, 'full', 'half', null, null, null, null],
+                    net: [4, 4, 4, 5, 5.5, 4, 4, 3, 3],
+                    total: 36.5
+                },
+                beTheBallBestBall: [4, 5, 2, 5, 4, 4, 4, 4, 4], // Be the Ball team best ball
+                aviariBestBall: [4, 4, 4, 4, 5.5, 4, 4, 3, 3],  // Aviari team best ball
+                matchStatus: ['AS', '1dn', '2up', '1up', '1½up', 'AS', 'AS', '1dn', '1dn'] // Hole-by-hole match status
             }
-        }
+        ]
     }
 };
 
@@ -1054,13 +1088,9 @@ function showMultiMatchScorecard(matchData) {
                 </thead>
                 <tbody>`;
         
-        // Add players
-        const players = [
-            match.whackShackPlayer1,
-            match.whackShackPlayer2,
-            match.bumpRunPlayer1, 
-            match.bumpRunPlayer2
-        ];
+        // Add players - get all player objects dynamically
+        const playerKeys = Object.keys(match).filter(key => key.includes('Player'));
+        const players = playerKeys.map(key => match[key]);
         
         players.forEach((player, playerIndex) => {
             // Add separator row between teams
@@ -1088,23 +1118,32 @@ function showMultiMatchScorecard(matchData) {
         // Add team best ball rows
         html += `<tr><td colspan="11" style="border: none; padding: 8px;"></td></tr>`;
         
+        // Team Best Ball rows - find best ball arrays dynamically
+        const bestBallKeys = Object.keys(match).filter(key => key.includes('BestBall'));
+        const team1BestBall = bestBallKeys[0] ? match[bestBallKeys[0]] : [];
+        const team2BestBall = bestBallKeys[1] ? match[bestBallKeys[1]] : [];
+        
         // Team 1 Best Ball
-        html += `<tr style="background: #e8f5e8;">
-            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team1} Best Ball</td>`;
-        match.whackShackBestBall.forEach(score => {
-            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${score}</td>`;
-        });
-        const team1Total = match.whackShackBestBall.reduce((a, b) => a + b, 0);
-        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team1Total}</td></tr>`;
+        if (team1BestBall.length > 0) {
+            html += `<tr style="background: #e8f5e8;">
+                <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team1} Best Ball</td>`;
+            team1BestBall.forEach(score => {
+                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${score}</td>`;
+            });
+            const team1Total = team1BestBall.reduce((a, b) => a + b, 0);
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team1Total}</td></tr>`;
+        }
         
         // Team 2 Best Ball  
-        html += `<tr style="background: #ffe8e8;">
-            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team2} Best Ball</td>`;
-        match.bumpRunBestBall.forEach(score => {
-            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${score}</td>`;
-        });
-        const team2Total = match.bumpRunBestBall.reduce((a, b) => a + b, 0);
-        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team2Total}</td></tr>`;
+        if (team2BestBall.length > 0) {
+            html += `<tr style="background: #ffe8e8;">
+                <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team2} Best Ball</td>`;
+            team2BestBall.forEach(score => {
+                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${score}</td>`;
+            });
+            const team2Total = team2BestBall.reduce((a, b) => a + b, 0);
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team2Total}</td></tr>`;
+        }
         
         // Match Status
         html += `<tr style="background: #fff3cd;">
