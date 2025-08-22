@@ -1104,12 +1104,13 @@ function showMultiMatchScorecard(matchData) {
             // Add scores with stroke indicators
             player.scores.forEach((score, i) => {
                 let cellContent = score;
+                let strokeIndicator = '';
                 if (player.strokes[i] === 'full') {
-                    cellContent += ' ●';
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">●</span>';
                 } else if (player.strokes[i] === 'half') {
-                    cellContent += ' ½';
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">½</span>';
                 }
-                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${cellContent}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; position: relative;">${cellContent}${strokeIndicator}</td>`;
             });
             
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${player.total}</td></tr>`;
@@ -1253,12 +1254,13 @@ function showDetailedScorecard(matchData) {
             // Add scores with stroke indicators
             player.scores.forEach((score, i) => {
                 let cellContent = score;
+                let strokeIndicator = '';
                 if (player.strokes[i] === 'full') {
-                    cellContent += ' ●';
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">●</span>';
                 } else if (player.strokes[i] === 'half') {
-                    cellContent += ' ½';
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">½</span>';
                 }
-                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${cellContent}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; position: relative;">${cellContent}${strokeIndicator}</td>`;
             });
             
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${player.total}</td></tr>`;
@@ -1302,12 +1304,13 @@ function showDetailedScorecard(matchData) {
             
             player.scores.forEach((score, i) => {
                 let cellContent = score;
+                let strokeIndicator = '';
                 if (player.strokes[i] === 'full') {
-                    cellContent += ' ●';
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">●</span>';
                 } else if (player.strokes[i] === 'half') {
-                    cellContent += ' ½';
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">½</span>';
                 }
-                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${cellContent}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; position: relative;">${cellContent}${strokeIndicator}</td>`;
             });
             
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${player.total}</td></tr>`;
