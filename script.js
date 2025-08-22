@@ -1157,16 +1157,22 @@ function showMultiMatchScorecard(matchData) {
                 </thead>
                 <tbody>`;
         
-        // Add players - get all player objects dynamically
+        // Add players - get all player objects dynamically and group by teams
         const playerKeys = Object.keys(match).filter(key => key.includes('Player'));
         const players = playerKeys.map(key => match[key]);
         
-        players.forEach((player, playerIndex) => {
-            // Add separator row between teams
-            if (playerIndex === 2) {
-                html += `<tr><td colspan="11" style="border: none; padding: 4px;"></td></tr>`;
-            }
-            
+        // Get team names dynamically
+        const teamNames = Object.keys(match).filter(key => key.includes('BestBall')).map(key => {
+            return key.replace('BestBall', '').replace(/([A-Z])/g, ' $1').trim();
+        });
+        
+        // Team 1 (first 2 players)
+        const team1Players = players.slice(0, 2);
+        const team1Name = teamNames[0] || team1;
+        const team1BestBallKey = Object.keys(match).find(key => key.includes('BestBall') && key.toLowerCase().includes(team1Name.toLowerCase().replace(' ', '')));
+        const team1BestBall = team1BestBallKey ? match[team1BestBallKey] : [];
+        
+        team1Players.forEach((player, playerIndex) => {
             html += `<tr>
                 <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${player.player}</td>`;
             
@@ -1185,14 +1191,6 @@ function showMultiMatchScorecard(matchData) {
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${player.total}</td></tr>`;
         });
         
-        // Add team best ball rows
-        html += `<tr><td colspan="11" style="border: none; padding: 8px;"></td></tr>`;
-        
-        // Team Best Ball rows - find best ball arrays dynamically
-        const bestBallKeys = Object.keys(match).filter(key => key.includes('BestBall'));
-        const team1BestBall = bestBallKeys[0] ? match[bestBallKeys[0]] : [];
-        const team2BestBall = bestBallKeys[1] ? match[bestBallKeys[1]] : [];
-        
         // Team 1 Best Ball
         if (team1BestBall.length > 0) {
             html += `<tr style="background: #e8f5e8;">
@@ -1203,6 +1201,60 @@ function showMultiMatchScorecard(matchData) {
             const team1Total = team1BestBall.reduce((a, b) => a + b, 0);
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team1Total}</td></tr>`;
         }
+        
+        // Team 1 Match Status
+        html += `<tr style="background: #e8f5e8;">
+            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team1} Status</td>`;
+        match.matchStatus.forEach(status => {
+            // Show status from team1's perspective
+            let team1Status = status;
+            if (status.includes('dn')) {
+                team1Status = status.replace('dn', 'up');
+            } else if (status.includes('up')) {
+                team1Status = status.replace('up', 'dn');
+            }
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team1Status}</td>`;
+        });
+        
+        // Determine team1 final result
+        const finalStatus = match.matchStatus[8];
+        let team1Result = '';
+        if (finalStatus.includes('up')) {
+            team1Result = `${team2} wins ${finalStatus}`;
+        } else if (finalStatus.includes('dn')) {
+            team1Result = `${team1} wins ${finalStatus.replace('dn', 'up')}`;
+        } else {
+            team1Result = 'Tied';
+        }
+        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team1Result}</td></tr>`;
+        
+        // Separator
+        html += `<tr><td colspan="11" style="border: none; padding: 8px;"></td></tr>`;
+        
+        // Team 2 (last 2 players)
+        const team2Players = players.slice(2, 4);
+        const team2Name = teamNames[1] || team2;
+        const team2BestBallKey = Object.keys(match).find(key => key.includes('BestBall') && key.toLowerCase().includes(team2Name.toLowerCase().replace(' ', '')));
+        const team2BestBall = team2BestBallKey ? match[team2BestBallKey] : [];
+        
+        team2Players.forEach((player, playerIndex) => {
+            html += `<tr>
+                <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${player.player}</td>`;
+            
+            // Add scores with stroke indicators
+            player.scores.forEach((score, i) => {
+                let cellContent = score;
+                let strokeIndicator = '';
+                if (player.strokes[i] === 'full') {
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">●</span>';
+                } else if (player.strokes[i] === 'half') {
+                    strokeIndicator = '<span style="position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666;">½</span>';
+                }
+                html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; position: relative;">${cellContent}${strokeIndicator}</td>`;
+            });
+            
+            html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${player.total}</td></tr>`;
+        });
         
         // Team 2 Best Ball  
         if (team2BestBall.length > 0) {
@@ -1215,25 +1267,24 @@ function showMultiMatchScorecard(matchData) {
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team2Total}</td></tr>`;
         }
         
-        // Match Status
-        html += `<tr style="background: #fff3cd;">
-            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Match Status</td>`;
+        // Team 2 Match Status
+        html += `<tr style="background: #ffe8e8;">
+            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${team2} Status</td>`;
         match.matchStatus.forEach(status => {
+            // Show status from original perspective (team2's perspective)
             html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${status}</td>`;
         });
         
-        // Determine final match result
-        const finalStatus = match.matchStatus[8]; // Last hole status
-        let matchResult = '';
+        // Determine team2 final result
+        let team2Result = '';
         if (finalStatus.includes('up')) {
-            matchResult = team1.includes('Whack') ? `${team1} wins ${finalStatus}` : `${team2} wins ${finalStatus}`;
+            team2Result = `${team1} wins ${finalStatus}`;
         } else if (finalStatus.includes('dn')) {
-            matchResult = team1.includes('Whack') ? `${team2} wins ${finalStatus.replace('dn', 'up')}` : `${team1} wins ${finalStatus.replace('dn', 'up')}`;
+            team2Result = `${team2} wins ${finalStatus.replace('dn', 'up')}`;
         } else {
-            matchResult = 'Match Split';
+            team2Result = 'Tied';
         }
-        
-        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${matchResult}</td></tr>`;
+        html += `<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${team2Result}</td></tr>`;
         html += `</tbody></table>`;
     });
     
