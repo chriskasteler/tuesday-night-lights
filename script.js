@@ -989,10 +989,10 @@ const hardcodedResults = {
                 },
                 samuraisPlayer2: {
                     player: 'Stephen Kirsch',
-                    scores: [6, 6, 3, 6, 3, 4, 4, 6, 5], // Hole 9 score estimated - need actual score
-                    strokes: [null, 'full', 'full', 'full', null, null, null, null, null],
-                    net: [6, 5, 2, 5, 3, 4, 4, 6, 5],
-                    total: 40 // Will need to update when hole 9 is confirmed
+                    scores: [6, 6, 3, 5, 6, 3, 4, 4, 6],
+                    strokes: [null, 'full', 'full', 'full', 'full', null, null, null, null],
+                    net: [6, 5, 2, 4, 5, 3, 4, 4, 6],
+                    total: 39
                 },
                 creamTeamPlayer1: {
                     player: 'Steven O\'Conner',
@@ -1085,7 +1085,7 @@ const hardcodedResults = {
                 },
                 beTheBallBestBall: [4, 5, 3, 5, 4, 4, 4, 3, 3], // Be the Ball team best ball
                 aviariBestBall: [4, 4, 3, 4, 3, 4, 5, 4, 4],      // Aviari team best ball
-                matchStatus: ['AS', '1dn', '1dn', '2dn', '1dn', '1dn', 'AS', '1dn', '2dn'] // Hole-by-hole match status
+                matchStatus: ['AS', '1dn', '1dn', '2dn', '1dn', '1dn', 'AS', '1up', '2up'] // Hole-by-hole match status
             },
             {
                 title: 'Match 2',
