@@ -969,7 +969,7 @@ const hardcodedResults = {
                 },
                 whackShackBestBall: [4, 4, 4, 4, 5, 5, 5, 3, 4], // Whack Shack team best ball
                 bumpRunBestBall: [4, 4, 3, 3, 5.5, 4, 4, 3, 3],  // Bump & Run team best ball
-                matchStatus: ['AS', 'AS', '1up', '2up', '1up', '1up', '1up', 'AS', '1up'] // Hole-by-hole match status
+                matchStatus: ['AS', 'AS', '1dn', '2dn', '1dn', 'AS', '1up', '1up', '2up'] // Hole-by-hole match status
             }
         ]
     },
