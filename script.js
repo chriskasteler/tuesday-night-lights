@@ -1037,10 +1037,10 @@ const hardcodedResults = {
                 },
                 creamTeamPlayer2: {
                     player: 'Brain Wolfe',
-                    scores: [4, 4, 3, 5, 4, 3, 3, 3, 4],
+                    scores: [4, 4, 3, 5, 4, 5, 3, 3, 4],
                     strokes: [null, 'full', null, null, null, null, null, null, null],
-                    net: [4, 3, 3, 5, 4, 3, 3, 3, 4],
-                    total: 32
+                    net: [4, 3, 3, 5, 4, 5, 3, 3, 4],
+                    total: 34
                 },
                 samuraisBestBall: [5, 4, 3, 3.5, 4, 4, 5, 3, 4], // Samurais team best ball
                 creamTeamBestBall: [4, 3, 3, 5, 4, 3, 3, 3, 4], // Cream Team best ball
