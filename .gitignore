@@ -1,4 +1,12 @@
-# Operating System Files
+# Firebase configuration with sensitive keys
+firebase-config.js
+.env
+.env.local
+
+# Node modules (if you ever use them)
+node_modules/
+
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
@@ -7,30 +15,12 @@
 ehthumbs.db
 Thumbs.db
 
-# Editor/IDE Files
+# Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-
-# Node modules (if using any build tools later)
-node_modules/
-npm-debug.log*
-
-# Environment variables (if any sensitive data)
-.env
-.env.local
-.env.production
-
-# Backup files
-*.backup
-*.bak
-*.tmp
-
-# Firebase cache (if using Firebase CLI)
-.firebase/
-.firebaserc
 
 # Logs
-*.log 
+*.log
+npm-debug.log*
