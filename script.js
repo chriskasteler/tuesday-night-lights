@@ -1,6 +1,6 @@
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY", // Replace with your actual Firebase API key
+    apiKey: "YOUR_FIREBASE_API_KEY",
     authDomain: "highland-league.firebaseapp.com",
     projectId: "highland-league",
     storageBucket: "highland-league.firebasestorage.app",
